@@ -3,6 +3,8 @@
 config.plist.bak*
 *.bak-bt
 SysReport/
+!research/data/sysreport/
+!research/data/sysreport/**
 *.panic
 tools/scrub-map.local.psd1
 
