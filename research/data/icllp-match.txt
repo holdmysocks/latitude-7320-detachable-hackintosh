@@ -1,0 +1,11 @@
+=== FB kext present? ===
+/System/Library/Extensions/AppleIntelICLLPGraphicsFramebuffer.kext
+=== FB IOPCIMatch ===
+			<key>IOPCIPrimaryMatch</key>
+			<string>0xff058086 0x8A708086 0x8A718086 0x8A518086 0x8A5C8086 0x8A5D8086 0x8A528086 0x8A538086 0x8A5A8086 0x8A5B8086</string>
+			<key>IOProbeScore</key>
+			<integer>80000</integer>
+=== MTL bundle present? ===
+ls: /System/Library/Extensions/AppleIntelICLLPGraphicsMTLDriver.bundle: No such file or directory
+=== MTL IOPCIMatch ===
+grep: /System/Library/Extensions/AppleIntelICLLPGraphicsMTLDriver.bundle/Contents/Info.plist: No such file or directory

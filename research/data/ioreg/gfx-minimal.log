@@ -1,0 +1,9 @@
+Timestamp               Ty Process[PID:TID]
+2026-07-28 20:56:30.524 Df kernel[0:7b0] (IOGraphicsFamily) IOG flags 0x3 (0x51)
+2026-07-28 20:56:30.578 Df kernel[0:7ae] (AppleIntelICLLPGraphicsFramebuffer) Entry to probe function
+2026-07-28 20:56:30.578 Df kernel[0:7ae] (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Failing probe: Undefined platform ID
+2026-07-28 20:56:30.578 Df kernel[0:7ae] (AppleIntelICLGraphics) [IGPU] Failing probe (-allow3d is NOT set in boot-arg)!
+2026-07-28 20:56:30.578 Df kernel[0:7ae] (AppleIntelICLGraphics) [IGPU] Failing probe (-allow3d is NOT set in boot-arg)!
+2026-07-28 20:56:30.579 Df kernel[0:7ae] (IOGraphicsFamily) GTrace synchronization point 0
+2026-07-28 20:56:30.612 Df kernel[0:19c] (IOGraphicsFamily) GTrace synchronization point 2
+2026-07-28 20:56:36.022 Df kernel[0:7a] (IOGraphicsFamily) GTrace synchronization point 8

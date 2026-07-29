@@ -1,0 +1,14 @@
+Index Refs Address            Size       Wired      Name (Version) UUID <Linked Against>
+   56    8 0xffffff8004176000 0x31000    0x31000    as.vit9696.Lilu (1.7.2) C2A303B8-6D22-3163-A905-5DB8E340D285 <9 7 6 3 2 1>
+   57    3 0xffffff80041a7000 0x18000    0x18000    as.vit9696.VirtualSMC (1.3.7) DE3A2587-8A7F-389A-BC66-19277E0D0835 <56 17 9 7 6 3 1>
+   59    0 0xffffff80041cb000 0x18000    0x18000    ru.usrsse2.SMCBatteryManager (1.3.7) 248EC238-4159-3D8A-8B5F-7F26A1331133 <58 57 56 17 9 7 6 3 1>
+   60    0 0xffffff80041e3000 0xf000     0xf000     as.lvs1974.SMCDellSensors (1.3.7) 42745C45-0E7C-31A7-9F9B-1CA1CC6C0575 <57 56 9 7 6 3 2 1>
+   61    0 0xffffff80041f2000 0x83000    0x83000    as.vit9696.WhateverGreen (1.7.0) C960BCE0-7D95-3D9B-9143-2A65C6F714F2 <56 19 9 7 6 3 2 1>
+   62    0 0xffffff8004275000 0xd000     0xd000     org.acidanthera.NVMeFix (1.1.3) B85FCD6D-9B68-3AC2-B4C9-4BF1441CCCC3 <56 9 7 6 3 2 1>
+   63    0 0xffffff8004282000 0x8000     0x8000     com.1Revenger1.ECEnabler (1.0.6) 62C6C7EF-F3AC-3C94-B801-9FE22BAAC215 <56 9 7 6 3 2 1>
+   64    0 0xffffff8004da1000 0xb000     0xb000     as.acidanthera.BlueToolFixup (2.7.2) 037F9890-9A93-3E7F-AC9B-4AD018E0A67B <56 9 7 6 3 2 1>
+   65    0 0xffffff80041bf000 0xc000     0xc000     as.vit9696.SMCProcessor (1.3.7) BE9CB674-03BD-3CAC-8CD5-E3E60941A67E <57 56 17 9 7 6 3 2 1>
+   75    1 0xffffff800428a000 0x1a000    0x1a000    as.acidanthera.voodoo.driver.PS2Controller (2.3.7) E3314D9C-A923-3BFF-8F79-8D8F7627085F <17 9 7 6 3 1>
+   82    0 0xffffff8004dd4000 0xa000     0xa000     com.dhinakg.USBToolBox.kext (1.2.0) DF8F0CD3-4C6C-33AA-8A16-C7DEB1410F96 <37 19 6 3>
+  101    0 0xffffff80042a4000 0xafd000   0xafd000   com.zxystd.IntelBluetoothFirmware (2.4.0) F9DD55B4-27C6-39D5-AAFC-C599DB3DEBCA <38 7 6 3>
+  109    0 0xffffff8004dac000 0xd000     0xd000     as.acidanthera.voodoo.driver.PS2Keyboard (2.3.7) EFA883F4-7558-3E98-A352-E202CB3DFAAF <75 70 9 7 6 3 1>

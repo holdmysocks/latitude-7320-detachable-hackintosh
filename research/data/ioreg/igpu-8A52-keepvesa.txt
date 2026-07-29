@@ -1,0 +1,52 @@
++-o IGPU@2  <class IOPCIDevice, id 0x1000002e3, registered, matched, active, busy 0 (334 ms), retain 21>
+  | {
+  |   "acpi-path" = "IOACPIPlane:/_SB/PC00@0/GFX0@20000"
+  |   "acpi-device" = "IOACPIPlatformDevice is not serializable"
+  |   "assigned-addresses" = <1010008240000000000000110000000000000001181000c2400000000000000000000000000000102010008100000000003000000000000040000000>
+  |   "vendor-id" = <86800000>
+  |   "class-code" = <00000300>
+  |   "subsystem-vendor-id" = <28100000>
+  |   "IOPCIExpressLinkCapabilities" = 0
+  |   "IOName" = "display"
+  |   "pcidebug" = "0:2:0"
+  |   "display-connect-flags" = <00000000>
+  |   "IOPCIExpressLinkStatus" = 0
+  |   "IOPCIExpressCapabilities" = 146
+  |   "AAPL,gray-value" = <00000000>
+  |   "Capability Offsets" = {"VendorSpecificCapability"=64,"PowerManagementCapability"=208,"PCIExpressCapability"=112,"PASID"=256,"PRI"=768,"MSICapability"=172,"SRIOV"=800,"ATS"=512}
+  |   "IOServiceDEXTEntitlements" = (("com.apple.developer.driverkit.transport.pci"))
+  |   "built-in" = <00>
+  |   "IOBusyInterest" = "IOCommand is not serializable"
+  |   "IOPowerManagement" = {"ChildrenPowerState"=2,"CurrentPowerState"=2,"CapabilityFlags"=258,"ChildProxyPowerState"=2,"MaxPowerState"=3}
+  |   "IOPCIResourced" = Yes
+  |   "IODeviceMemory" = (({"address"=275163119616,"length"=16777216}),({"address"=274877906944,"length"=268435456}),"IOSubMemoryDescriptor is not serializable")
+  |   "IOPCIMSIMessageControl" = 256
+  |   "name" = <"display">
+  |   "subsystem-id" = <450a0000>
+  |   "AAPL,RegEntryID" = <d8f3b8cc04000000270c4733fbffffff656d6953000000007a6c755200000000>
+  |   "AAPL,gray-page" = <01000000>
+  |   "AAPL,ndrv-dev" = Yes
+  |   "IOPMIsPowerManaged" = Yes
+  |   "compatible" = <"pci1028,a45","pci8086,9a40","pciclass,030000","GFX0","IGPU">
+  |   "IOPCIExpressDeviceCapabilities2" = 0
+  |   "IOHibernateState" = <00000000>
+  |   "IOPCIExpressDeviceCapabilities" = 268468224
+  |   "attached-gpu-control-path" = "IOService:/AppleACPIPlatformExpert/PC00@0/AppleACPIPCI/IGPU@2/IONDRVFramebuffer/AGPM"
+  |   "reg" = <0010000000000000000000000000000000000000101000020000000000000000000000000000000118100042000000000000000000000000000000102010000100000000000000000000000040000000>
+  |   "IOPCIPowerManagementCapabilities" = 2228225
+  |   "device-id" = <528a0000>
+  |   "revision-id" = <01000000>
+  |   "IOPCIExpressLinkCapabilities2" = 0
+  |   "AAPL,ig-platform-id" = <ffffffff>
+  | }
+  | 
+  +-o .Display_boot  <class IONDRVFramebuffer, id 0x10000055d, registered, matched, active, busy 0 (126 ms), retain 21>
+    +-o AppleMCCSControlModule  <class AppleMCCSControlModule, id 0x10000059a, registered, matched, active, busy 0 (4 ms), retain 7>
+    | +-o AppleMCCSParameterHandler  <class AppleMCCSParameterHandler, id 0x1000005a0, registered, matched, active, busy 0 (1 ms), retain 5>
+    +-o AppleUpstreamUserClientDriver  <class AppleUpstreamUserClientDriver, id 0x10000059b, registered, matched, active, busy 0 (0 ms), retain 5>
+    +-o AGPM  <class AGPM, id 0x1000005e8, registered, matched, active, busy 0 (1 ms), retain 8>
+    +-o display0  <class IODisplayConnect, id 0x10000062e, registered, matched, active, busy 0 (0 ms), retain 6>
+    | +-o AppleDisplay  <class AppleDisplay, id 0x100000630, registered, matched, active, busy 0 (0 ms), retain 8>
+    +-o IOFramebufferUserClient  <class IOFramebufferUserClient, id 0x100000633, !registered, !matched, active, busy 0, retain 5>
+    +-o IOFramebufferSharedUserClient  <class IOFramebufferSharedUserClient, id 0x1000009f1, !registered, !matched, active, busy 0, retain 5>
+

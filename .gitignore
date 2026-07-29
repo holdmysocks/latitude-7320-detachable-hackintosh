@@ -4,6 +4,7 @@ config.plist.bak*
 *.bak-bt
 SysReport/
 *.panic
+tools/scrub-map.local.psd1
 
 # Downloaded components — see EFI/OC/Kexts/KEXTS.md and tools/fetch-components.ps1
 EFI/OC/Kexts/*.kext/
