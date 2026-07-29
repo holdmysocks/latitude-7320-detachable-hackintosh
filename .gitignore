@@ -7,6 +7,8 @@ SysReport/
 
 # Downloaded components — see EFI/OC/Kexts/KEXTS.md and tools/fetch-components.ps1
 EFI/OC/Kexts/*.kext/
+!EFI/OC/Kexts/UTBMap.kext/
+!EFI/OC/Kexts/UTBMap.kext/**
 EFI/OC/Drivers/*.efi
 EFI/OC/Tools/*.efi
 EFI/BOOT/BOOTx64.efi
