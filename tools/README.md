@@ -1,11 +1,12 @@
 # Tools
 
-Five scripts. All PowerShell except one, because the machine dual-boots Windows
-and the ESP work has to happen from there anyway.
+The original five scripts are PowerShell (all but one), because the machine dual-boots Windows
+and the first ESP work happened from there. The [macOS-side harness](#mac--the-macos-side-harness-phase-2)
+used for the later graphics work is in `mac/`.
 
 | Script | What it does |
 |---|---|
-| [`fetch-components.ps1`](fetch-components.ps1) / [`.sh`](fetch-components.sh) | downloads OpenCore + the 16 kexts into `EFI/`. Run this first |
+| [`fetch-components.ps1`](fetch-components.ps1) / [`.sh`](fetch-components.sh) | downloads OpenCore + the 17 kexts into `EFI/`. Run this first |
 | [`Setup-SMBIOS.ps1`](Setup-SMBIOS.ps1) | fills in serial / MLB / UUID / ROM, then validates |
 | [`gfx-experiment.ps1`](gfx-experiment.ps1) | the graphics experiment harness |
 | [`Install-BluetoothFix.ps1`](Install-BluetoothFix.ps1) | retrofits `IntelBTPatcher` into an older EFI |
@@ -110,3 +111,29 @@ Not vendored. It ships inside the OpenCore release archive under
 `Utilities/macrecovery/`, and `fetch-components` already downloads that
 archive. Usage for Tahoe is in
 [`../docs/04-installation.md`](../docs/04-installation.md#option-a--macrecovery-no-mac-required).
+
+---
+
+## `mac/` — the macOS-side harness (phase 2)
+
+Used for runs A–N in [`../research/RESULTS.md`](../research/RESULTS.md). These run on the machine under test, from
+macOS, and expect the working files on a FAT32 stick mounted at `/Volumes/TGLDEBUG` (paths are at the top of
+`tgl-mac.sh`).
+
+| Script | What it does |
+|---|---|
+| [`mac/tgl-mac.sh`](mac/tgl-mac.sh) | `status`, `gen`, `apply`, `collect [keep]`, `revert`, `promote`, `vesa`, `install-kext`, `install-extra`, `install-acpi`, `fblog`, `mapstate`, `arm-rescue` |
+| [`mac/make-experiment.py`](mac/make-experiment.py) | builds one experiment config from the VESA base config; refuses platform ids Tahoe does not have |
+| [`mac/decode-tglmap.py`](mac/decode-tglmap.py) | decodes the register snapshot written by patch 0003 |
+| [`mac/extract_kext.py`](mac/extract_kext.py) | copies one kext out of a kernel collection into an inspect-only Mach-O |
+| [`mac/dis-icllp.py`](mac/dis-icllp.py) | annotated disassembly of one framebuffer function |
+| [`mac/bright.py`](mac/bright.py) | read or set brightness through DisplayServices |
+| [`mac/collect-mact.sh`](mac/collect-mact.sh) | the earlier capture script (phase 1 handoff) |
+
+`tgl-mac.sh apply <experiment>` generates the config from `config.BASE-VESA.plist` on the ESP, validates it with
+`ocvalidate`, and refuses to run if the live config is not the known-good one. `collect` works out from the running
+boot-args whether this boot is the experiment or the fallback, saves the driver log and snapshot, and restores the
+known-good config (`collect keep` leaves a surviving experiment in place). The ESP is found as "internal, physical,
+type EFI", never by disk number.
+
+`ocvalidate` for macOS comes from the same OpenCore release as the `.exe`; it is not committed.

@@ -77,15 +77,27 @@ real Mac to Tiger Lake, *and* on Tahoe's supported list. Tahoe dropped pre-2019
 SMBIOS, leaving only `MacBookPro16,1/16,2/16,4`, `iMac20,1/20,2`, `MacPro7,1`.
 No board-ID bypass needed.
 
-**Graphics:** `DeviceProperties` has **no** IGPU entry; boot-args carry
-`-igfxvesa`. Deliberate. Injecting a framebuffer ID before the system boots
-reliably produces black screens indistinguishable from a dozen other failures.
+**Graphics:** the config starts Apple's Ice Lake framebuffer (`AppleIntelICLLPGraphicsFramebuffer`) on the Tiger
+Lake iGPU. It needs the **patched WhateverGreen** from [`WhateverGreen-patches/`](../WhateverGreen-patches/); with a
+stock build the panel stays black.
 
-It is also, on this hardware, redundant — WhateverGreen forces
-`ig-platform-id = 0xFFFFFFFF` on unrecognised `9A40` whether or not
-`-igfxvesa` is set. See [`research/README.md`](../research/README.md).
+| Setting | Value | Why |
+|---|---|---|
+| `DeviceProperties` → `PciRoot(0x0)/Pci(0x2,0x0)` → `device-id` | `5A8A0000` | `9A40` is in no Apple match list |
+| … → `AAPL,ig-platform-id` | `02005C8A` | `0x8A5C0002`; `0x8A520000` no longer exists in Tahoe |
+| boot-arg `lilucpu=12` | | makes Lilu report Ice Lake so WhateverGreen's Ice Lake fixes apply |
+| boot-arg `-igfxdvmt` | | without it the driver computes 4 GB of stolen memory and the machine resets |
+| boot-arg `igfxtglmap=0xA83F` | | the Tiger Lake register map (patch 0003) |
+| boot-args `-igfxcdc -igfxdbeo` | | stock Ice Lake fixes, carried along, not individually verified |
+| `Kernel/Block` `AppleIntelICLGraphics` | `Exclude` | no accelerator; framebuffer only |
+| `ACPI/Add` `SSDT-PNLF.aml` | enabled | backlight; `_UID` must be 19 |
+| `ACPI/Add` `SSDT-DOSI.aml` | enabled | brightness keys (with `BrightnessKeys.kext`) |
 
-The only `DeviceProperties` entry is `layout-id = 1` on
+There is **no graphics acceleration**. Full account: [`research/LAYER3.md`](../research/LAYER3.md).
+
+To fall back to VESA, remove the `Pci(0x2,0x0)` entry and use boot-args `-v debug=0x100 keepsyms=1 -igfxvesa`.
+
+The other `DeviceProperties` entry is `layout-id = 1` on
 `PciRoot(0x0)/Pci(0x1f,0x3)`. It is inert — there is no HDA codec for it to
 apply to — and is left in place only because it is harmless and was present in
 every configuration the experiments were run against.

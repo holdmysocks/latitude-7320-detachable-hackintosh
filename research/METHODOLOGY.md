@@ -1,7 +1,8 @@
 # Methodology
 
-Why the results in [`RESULTS.md`](RESULTS.md) are worth trusting, and the four
-measurement traps that nearly made them worthless.
+How the runs in [`RESULTS.md`](RESULTS.md) were controlled, what was not controlled, and the
+measurement traps. The first part describes phase 1 (runs 0–10); [phase 2](#phase-2-runs-an-what-changed-in-the-method)
+is at the end.
 
 ---
 
@@ -42,10 +43,13 @@ static reservation, a DHCP lease change would look identical to a dead kernel.
 Stated plainly, because a methodology section that only lists strengths is
 advertising:
 
-- **WhateverGreen was loaded in every run except 9.** It is not a neutral
-  observer — it forces `ig-platform-id = 0xFFFFFFFF` on unrecognised `9A40`.
-  Run 9 shows it is not the *cause* of the hang, but it shapes what the
-  framebuffer receives in all the others.
+- **WhateverGreen was loaded in every run except 9, and did nothing to the
+  framebuffer in any of them.** Version 1.7.0 has no Tiger Lake case, so its
+  DVMT fix, connector patches and MMIO hooks never ran. This was not known at
+  the time and it invalidates what runs 5–10 were taken to show; see
+  [`RESULTS.md`](RESULTS.md) and [`LAYER3.md`](LAYER3.md). The `0xFFFFFFFF`
+  platform id comes from Lilu, not from WhateverGreen.
+- **Platform id `0x8A520000` was assumed valid.** It is not in Tahoe's table.
 - **Run 2 changed three variables.** Nothing rests on it alone.
 - **Single machine, single sample per configuration.** Each hang was observed
   once. The failure mode was consistent across seven distinct configurations,
@@ -167,3 +171,59 @@ the correct answer, not a missing driver you can install.
 Judge attachment by **the class of `.Display_boot`**, and by nothing else:
 `IONDRVFramebuffer` means VESA; `AppleIntelICLLPGraphicsFramebuffer` means the
 Apple kext took it.
+
+---
+
+## Phase 2 (runs A–N): what changed in the method
+
+The first eleven runs had no feedback channel: every failure was a silent reset. Phase 2 worked because three
+channels turned out to exist.
+
+**The driver logs its own modeset.** `AppleIntelICLLPGraphicsFramebuffer` writes detailed `[IGFB]` lines through
+`os_log`: register values it computes, link-training phases, power-state transitions, every error. They are in the
+unified log and survive a hard power-off, provided the boot lived about a minute:
+
+```bash
+log show --start "2026-10-07 13:14:00" --predicate 'process == "kernel" AND eventMessage CONTAINS "IGFB"' --style compact
+```
+
+Once the reset was gone (run A), this log named each next problem.
+
+**Register snapshots written to a file.** Patch 0003 can read a fixed list of registers at the driver's first access
+(the firmware's working state) and again minutes after the modeset, and write both to
+`/Users/Shared/tgl-map-state.bin` from a kernel thread. Comparing the two columns is what found the zeroed backlight
+duty. `tools/mac/decode-tglmap.py` decodes it.
+
+**Disassembly of the exact binary.** `tools/mac/extract_kext.py` copies one kext out of
+`SystemKernelExtensions.kc` into a file `nm` and `objdump` can read; `tools/mac/dis-icllp.py` annotates a function
+with the log strings it references. Every cause in [`LAYER3.md`](LAYER3.md) was confirmed there before a boot was
+spent on it.
+
+**One change per boot, generated, validated, recorded.** `tools/mac/tgl-mac.sh` builds each experiment from the VESA
+base config, runs `ocvalidate`, refuses to stack experiments, checks after the boot which config actually ran (by
+comparing the running boot-args), and restores the known-good config.
+
+### What was not controlled in phase 2
+
+- `-igfxcdc`, `-igfxdbeo` and the `Kernel/Block` entry for the accelerator were carried through every run from A
+  onward and never removed individually. They may be unnecessary.
+- Runs F2 and M each changed more than one thing, by choice, to save boots. Their individual parts were isolated
+  afterwards only where something went wrong.
+- Single machine, one sample per configuration, as before.
+
+### Additional traps
+
+- **Writing NVRAM from a kext resets this machine.** Runs B, F3 and F4 reset at the moment diagnostics were written
+  through Lilu's `NVStorage`. It looked exactly like the graphics failures of phase 1. A diagnostic that can kill the
+  machine has to be ruled out before its absence is read as information.
+- **Third-party kext `IOLog` output is not in the unified log on Tahoe.** Not early, not late. Only `dmesg` has it,
+  and the 128 KiB buffer wraps within a minute on this machine.
+- **A log file of 0 bytes** in `/var/db/diagnostics/Persist` for a boot means the kernel froze or died in the first
+  30–60 seconds. A populated one means it lived, whatever the screen showed.
+- **Disk numbers change between boots.** The USB stick became `disk0` once; a script that assumed the internal ESP
+  was `disk0s1` would have written to the wrong disk. Find the ESP by "internal, physical, type EFI".
+- **Booting through Windows shifts the macOS clock** by the UTC offset until NTP corrects it, so log timestamps of
+  the next boot are off by hours.
+- **`sudo` drops environment variables.** `KEEP=1 sudo script` does not pass `KEEP`.
+- **`Kernel/Block` with `Exclude` did not keep `AppleIntelICLGraphics` out of `kextstat`.** It attached nothing, but
+  "blocked" is not what happened.

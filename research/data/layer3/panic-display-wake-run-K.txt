@@ -1,0 +1,73 @@
+panic(cpu 4 caller 0xffffff7f9cd3b5fb): "[IGFB][PANIC][POWER_WEL] " "Enable powerwell PG1 called without enabling display engine\n" @AppleIntelPowerWell.cpp:770
+Panicked task 0xffffff95622ff9a0: 194 threads: pid 0: kernel_task
+Backtrace (CPU 4), panicked thread: 0xffffff86ff0a7a68, Frame : Return Address
+0xffffffabc7838370 : 0xffffff8008358d31 mach_kernel : _handle_debugger_trap + 0x421
+0xffffffabc78383c0 : 0xffffff80084e5512 mach_kernel : _kdp_i386_trap + 0x122
+0xffffffabc7838400 : 0xffffff80084d47c8 mach_kernel : _kernel_trap + 0x778
+0xffffffabc78384c0 : 0xffffff80082eb971 mach_kernel : _return_from_trap + 0xc1
+0xffffffabc78384e0 : 0xffffff8008359107 mach_kernel : _DebuggerTrapWithState + 0x67
+0xffffffabc78385e0 : 0xffffff8008358799 mach_kernel : _panic_trap_to_debugger + 0x269
+0xffffffabc7838750 : 0xffffff8008ba068d mach_kernel : _panic + 0x81
+0xffffffabc7838840 : 0xffffff7f9cd3b5fb com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN19AppleIntelPowerWell22hwSetPowerWellStateAuxEbj.cold.1
+0xffffffabc7838850 : 0xffffff7f9cd0dd3d com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN19AppleIntelPowerWell17enablePowerWellPGEj + 0x7f
+0xffffffabc7838860 : 0xffffff7f9cd04613 com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN31AppleIntelFramebufferController10LightUpEDPEP21AppleIntelFramebufferP21AppleIntelDisplayPathPK29IODetailedTimingInformationV2 + 0x3d
+0xffffffabc78388b0 : 0xffffff7f9cd04460 com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN31AppleIntelFramebufferController9hwSetModeEP21AppleIntelFramebufferP21AppleIntelDisplayPathiPK29IODetailedTimingInformationV2 + 0x84c
+0xffffffabc7838b20 : 0xffffff7f9cd19901 com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN31AppleIntelFramebufferController9hwSetModeEP21AppleIntelFramebufferiPK29IODetailedTimingInformationV2 + 0xe3
+0xffffffabc7838b90 : 0xffffff7f9ccd0f45 com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN21AppleIntelFramebuffer18prepareToEnterWakeEv + 0xc07
+0xffffffabc7838d30 : 0xffffff7f9cccfc83 com.apple.driver.AppleIntelICLLPGraphicsFramebuffer : __ZN21AppleIntelFramebuffer24setFramebufferPowerStateEj + 0x111
+0xffffffabc7838d60 : 0xffffff7f9d3f156b com.apple.iokit.IOGraphicsFamily : __ZN13IOFramebuffer14checkPowerWorkEj + 0x273
+0xffffffabc7838df0 : 0xffffff7f9d3f12db com.apple.iokit.IOGraphicsFamily : __ZN14IOFBController14checkPowerWorkEj + 0x9d
+0xffffffabc7838e20 : 0xffffff7f9d3f8513 com.apple.iokit.IOGraphicsFamily : __ZN13IOFramebuffer10systemWorkEP8OSObjectP22IOInterruptEventSourcei + 0x111
+0xffffffabc7838ed0 : 0xffffff8008ac9cb2 mach_kernel : __ZN22IOInterruptEventSource12checkForWorkEv + 0x122
+0xffffffabc7838f20 : 0xffffff8008ac86ce mach_kernel : __ZN10IOWorkLoop15runEventSourcesEv + 0xee
+0xffffffabc7838f60 : 0xffffff8008ac7d27 mach_kernel : __ZN10IOWorkLoop10threadMainEv + 0x47
+0xffffffabc7838fa0 : 0xffffff80082eb19e mach_kernel : _call_continuation + 0x2e
+      Kernel Extensions in backtrace:
+         com.apple.iokit.IOGraphicsFamily(600.0)[74AA6483-8AB4-3A94-8143-5E306C16D7DA]@0xffffff7f9d3e6000->0xffffff7f9d414fff
+            dependency: com.apple.iokit.IOPCIFamily(2.9)[806E705F-19AA-3438-A285-4638FA70A8FE]@0xffffff800a9e4000->0xffffff800aa37fff
+         com.apple.driver.AppleIntelICLLPGraphicsFramebuffer(24.0.5)[DA0803BA-BBA5-3AC3-A660-15C087A2AE68]@0xffffff7f9ccbe000->0xffffff7f9cd65fff
+            dependency: com.apple.AppleGraphicsDeviceControl(8.1.12)[02FECF8A-3227-3BBB-B0EB-1DB31965ADB9]@0xffffff7f9ca20000->0xffffff7f9ca23fff
+            dependency: com.apple.iokit.IOACPIFamily(1.4)[84EBB8FA-30FD-38A1-97EB-E0B6FB45608F]@0xffffff800a49c000->0xffffff800a49dfff
+            dependency: com.apple.iokit.IOAcceleratorFamily2(487.4.3)[B77A42EC-6B0C-3A8D-89A2-B8F4CDBAC8C9]@0xffffff7f9d267000->0xffffff7f9d2d0fff
+            dependency: com.apple.iokit.IOGraphicsFamily(600)[74AA6483-8AB4-3A94-8143-5E306C16D7DA]@0xffffff7f9d3e6000->0xffffff7f9d414fff
+            dependency: com.apple.iokit.IOPCIFamily(2.9)[806E705F-19AA-3438-A285-4638FA70A8FE]@0xffffff800a9e4000->0xffffff800aa37fff
+            dependency: com.apple.iokit.IOReportFamily(47)[B4FEEABE-4E12-383F-AD88-CF018493EECE]@0xffffff800aa49000->0xffffff800aa4bfff
+
+Process name corresponding to current thread (0xffffff86ff0a7a68): kernel_task
+Boot args: -v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0x603E -igfxdbeo 
+
+Mac OS version:
+25G72
+
+Kernel version:
+Darwin Kernel Version 25.6.0: Sat Jul 11 15:22:40 PDT 2026; root:xnu-12377.161.13~4/RELEASE_X86_64
+Kernel UUID: 87453B1D-A163-31FA-B33B-0FB4BE78E6E8
+roots installed: 0
+KernelCache slide: 0x0000000008000000
+KernelCache base:  0xffffff8008200000
+Kernel slide:      0x00000000080e8000
+Kernel text base:  0xffffff80082e8000
+__HIB  text base: 0xffffff8008100000
+System model name: MacBookPro16,2 (Mac-5F9802EFE386AA28)
+System shutdown begun: NO
+Panic diags file available: YES (0x0)
+Hibernation exit count: 0
+
+System uptime in nanoseconds: 1845061344027
+Last Sleep:           absolute           base_tsc          base_nano
+  Uptime  : 0x000001ad9639e2d9
+  Sleep   : 0x0000000000000000 0x0000000000000000 0x0000000000000000
+  Wake    : 0x0000000000000000 0x000000057c0c3c93 0x0000000000000000
+Compressor Info: 0% of compressed pages limit (OK) and 0% of segments limit (OK) with 0 swapfiles and OK swap space
+Zone info:
+  Zone map: 0xffffff80955ce000 - 0xffffffa0955ce000
+  . VM    : 0xffffff80955ce000 - 0xffffff856229a000
+  . RO    : 0xffffff856229a000 - 0xffffff86fbc3e000
+  . GEN0  : 0xffffff86fbc3e000 - 0xffffff8bc890a000
+  . GEN1  : 0xffffff8bc890a000 - 0xffffff90955d6000
+  . GEN2  : 0xffffff90955d6000 - 0xffffff95622a2000
+  . GEN3  : 0xffffff95622a2000 - 0xffffff9a2ef6e000
+  . DATA  : 0xffffff9a2ef6e000 - 0xffffffa0955ce000
+  Metadata: 0xffffff802f484000 - 0xffffff804f484000
+  Bitmaps : 0xffffff804f484000 - 0xffffff8050c84000
+  Extra   : 0 - 0

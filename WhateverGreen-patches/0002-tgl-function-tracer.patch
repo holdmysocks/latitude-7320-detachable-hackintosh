@@ -1,0 +1,379 @@
+diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
+index 7fd6173..e1e4c49 100644
+--- a/WhateverGreen/kern_igfx.cpp
++++ b/WhateverGreen/kern_igfx.cpp
+@@ -660,6 +660,221 @@ size_t IGFX::TigerLakeTracer::onAccess(bool write, uint32_t address, uint32_t va
+ 	PANIC("igfx", "%s", report);
+ }
+ 
++// MARK: - Tiger Lake Function Tracer
++
++// Audited against AppleIntelICLLPGraphicsFramebuffer from macOS 26.6 (25G72), see results/analysis/SYMBOLS.md.
++// safeLength is the number of leading bytes with no relative operands; a trampoline may only copy those.
++const IGFX::TigerLakeFunctionTracer::Function IGFX::TigerLakeFunctionTracer::functions[] {
++	{"__ZN31AppleIntelFramebufferController5startEP9IOService", "AIFC::start", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x48, 0x83, 0xEC}, 23},
++	{"__ZN31AppleIntelFramebufferController20initInterruptServiceEv", "AIFC::initInterruptService", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x50, 0x48, 0x89}, 35},
++	{"__Z14registerSysctlv", "registerSysctl", {0x55, 0x48, 0x89, 0xE5, 0x31, 0xC0, 0x48, 0x89, 0x05, 0x01, 0x05, 0x07, 0x00, 0x48, 0x89, 0x05}, 6},
++	{"__ZN31AppleIntelFramebufferController16getOSInformationEv", "AIFC::getOSInformation", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x48, 0x83, 0xEC, 0x18, 0x48, 0x89, 0xFB}, 23},
++	{"__ZN31AppleIntelFramebufferController17registerWithAICPMEPv", "AIFC::registerWithAICPM", {0x55, 0x48, 0x89, 0xE5, 0x53, 0x48, 0x83, 0xEC, 0x28, 0x48, 0x89, 0xF3, 0xBE, 0x98, 0x59, 0x14}, 17},
++	{"__ZN31AppleIntelFramebufferController13FBMemMgr_InitEv", "AIFC::FBMemMgr_Init", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x48, 0x83, 0xEC}, 32},
++	{"__ZN31AppleIntelFramebufferController11initCDClockEv", "AIFC::initCDClock", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x50, 0x48, 0x89, 0xFB, 0xBE, 0x04, 0x10}, 18},
++	{"__ZN14AppleIntelPort13allocatePortsEj", "AppleIntelPort::allocatePorts", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x50, 0x48, 0x83}, 14},
++	{"__ZN19AppleIntelPowerWell4initEP31AppleIntelFramebufferController", "AppleIntelPowerWell::init", {0x55, 0x48, 0x89, 0xE5, 0x53, 0x50, 0x48, 0x89, 0xFB, 0x48, 0x89, 0x77, 0x10, 0x8A, 0x86, 0x20}, 24},
++	{"__ZN19AppleIntelPowerWell20probePowerWellsStateEv", "AppleIntelPowerWell::probePowerWellsState", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x48, 0x83, 0xEC}, 33},
++	{"__ZN19AppleIntelPowerWell19enableDisplayEngineEv", "AppleIntelPowerWell::enableDisplayEngine", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x50, 0x48, 0x89, 0xFB, 0x48, 0x8B, 0x7F}, 22},
++	{"__ZN21AppleIntelDisplayPath4initEj", "AppleIntelDisplayPath::init", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x56, 0x53, 0x48, 0x83, 0xEC, 0x10, 0x41, 0x89, 0xF6, 0x48, 0x89}, 23},
++	{"__ZN21AppleIntelFramebuffer4initEP31AppleIntelFramebufferControllerj", "AppleIntelFramebuffer::init", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x54, 0x53, 0x48, 0x83, 0xEC, 0x10, 0x41}, 38},
++	{"__ZN31AppleIntelFramebufferController23initPlatformWorkaroundsEv", "AIFC::initPlatformWorkarounds", {0x55, 0x48, 0x89, 0xE5, 0x31, 0xC0, 0x83, 0xBF, 0x9C, 0x0C, 0x00, 0x00, 0x00, 0x75, 0x0F, 0xB8}, 13},
++	{"__ZN31AppleIntelFramebufferController16setupBootDisplayEv", "AIFC::setupBootDisplay", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x48, 0x83, 0xEC}, 37},
++	{"__ZN31AppleIntelFramebufferController21hwSetPanelPowerConfigEj", "AIFC::hwSetPanelPowerConfig", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x56, 0x53, 0x48, 0x89, 0xFB, 0x89, 0xB7, 0x00, 0x0D, 0x00, 0x00}, 25},
++	{"__ZN31AppleIntelFramebufferController25hwInitializeLatencyValuesEv", "AIFC::hwInitializeLatencyValues", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x56, 0x53, 0x48, 0x89, 0xFB, 0xBE, 0x06, 0x00, 0x00, 0x00, 0x31}, 17},
++	{"__ZN31AppleIntelFramebufferController18hwInitializeCStateEv", "AIFC::hwInitializeCState", {0x83, 0xBF, 0x38, 0x0B, 0x00, 0x00, 0x01, 0x0F, 0x85, 0xBA, 0x00, 0x00, 0x00, 0x55, 0x48, 0x89}, 7},
++	{"__ZN31AppleIntelFramebufferController19hwSetupCursorMemoryEv", "AIFC::hwSetupCursorMemory", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x55, 0x41, 0x54, 0x53, 0x50, 0x45, 0x31}, 25},
++	{"__ZN31AppleIntelFramebufferController13setupWorkLoopEP10IOWorkLoop", "AIFC::setupWorkLoop", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x56, 0x53, 0x48, 0x83, 0xEC, 0x30, 0x49, 0x89, 0xF6, 0x48, 0x89}, 17},
++	{"__ZN31AppleIntelFramebufferController15initPMRegistersEv", "AIFC::initPMRegisters", {0xF6, 0x87, 0x20, 0x09, 0x00, 0x00, 0x01, 0x0F, 0x85, 0x2C, 0x0C, 0x00, 0x00, 0x55, 0x48, 0x89}, 7},
++	{"__ZN31AppleIntelFramebufferController20hwGetMemoryLayoutEFIEP21AppleIntelFramebuffer", "AIFC::hwGetMemoryLayoutEFI", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x41, 0x54, 0x53, 0x8B, 0x8E, 0x9C, 0x7D, 0x00}, 34},
++	{"__ZN14AppleIntelPAVP4initEP9IOService", "AppleIntelPAVP::init", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x56, 0x53, 0x49, 0x89, 0xF6, 0x48, 0x89, 0xFB, 0x48, 0x8D, 0x05}, 13},
++	{"__ZN31AppleIntelFramebufferController15createMEIDriverEv", "AIFC::createMEIDriver", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x50, 0x45, 0x31, 0xFF, 0x48, 0x83, 0xBF}, 21},
++	{"__ZN31AppleIntelFramebufferController35createAppleGraphicsDeviceControlnubEv", "AIFC::createAppleGraphicsDeviceControlnub", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x50, 0x49, 0x89, 0xFE, 0x48, 0x8B, 0x05}, 13},
++	{"__ZN31AppleIntelFramebufferController17addPMNotificationEv", "AIFC::addPMNotification", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x48, 0x81, 0xEC, 0x28, 0x01, 0x00, 0x00}, 19},
++	{"__ZN31AppleIntelFramebufferController18hwEnableInterruptsEv", "AIFC::hwEnableInterrupts", {0x55, 0x48, 0x89, 0xE5, 0x41, 0x57, 0x41, 0x56, 0x53, 0x50, 0x48, 0x89, 0xFB, 0xBE, 0x08, 0x44}, 18},
++};
++
++const size_t IGFX::TigerLakeFunctionTracer::functionCount = arrsize(functions);
++
++template <size_t I>
++uint64_t IGFX::TigerLakeFunctionTracer::wrapFunction(uint64_t a0, uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5) {
++	auto &tracer = callbackIGFX->modTigerLakeFunctionTracer;
++	tracer.onEntry(I);
++	auto result = reinterpret_cast<Wrapper>(tracer.org[I])(a0, a1, a2, a3, a4, a5);
++	tracer.onReturn(I, result);
++	return result;
++}
++
++const IGFX::TigerLakeFunctionTracer::Wrapper IGFX::TigerLakeFunctionTracer::wrappers[] {
++	wrapFunction<0>,
++	wrapFunction<1>,
++	wrapFunction<2>,
++	wrapFunction<3>,
++	wrapFunction<4>,
++	wrapFunction<5>,
++	wrapFunction<6>,
++	wrapFunction<7>,
++	wrapFunction<8>,
++	wrapFunction<9>,
++	wrapFunction<10>,
++	wrapFunction<11>,
++	wrapFunction<12>,
++	wrapFunction<13>,
++	wrapFunction<14>,
++	wrapFunction<15>,
++	wrapFunction<16>,
++	wrapFunction<17>,
++	wrapFunction<18>,
++	wrapFunction<19>,
++	wrapFunction<20>,
++	wrapFunction<21>,
++	wrapFunction<22>,
++	wrapFunction<23>,
++	wrapFunction<24>,
++	wrapFunction<25>,
++	wrapFunction<26>
++};
++
++void IGFX::TigerLakeFunctionTracer::init() {
++	static_assert(arrsize(wrappers) == arrsize(functions), "One wrapper per traced function");
++	static_assert(arrsize(functions) <= MaxFunctions, "Too many traced functions");
++
++	// We only need to patch the framebuffer driver
++	requiresPatchingFramebuffer = true;
++}
++
++void IGFX::TigerLakeFunctionTracer::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
++	if (!checkKernelArgument("-igfxtgl"))
++		return;
++
++	// Proves that this code runs at all and shows what the routing decided. Deliberately not limited to Tiger Lake.
++	auto &tracer = callbackIGFX->modTigerLakeTracer;
++	if (checkKernelArgument("-igfxtglalive"))
++		PANIC("igfx", "TGL: alive 0002 gen=%d fb=%d tracer=%d stop=%u park=%d vesa=%d", static_cast<int>(BaseDeviceInfo::get().cpuGeneration),
++			  callbackIGFX->currentFramebuffer == &kextIntelICLLPFb, tracer.enabled, tracer.stopAt, tracer.park, checkKernelArgument("-igfxvesa"));
++
++	if (BaseDeviceInfo::get().cpuGeneration != CPUInfo::CpuGeneration::TigerLake)
++		return;
++
++	selfTest = checkKernelArgument("-igfxtglselftest");
++	bool hasEntry = PE_parse_boot_argn("igfxtglfn", &stopEntry, sizeof(stopEntry));
++	bool hasReturn = PE_parse_boot_argn("igfxtglfnret", &stopReturn, sizeof(stopReturn));
++	routing = hasEntry || hasReturn;
++	enabled = selfTest || routing;
++	if (enabled)
++		SYSLOG("igfx", "TGL: fn tracer 0002 selftest=%d routing=%d entry=%u ret=%u", selfTest, routing, stopEntry, stopReturn);
++}
++
++void IGFX::TigerLakeFunctionTracer::processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
++	// WhateverGreen routes getOSInformation itself after all submodules when any of these is set, and the DVMT fix
++	// routes FBMemMgr_Init before us. Routing either again would stack two trampolines, so leave them alone.
++	auto igfx = callbackIGFX;
++	bool coreRoutesOSInformation = igfx->applyFramebufferPatch || igfx->dumpFramebufferToDisk || igfx->dumpPlatformTable || igfx->hdmiAutopatch;
++
++	for (size_t i = 0; i < functionCount; i++) {
++		auto &function = functions[i];
++		auto from = patcher.solveSymbol(index, function.symbol, address, size, true);
++		if (!from) {
++			patcher.clearError();
++			status[i] = '-';
++			continue;
++		}
++		resolved++;
++
++		if (memcmp(reinterpret_cast<const void *>(from), function.signature, sizeof(function.signature)) != 0) {
++			status[i] = 's';
++			continue;
++		}
++
++		if ((coreRoutesOSInformation && strcmp(function.symbol, "__ZN31AppleIntelFramebufferController16getOSInformationEv") == 0) ||
++			(igfx->modDVMTCalcFix.enabled && strcmp(function.symbol, "__ZN31AppleIntelFramebufferController13FBMemMgr_InitEv") == 0)) {
++			status[i] = 'w';
++			continue;
++		}
++
++		if (!routing) {
++			status[i] = 'r';
++			continue;
++		}
++
++		// A long (absolute) route overwrites 14 bytes. When fewer leading bytes are relocatable, only allow a short
++		// relative route, which overwrites 5 and fails cleanly when the wrapper is out of range.
++		bool shortOnly = function.safeLength < 14;
++		size_t copied = Disassembler::quickInstructionSize(from, shortOnly ? 5 : 14);
++		if (copied == 0 || copied > function.safeLength) {
++			status[i] = 'd';
++			continue;
++		}
++
++		KernelPatcher::RouteRequest request(function.symbol, wrappers[i], org[i]);
++		bool success = shortOnly ? patcher.routeMultipleShort(index, &request, 1, address, size) : patcher.routeMultiple(index, &request, 1, address, size);
++		if (!success || !org[i]) {
++			patcher.clearError();
++			org[i] = 0;
++			status[i] = 'f';
++			continue;
++		}
++
++		status[i] = '+';
++		routed++;
++	}
++	status[functionCount] = '\0';
++
++	for (size_t i = 0; i < functionCount; i++)
++		SYSLOG("igfx", "TGL: fn %lu %c %s", i + 1, status[i], functions[i].name);
++	SYSLOG("igfx", "TGL: fn table resolved %lu/%lu routed %lu: %s", resolved, functionCount, routed, status);
++
++	if (selfTest) {
++		auto &rrs = igfx->modMMIORegistersReadSupport;
++		auto &rws = igfx->modMMIORegistersWriteSupport;
++		auto &tracer = igfx->modTigerLakeTracer;
++		PANIC("igfx", "TGL: selftest 0002 kext=%d rrs=%d rws=%d orgR=%d orgW=%d tracer=%d stop=%u park=%d fn=%d entry=%u ret=%u resolved=%lu/%lu routed=%lu table=%s",
++			  igfx->getRealFramebuffer(index) == &kextIntelICLLPFb, rrs.enabled, rws.enabled, rrs.orgReadRegister32 != nullptr, rws.orgWriteRegister32 != nullptr,
++			  tracer.enabled, tracer.stopAt, tracer.park, routing, stopEntry, stopReturn, resolved, functionCount, routed, status);
++	}
++}
++
++void IGFX::TigerLakeFunctionTracer::onEntry(size_t i) {
++	auto hit = static_cast<uint32_t>(OSIncrementAtomic(&entries[i])) + 1;
++	auto access = static_cast<uint32_t>(callbackIGFX->modTigerLakeTracer.count);
++	SYSLOG("igfx", "TGL: fn > %lu %s hit %u access %u", i + 1, functions[i].name, hit, access);
++	if (hit != 1 || stopEntry != i + 1)
++		return;
++
++	static char head[160];
++	snprintf(head, sizeof(head), "igfx TGL: fn stopped on entry %lu/%lu %s (access %u, tracer %d)\n",
++			 i + 1, functionCount, functions[i].name, access, callbackIGFX->modTigerLakeTracer.enabled);
++	panicWithRing(head);
++}
++
++void IGFX::TigerLakeFunctionTracer::onReturn(size_t i, uint64_t result) {
++	auto hit = static_cast<uint32_t>(OSIncrementAtomic(&returns[i])) + 1;
++	auto access = static_cast<uint32_t>(callbackIGFX->modTigerLakeTracer.count);
++	SYSLOG("igfx", "TGL: fn < %lu %s hit %u access %u = 0x%llx", i + 1, functions[i].name, hit, access, result);
++	if (hit != 1 || stopReturn != i + 1)
++		return;
++
++	static char head[192];
++	snprintf(head, sizeof(head), "igfx TGL: fn stopped after return %lu/%lu %s = 0x%llx (access %u, tracer %d)\n",
++			 i + 1, functionCount, functions[i].name, result, access, callbackIGFX->modTigerLakeTracer.enabled);
++	panicWithRing(head);
++}
++
++void IGFX::TigerLakeFunctionTracer::panicWithRing(const char *head) {
++	// Same ring line format as the register tracer, so the harness can read both
++	auto &tracer = callbackIGFX->modTigerLakeTracer;
++	static char report[TigerLakeTracer::RingSize * 40 + 256];
++	size_t len = snprintf(report, sizeof(report), "%s", head);
++	auto latest = static_cast<uint32_t>(tracer.count);
++	for (uint32_t k = latest >= TigerLakeTracer::RingSize ? latest - TigerLakeTracer::RingSize + 1 : 1; k <= latest && len < sizeof(report); k++) {
++		auto &access = tracer.ring[k % TigerLakeTracer::RingSize];
++		if (access.index != k)
++			continue;
++		len += snprintf(report + len, sizeof(report) - len, "%u %s 0x%05X = 0x%08X\n", access.index, access.write ? "W" : "R", access.address, access.value);
++	}
++	PANIC("igfx", "%s", report);
++}
++
+ // MARK: - Force Complete Modeset
+ 
+ void IGFX::ForceCompleteModeset::init() {
+diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
+index fc1aced..af23ba2 100644
+--- a/WhateverGreen/kern_igfx.hpp
++++ b/WhateverGreen/kern_igfx.hpp
+@@ -2436,6 +2436,131 @@ private:
+ 		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
+ 	} modTigerLakeTracer;
+ 
++	/**
++	 *  A submodule to self-test the Tiger Lake tracer and to trace early framebuffer functions at function granularity
++	 *
++	 *  @note Everything reports by panicking, because early IOLog output does not survive on the target machine.
++	 *        `-igfxtglalive` panics while the kernel is processed, proving this code runs at all.
++	 *        `-igfxtglselftest` panics with the hook status while the framebuffer kext is patched, before any of its code runs.
++	 *        `igfxtglfn=N` panics on the first entry to table function N (1-based), before calling it.
++	 *        `igfxtglfnret=N` panics after the first return of table function N. `igfxtglfn=0` routes and logs only.
++	 *  @note Register-level tracing is blind before the first hooked access and to the unhooked DMC upload in
++	 *        hwInitializeCState. Function-level tracing covers both.
++	 */
++	class TigerLakeFunctionTracer: public PatchSubmodule {
++	public:
++		/**
++		 *  A traced framebuffer function
++		 */
++		struct Function {
++			/**
++			 *  Mangled symbol name
++			 */
++			const char *symbol;
++
++			/**
++			 *  Short name used in logs and panic strings
++			 */
++			const char *name;
++
++			/**
++			 *  First bytes of the function in the audited binary (macOS 26.6 25G72). Any mismatch skips routing.
++			 */
++			uint8_t signature[16];
++
++			/**
++			 *  Number of bytes from the start that contain no relative operands, so a trampoline may copy them
++			 */
++			uint8_t safeLength;
++		};
++
++		/**
++		 *  Wrapper signature: every traced function takes at most six integer or pointer arguments
++		 *  and returns void, an integer, or a pointer, so passing six registers through is exact on x86_64
++		 */
++		using Wrapper = uint64_t (*)(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
++
++		/**
++		 *  Maximum number of traced functions
++		 */
++		static constexpr size_t MaxFunctions = 32;
++
++		/**
++		 *  Traced functions, in start() call order
++		 */
++		static const Function functions[];
++
++		/**
++		 *  Number of traced functions
++		 */
++		static const size_t functionCount;
++
++		/**
++		 *  Wrappers, one per traced function
++		 */
++		static const Wrapper wrappers[];
++
++		/**
++		 *  Original functions (trampolines), null if not routed
++		 */
++		mach_vm_address_t org[MaxFunctions] {};
++
++		/**
++		 *  Number of entries to and returns from each function
++		 */
++		volatile SInt32 entries[MaxFunctions] {};
++		volatile SInt32 returns[MaxFunctions] {};
++
++		/**
++		 *  Per-function status reported by the self-test, one character each
++		 */
++		char status[MaxFunctions + 1] {};
++
++		/**
++		 *  Function to stop on entry to, and after the return of (1-based), 0 to never stop
++		 */
++		uint32_t stopEntry {0};
++		uint32_t stopReturn {0};
++
++		/**
++		 *  Route the traced functions
++		 */
++		bool routing {false};
++
++		/**
++		 *  Panic with the hook status once the framebuffer kext is patched
++		 */
++		bool selfTest {false};
++
++		/**
++		 *  Number of resolved and routed functions
++		 */
++		size_t resolved {0};
++		size_t routed {0};
++
++		/**
++		 *  Wrapper for traced function I
++		 */
++		template <size_t I>
++		static uint64_t wrapFunction(uint64_t a0, uint64_t a1, uint64_t a2, uint64_t a3, uint64_t a4, uint64_t a5);
++
++		/**
++		 *  Called on entry to and after the return of traced function i, stopping if requested
++		 */
++		void onEntry(size_t i);
++		void onReturn(size_t i, uint64_t result);
++
++		/**
++		 *  Panic with a report followed by the register tracer's ring, oldest first
++		 */
++		[[noreturn]] void panicWithRing(const char *head);
++
++		// MARK: Patch Submodule IMP
++		void init() override;
++		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
++		void processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) override;
++	} modTigerLakeFunctionTracer;
++
+ 	/**
+ 	 *  A collection of shared submodules
+ 	 */
+@@ -2448,7 +2573,7 @@ private:
+ 	/**
+ 	 *  A collection of submodules
+ 	 */
+-	PatchSubmodule *submodules[22] = {
++	PatchSubmodule *submodules[23] = {
+ 		&modDVMTCalcFix,
+ 		&modDPCDMaxLinkRateFix,
+ 		&modCoreDisplayClockFix,
+@@ -2471,6 +2596,7 @@ private:
+ 		&modMaxPixelClockOverride,
+ 		&modDisplayDataBufferEarlyOptimizer,
+ 		&modTigerLakeTracer,
++		&modTigerLakeFunctionTracer,
+ 	};
+ 	
+ 	/**

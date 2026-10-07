@@ -34,6 +34,7 @@ $components = @(
   @{ Repo='acidanthera/VirtualSMC';             Tested='1.3.7';  Asset='RELEASE\.zip$'; Kexts='VirtualSMC.kext','SMCProcessor.kext','SMCBatteryManager.kext','SMCDellSensors.kext' }
   @{ Repo='acidanthera/WhateverGreen';          Tested='1.7.0';  Asset='RELEASE\.zip$'; Kexts='WhateverGreen.kext' }
   @{ Repo='acidanthera/NVMeFix';                Tested='1.1.3';  Asset='RELEASE\.zip$'; Kexts='NVMeFix.kext' }
+  @{ Repo='acidanthera/BrightnessKeys';                Tested='1.0.3';  Asset='RELEASE\.zip$'; Kexts='BrightnessKeys.kext' }
   @{ Repo='acidanthera/BrcmPatchRAM';           Tested='2.7.2';  Asset='RELEASE\.zip$'; Kexts='BlueToolFixup.kext' }
   @{ Repo='acidanthera/VoodooPS2';              Tested='2.3.7';  Asset='RELEASE\.zip$'; Kexts='VoodooPS2Controller.kext' }
   @{ Repo='1Revenger1/ECEnabler';               Tested='1.0.6';  Asset='RELEASE\.zip$'; Kexts='ECEnabler.kext' }

@@ -10,6 +10,7 @@ data/
 ├── kextstat/     loaded-kext lists, baseline and per-experiment
 ├── sysreport/    CPU / GOP / PCI / driver text reports
 ├── usb/          USBToolBox topology and both port maps
+├── layer3/       phase 2: driver logs, register snapshots, panic report, run log
 └── icllp-match.txt
 ```
 
@@ -136,3 +137,25 @@ The trimmed 9-port map that actually shipped is at
 Text reports from the same Phase 1 SysReport dump. `CPUInfo.txt` is where
 `CstConfigLock 1` comes from; `GOPInfo.txt` establishes the 1920×1280 panel and
 the above-4 GB framebuffer BAR; `PCIInfo.txt` is the authoritative device list.
+
+---
+
+## `layer3/` — phase 2 evidence (runs A–N, 2026-10-07)
+
+| File | Run | What it is |
+|---|---|---|
+| `runs.csv` | all | the harness's run log: time, experiment, boot-args, outcome |
+| `logs/run-A-igfb.log` | A | first boot where `start()` returned. Link training fails at phase 1 |
+| `logs/run-C-igfb.log` | C | `Link Training successful`, then `Link loss occurred on DDI0` |
+| `logs/run-F-igfb.log` | F | link stable, modeset complete, panel black |
+| `logs/run-F2-igfb.log` | F2 | same with `-igfxblr -igfxdbeo` |
+| `logs/run-K-igfb.log` | K | first picture; panel on FB1 |
+| `logs/run-M-igfb.log` | M | built-in panel on FB0, seamless boot, display sleep and wake |
+| `snapshots/run-F5-state.{bin,txt}` | F5 | 48 registers, firmware state next to the driver's state 180 s after the modeset. Backlight duty `0xBC3C` → `0` |
+| `snapshots/run-K-state.{bin,txt}` | K | the same with the backlight kept |
+| `panic-display-wake-run-K.txt` | K | `Enable powerwell PG1 called without enabling display engine` on display wake |
+| `icllp-symbol-inventory.md` | — | static inventory of the Tahoe framebuffer binary: hook targets, DMC upload, accessor coverage |
+
+The `.log` files contain only the kernel's `[IGFB]` lines (plus the `boot-args` line that identifies the boot),
+extracted with `log show`. They carry no account names, serials or addresses. Runs B, D, E, F3 and F4 left no log:
+the machine reset or froze before anything was persisted.

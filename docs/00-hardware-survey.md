@@ -42,7 +42,7 @@ Framebuffer 0x4000000000, size 0x960000   (= 1920*1280*4, checks out)
 | Path | ID | Device | macOS |
 |---|---|---|---|
 | `Pci(0x0,0x0)` | `8086:9A12` | TGL host bridge | ✅ |
-| `Pci(0x2,0x0)` | **`8086:9A40`** | **Iris Xe 80 EU** | ❌ VESA only |
+| `Pci(0x2,0x0)` | **`8086:9A40`** | **Iris Xe 80 EU** | ⚠️ native framebuffer with a patched WhateverGreen; no acceleration |
 | `Pci(0x4,0x0)` | `8086:9A03` | DPTF participant | ⚪ self-disables |
 | `Pci(0x5,0x0)` | `8086:9A19` | **IPU6 camera** | ❌ no driver |
 | `Pci(0x6,0x0)/Pci(0x0,0x0)` | `1C5C:174A` | SK hynix BC711 NVMe | ✅ NVMeFix |

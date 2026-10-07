@@ -1,0 +1,182 @@
+diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
+index 1685c7e..7fd6173 100644
+--- a/WhateverGreen/kern_igfx.cpp
++++ b/WhateverGreen/kern_igfx.cpp
+@@ -136,6 +136,14 @@ void IGFX::init() {
+ 			modTypeCCheckDisabler.enabled = true;
+ 			modBlackScreenFix.available = true;
+ 			break;
++		case CPUInfo::CpuGeneration::TigerLake:
++			// Experimental and opt-in. There is no Tiger Lake driver; route the ICL LP framebuffer so that
++			// framebuffer patches and the MMIO tracer can act on it. The accelerator is deliberately left alone.
++			if (checkKernelArgument("-igfxtgl"))
++				currentFramebuffer = &kextIntelICLLPFb;
++			else
++				SYSLOG("igfx", "found an unsupported processor 0x%X:0x%X, please report this!", family, model);
++			break;
+ 		case CPUInfo::CpuGeneration::RocketLake:
+ 		case CPUInfo::CpuGeneration::AlderLake:
+ 		case CPUInfo::CpuGeneration::RaptorLake:
+@@ -497,7 +505,11 @@ uint32_t IGFX::MMIORegistersReadSupport::wrapReadRegister32(void *controller, ui
+ 	}
+ 	
+ 	// Invoke the original function
++	auto &tracer = callbackIGFX->modTigerLakeTracer;
++	size_t slot = tracer.enabled ? tracer.onAccess(false, address, 0) : 0;
+ 	uint32_t retVal = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, address);
++	if (tracer.enabled)
++		tracer.ring[slot].value = retVal;
+ 	if (callbackIGFX->modMMIORegistersReadSupport.verbose)
+ 		DBGLOG("igfx", "RRS: Read MMIO Register = 0x%x; Value = 0x%x.", address, retVal);
+ 	
+@@ -587,6 +599,8 @@ void IGFX::MMIORegistersWriteSupport::wrapWriteRegister32(void *controller, uint
+ 	}
+ 	
+ 	// Invoke the original function
++	if (callbackIGFX->modTigerLakeTracer.enabled)
++		callbackIGFX->modTigerLakeTracer.onAccess(true, address, value);
+ 	callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32(controller, address, value);
+ 	if (callbackIGFX->modMMIORegistersWriteSupport.verbose)
+ 		DBGLOG("igfx", "RWS: Write MMIO Register = 0x%x; Value = 0x%x.", address, value);
+@@ -599,6 +613,53 @@ void IGFX::MMIORegistersWriteSupport::wrapWriteRegister32(void *controller, uint
+ 	}
+ }
+ 
++// MARK: - Tiger Lake MMIO Tracer
++
++void IGFX::TigerLakeTracer::init() {
++	// We rely on the shared MMIO read and write support to see every register access
++	requiresPatchingFramebuffer = true;
++	requiresMMIORegistersReadAccess = true;
++	requiresMMIORegistersWriteAccess = true;
++}
++
++void IGFX::TigerLakeTracer::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
++	enabled = BaseDeviceInfo::get().cpuGeneration == CPUInfo::CpuGeneration::TigerLake && checkKernelArgument("-igfxtgl");
++	if (!enabled)
++		return;
++
++	PE_parse_boot_argn("igfxtglstop", &stopAt, sizeof(stopAt));
++	park = checkKernelArgument("-igfxtglpark");
++	SYSLOG("igfx", "TGL: Tracing framebuffer MMIO. Will stop before access %u by %s.", stopAt, park ? "parking" : "panicking");
++}
++
++size_t IGFX::TigerLakeTracer::onAccess(bool write, uint32_t address, uint32_t value) {
++	auto index = static_cast<uint32_t>(OSIncrementAtomic(&count)) + 1;
++	size_t slot = index % RingSize;
++	ring[slot] = {index, address, value, write};
++	if (index != stopAt)
++		return slot;
++
++	// The chosen access is never performed. Report the history, oldest first, then stop here.
++	static char report[RingSize * 40 + 96];
++	size_t len = snprintf(report, sizeof(report), "igfx TGL: stopped before access %u (%s 0x%05X)\n", index, write ? "W" : "R", address);
++	for (size_t i = 1; i < RingSize && len < sizeof(report); i++) {
++		auto &access = ring[(index + i) % RingSize];
++		if (access.index == 0)
++			continue;
++		if (park)
++			SYSLOG("igfx", "TGL: %u %s 0x%05X = 0x%08X", access.index, access.write ? "W" : "R", access.address, access.value);
++		len += snprintf(report + len, sizeof(report) - len, "%u %s 0x%05X = 0x%08X\n", access.index, access.write ? "W" : "R", access.address, access.value);
++	}
++
++	if (park) {
++		SYSLOG("igfx", "TGL: Stopped before access %u (%s 0x%05X). Parking this thread.", index, write ? "W" : "R", address);
++		while (true)
++			IOSleep(1000);
++	}
++
++	PANIC("igfx", "%s", report);
++}
++
+ // MARK: - Force Complete Modeset
+ 
+ void IGFX::ForceCompleteModeset::init() {
+diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
+index b9d6359..fc1aced 100644
+--- a/WhateverGreen/kern_igfx.hpp
++++ b/WhateverGreen/kern_igfx.hpp
+@@ -2377,7 +2377,65 @@ private:
+ 		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
+ 		void processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) override;
+ 	} modDisplayDataBufferEarlyOptimizer;
+-	
++
++	/**
++	 *  A submodule to trace framebuffer MMIO register accesses on Tiger Lake and stop at a chosen one
++	 *
++	 *  @note Apple ships no Tiger Lake framebuffer. With `-igfxtgl`, the ICL LP framebuffer is routed on
++	 *        Tiger Lake so that its ReadRegister32/WriteRegister32 calls can be counted. `igfxtglstop=N`
++	 *        panics (or parks the thread with `-igfxtglpark`) before access N is performed, with the last
++	 *        accesses in the panic string. Bisecting N converts a silent platform reset into a named register.
++	 *  @note Only accesses routed through ReadRegister32/WriteRegister32 are seen. Inlined MMIO is invisible.
++	 */
++	class TigerLakeTracer: public PatchSubmodule {
++	public:
++		/**
++		 *  Number of recent accesses kept for the report
++		 */
++		static constexpr size_t RingSize = 32;
++
++		/**
++		 *  A single recorded register access
++		 */
++		struct Access {
++			uint32_t index;
++			uint32_t address;
++			uint32_t value;
++			bool write;
++		};
++
++		/**
++		 *  Ring buffer of recent accesses
++		 */
++		Access ring[RingSize] {};
++
++		/**
++		 *  Number of accesses seen so far (1-based index of the latest one)
++		 */
++		volatile SInt32 count {0};
++
++		/**
++		 *  Access index to stop before, 0 to never stop
++		 */
++		uint32_t stopAt {0};
++
++		/**
++		 *  Park the calling thread instead of panicking
++		 */
++		bool park {false};
++
++		/**
++		 *  Record an access that is about to be performed, stopping if requested
++		 *
++		 *  @return Ring slot of the access, used to fill in the value of a read after it completes
++		 */
++		size_t onAccess(bool write, uint32_t address, uint32_t value);
++
++		// MARK: Patch Submodule IMP
++		void init() override;
++		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
++	} modTigerLakeTracer;
++
+ 	/**
+ 	 *  A collection of shared submodules
+ 	 */
+@@ -2390,7 +2448,7 @@ private:
+ 	/**
+ 	 *  A collection of submodules
+ 	 */
+-	PatchSubmodule *submodules[21] = {
++	PatchSubmodule *submodules[22] = {
+ 		&modDVMTCalcFix,
+ 		&modDPCDMaxLinkRateFix,
+ 		&modCoreDisplayClockFix,
+@@ -2412,6 +2470,7 @@ private:
+ 		&modFramebufferDebugSupport,
+ 		&modMaxPixelClockOverride,
+ 		&modDisplayDataBufferEarlyOptimizer,
++		&modTigerLakeTracer,
+ 	};
+ 	
+ 	/**

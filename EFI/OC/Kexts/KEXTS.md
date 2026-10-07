@@ -34,7 +34,7 @@ Order in `Kernel > Add` is significant in three places. The shipped
 | 3 | `SMCProcessor` | ✅ | 1.3.7 | CPU temperatures |
 | 4 | `SMCBatteryManager` | ✅ | 1.3.7 | battery |
 | 5 | `SMCDellSensors` | ✅ | 1.3.7 | Dell SMM fan/thermal |
-| 6 | `WhateverGreen` | ✅ | 1.7.0 | non-GPU quirks; also the subject of the graphics research |
+| 6 | `WhateverGreen` | ✅ | **1.7.1 + patches** | drives the display: **must be the patched build**, see below |
 | 7 | `NVMeFix` | ✅ | 1.1.3 | BC711 power management |
 | 8 | `ECEnabler` | ✅ | 1.0.6 | Dell EC >8-bit battery fields |
 | 9 | `VoodooPS2Controller` | ✅ | 2.3.7 | keyboard (PS/2, even though the touchpad is USB) |
@@ -46,12 +46,27 @@ Order in `Kernel > Add` is significant in three places. The shipped
 | 15 | `VoodooInput` (plugin) | ✅ | 2.3.7 | inside `VoodooPS2Controller.kext` |
 | 16 | `USBToolBox` | ✅ | 1.2.0 | port-map driver — **must precede `UTBMap`** |
 | 17 | `UTBMap` | ✅ | — | the 9-port map (committed here) |
+| 18 | `BrightnessKeys` | ✅ | 1.0.3 | turns the firmware's `Notify (LCD, 0x86/0x87)` into brightness keys. Needs `SSDT-DOSI.aml` — [`research/LAYER3.md`](../../../research/LAYER3.md#brightness-keys) |
 
 The three ordering constraints:
 
 1. `Lilu` before everything that depends on it.
 2. `IntelBluetoothFirmware` → `IntelBTPatcher` → `BlueToolFixup`, in that order.
 3. `USBToolBox` before `UTBMap`, or the map silently does nothing.
+
+## ⚠️ WhateverGreen must be built from source
+
+The stock WhateverGreen release does **not** work with the committed `config.plist`. The config starts Apple's Ice
+Lake framebuffer on Tiger Lake hardware, and that only works with the register map in
+[`WhateverGreen-patches/`](../../../WhateverGreen-patches/). With a stock build the link never trains and the panel
+stays black.
+
+`fetch-components` still downloads the stock kext so that the VESA fallback works. Replace it:
+build per [`WhateverGreen-patches/README.md`](../../../WhateverGreen-patches/README.md) and copy the result over
+`EFI/OC/Kexts/WhateverGreen.kext`.
+
+To run on VESA instead (no patched kext needed): remove the `PciRoot(0x0)/Pci(0x2,0x0)` entry from
+`DeviceProperties`, and set boot-args back to `-v debug=0x100 keepsyms=1 -igfxvesa`.
 
 ## Where to get each one
 
@@ -61,6 +76,7 @@ The three ordering constraints:
 | VirtualSMC + SMC* plugins | <https://github.com/acidanthera/VirtualSMC> | BSD-3-Clause |
 | WhateverGreen | <https://github.com/acidanthera/WhateverGreen> | BSD-3-Clause |
 | NVMeFix | <https://github.com/acidanthera/NVMeFix> | BSD-3-Clause |
+| BrightnessKeys | <https://github.com/acidanthera/BrightnessKeys> | BSD-3-Clause |
 | BlueToolFixup | <https://github.com/acidanthera/BrcmPatchRAM> | BSD-3-Clause |
 | ECEnabler | <https://github.com/1Revenger1/ECEnabler> | BSD-3-Clause |
 | VoodooPS2Controller | <https://github.com/acidanthera/VoodooPS2> | BSD-3-Clause |

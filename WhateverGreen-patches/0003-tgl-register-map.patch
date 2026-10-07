@@ -1,0 +1,706 @@
+diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
+index e1e4c49..00bc26f 100644
+--- a/WhateverGreen/kern_igfx.cpp
++++ b/WhateverGreen/kern_igfx.cpp
+@@ -5,6 +5,7 @@
+ //  Copyright © 2018 vit9696. All rights reserved.
+ //
+ 
++#include <Headers/kern_nvram.hpp>
+ #include "kern_igfx.hpp"
+ #include "kern_fb.hpp"
+ #include "kern_guc.hpp"
+@@ -507,7 +508,8 @@ uint32_t IGFX::MMIORegistersReadSupport::wrapReadRegister32(void *controller, ui
+ 	// Invoke the original function
+ 	auto &tracer = callbackIGFX->modTigerLakeTracer;
+ 	size_t slot = tracer.enabled ? tracer.onAccess(false, address, 0) : 0;
+-	uint32_t retVal = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, address);
++	auto &regMap = callbackIGFX->modTigerLakeRegisterMap;
++	uint32_t retVal = regMap.enabled ? regMap.read(controller, address) : callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, address);
+ 	if (tracer.enabled)
+ 		tracer.ring[slot].value = retVal;
+ 	if (callbackIGFX->modMMIORegistersReadSupport.verbose)
+@@ -601,7 +603,10 @@ void IGFX::MMIORegistersWriteSupport::wrapWriteRegister32(void *controller, uint
+ 	// Invoke the original function
+ 	if (callbackIGFX->modTigerLakeTracer.enabled)
+ 		callbackIGFX->modTigerLakeTracer.onAccess(true, address, value);
+-	callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32(controller, address, value);
++	if (callbackIGFX->modTigerLakeRegisterMap.enabled)
++		callbackIGFX->modTigerLakeRegisterMap.write(controller, address, value);
++	else
++		callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32(controller, address, value);
+ 	if (callbackIGFX->modMMIORegistersWriteSupport.verbose)
+ 		DBGLOG("igfx", "RWS: Write MMIO Register = 0x%x; Value = 0x%x.", address, value);
+ 	
+@@ -875,6 +880,450 @@ void IGFX::TigerLakeFunctionTracer::panicWithRing(const char *head) {
+ 	PANIC("igfx", "%s", report);
+ }
+ 
++// MARK: - Tiger Lake Register Map
++
++namespace TGLReg {
++	static constexpr uint32_t TransDdiFuncCtlA = 0x60400;
++	static constexpr uint32_t TransDdiFuncCtlB = 0x61400;
++	static constexpr uint32_t TransDdiFuncCtlC = 0x62400;
++	static constexpr uint32_t TransDdiFuncCtlEdpICL = 0x6F400;
++	static constexpr uint32_t TransConfA = 0x70008;
++	static constexpr uint32_t TransClkSelA = 0x46140;
++	static constexpr uint32_t TransClkSelC = 0x46148;
++	static constexpr uint32_t DpTpCtlA_ICL = 0x64040;
++	static constexpr uint32_t DpTpCtlA_TGL = 0x60540;
++	static constexpr uint32_t DdiBufCtlA = 0x64000;
++	static constexpr uint32_t Dpll0Cfgcr0_TGL = 0x164284;
++	static constexpr uint32_t Dpll0Cfgcr1_TGL = 0x164288;
++	static constexpr uint32_t Dpll1Cfgcr0_TGL = 0x16428C;
++	static constexpr uint32_t Dpll1Cfgcr1_TGL = 0x164290;
++	static constexpr uint32_t Dssm = 0x51004;
++	static constexpr uint32_t Enable = 0x80000000;
++	static constexpr uint32_t ModeDpSst = 2U << 24;
++	static constexpr uint32_t ModeMask = 7U << 24;
++	static constexpr uint32_t PortWidthMask = 7U << 1;
++	static constexpr uint32_t DcoFractionMask = 0x7FFFU << 10;
++
++	static inline bool isFuncCtl(uint32_t a) { return a == TransDdiFuncCtlA || a == TransDdiFuncCtlB || a == TransDdiFuncCtlC; }
++	static inline bool isClkSel(uint32_t a) { return a >= TransClkSelA && a <= TransClkSelC && (a & 3) == 0; }
++	static inline bool isCfgcr0(uint32_t a) { return a == Dpll0Cfgcr0_TGL || a == Dpll1Cfgcr0_TGL; }
++
++	// TRANS_DDI_FUNC_CTL: ICL selects the DDI with `port << 28` (3 bits), TGL with `(port + 1) << 27` (4 bits)
++	static inline uint32_t funcCtlToTGL(uint32_t v) {
++		if (v == 0)
++			return 0;
++		uint32_t port = (v >> 28) & 7;
++		return (v & ~(0xFU << 27)) | ((port + 1) << 27);
++	}
++	static inline uint32_t funcCtlToICL(uint32_t v) {
++		uint32_t select = (v >> 27) & 0xF;
++		return (v & ~(0xFU << 27)) | ((select ? select - 1 : 0) << 28);
++	}
++	// TRANS_CLK_SEL: ICL `(port + 1) << 29`, TGL `(port + 1) << 28`
++	static inline uint32_t clkSelToTGL(uint32_t v) { return ((v >> 29) & 7) << 28; }
++	static inline uint32_t clkSelToICL(uint32_t v) { return ((v >> 28) & 7) << 29; }
++	static inline uint32_t halveFraction(uint32_t v) {
++		uint32_t f = (v & DcoFractionMask) >> 10;
++		return (v & ~DcoFractionMask) | (((f + 1) / 2) << 10);
++	}
++	static inline uint32_t doubleFraction(uint32_t v) {
++		uint32_t f = ((v & DcoFractionMask) >> 10) * 2;
++		return (v & ~DcoFractionMask) | ((f > 0x7FFF ? 0x7FFF : f) << 10);
++	}
++}
++
++void IGFX::TigerLakeRegisterMap::init() {
++	requiresPatchingFramebuffer = true;
++	requiresMMIORegistersReadAccess = true;
++	requiresMMIORegistersWriteAccess = true;
++}
++
++void IGFX::TigerLakeRegisterMap::processKernel(KernelPatcher &patcher, DeviceInfo *info) {
++	uint32_t mask = 0;
++	if (!PE_parse_boot_argn("igfxtglmap", &mask, sizeof(mask)))
++		mask = checkKernelArgument("-igfxtglmap") ? AllTranslation : 0;
++	if (mask == 0)
++		return;
++
++	// The generation may have been overridden with lilucpu, so look at the real CPU model
++	auto model = BaseDeviceInfo::get().cpuModel;
++	if (model != 0x8C && model != 0x8D) {
++		SYSLOG("igfx", "TGLMAP: igfxtglmap ignored, CPU model 0x%X is not Tiger Lake.", model);
++		return;
++	}
++
++	enabled = true;
++	features = mask;
++	trace = has(Log) && checkKernelArgument("-igfxtgltrace");
++	PE_parse_boot_argn("igfxtglwait", &lateWait, sizeof(lateWait));
++	if (has(LateState))
++		publishCall = thread_call_allocate(publishThread, this);
++	keepFirmwarePLL = checkKernelArgument("-igfxtglfwpll");
++	SYSLOG("igfx", "TGLMAP: Translating Ice Lake display registers for Tiger Lake (features 0x%X, fwpll %d).", features, keepFirmwarePLL);
++}
++
++bool IGFX::TigerLakeRegisterMap::shouldLog(bool isRead) {
++	// IOLog may block: only when asked for, and never with interrupts disabled
++	if (!has(Log) || !ml_get_interrupts_enabled())
++		return false;
++	if (trace)
++		return true;
++	auto &budget = isRead ? readLogBudget : logBudget;
++	if (budget <= 0)
++		return false;
++	OSDecrementAtomic(&budget);
++	return true;
++}
++
++uint32_t IGFX::TigerLakeRegisterMap::mapAddress(uint32_t address, bool isWrite) const {
++	// eDP transcoder and its pipe configuration block -> transcoder A
++	if (has(MapEdpTranscoder) && ((address >= 0x6F000 && address <= 0x6FFFF) || (address >= 0x7F000 && address <= 0x7FFFF))) {
++		bool core = (address >= 0x6F000 && address <= 0x6F0FF) || (address >= 0x6F400 && address <= 0x6F41F) || (address >= 0x7F000 && address <= 0x7F0FF);
++		if (has(EdpCoreOnly) && !core)
++			return address;
++		if (isWrite || !has(LazyEdpReads) || edpActivated)
++			return address - 0xF000;
++		return address;
++	}
++	if (has(MapDpTp)) {
++		// DP_TP_CTL / DP_TP_STATUS of DDI A -> transcoder A
++		if (address == 0x64040 || address == 0x64044)
++			return address - 0x64040 + 0x60540;
++		// DDI_DP_COMP_CTL / PAT of DDI A -> transcoder A
++		if (address >= 0x640F0 && address <= 0x640FC)
++			return address - 0x640F0 + 0x605F0;
++	}
++	// Combo DPLL configuration
++	if (has(MapDpll)) {
++		switch (address) {
++			case 0x164000: return TGLReg::Dpll0Cfgcr0_TGL;
++			case 0x164004: return TGLReg::Dpll0Cfgcr1_TGL;
++			case 0x164080: return TGLReg::Dpll1Cfgcr0_TGL;
++			case 0x164084: return TGLReg::Dpll1Cfgcr1_TGL;
++			default: break;
++		}
++	}
++	return address;
++}
++
++void IGFX::TigerLakeRegisterMap::record(uint32_t address, uint32_t value, bool translated) {
++	auto &slot = state.ring[state.ringNext % State::RingSize];
++	slot.address = address | (translated ? 0x80000000U : 0);
++	slot.value = value;
++	state.ringNext++;
++}
++
++void IGFX::TigerLakeRegisterMap::publish(void *controller, bool toNVRAM) {
++	// Registry and NVRAM calls may block: only when asked for, and never from a context with interrupts disabled
++	if (!has(PublishRegistry | PublishNVRAM) || !ml_get_interrupts_enabled())
++		return;
++
++	static const uint32_t live[] = {
++		TGLReg::TransDdiFuncCtlA, TGLReg::TransClkSelA, TGLReg::TransConfA, TGLReg::DpTpCtlA_TGL, TGLReg::DpTpCtlA_TGL + 4, TGLReg::DdiBufCtlA,
++		0x46010, TGLReg::Dpll0Cfgcr0_TGL, 0x46014, TGLReg::Dpll1Cfgcr0_TGL, 0x164280, 0xC7200, 0xC7204, 0xC8250
++	};
++	static_assert(sizeof(live) == sizeof(State::now), "live snapshot size");
++	for (size_t i = 0; i < arrsize(live); i++)
++		state.now[i] = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, live[i]);
++	state.seq++;
++
++	if (has(PublishRegistry))
++		static_cast<IOService *>(controller)->setProperty("tgl-map-state", &state, sizeof(state));
++
++	if (toNVRAM && has(PublishNVRAM) && nvramBudget > 0) {
++		nvramBudget--;
++		NVStorage storage;
++		if (storage.init()) {
++			storage.write(NVRAM_PREFIX(LILU_VENDOR_GUID, "tgl-map-state"), reinterpret_cast<const uint8_t *>(&state), sizeof(state), NVStorage::OptRaw);
++			storage.sync();
++			storage.deinit();
++		}
++	}
++}
++
++void IGFX::TigerLakeRegisterMap::snapshot(void *controller) {
++	snapshotTaken = true;
++	auto rd = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32;
++
++	// Always needed: the firmware's transcoder A setup and the DPLL reference clock
++	fwFuncCtlA = rd(controller, TGLReg::TransDdiFuncCtlA);
++	refIs38400 = ((rd(controller, TGLReg::Dssm) >> 29) & 7) == 2;
++	fwBacklightFreq = rd(controller, 0xC8254);
++	fwBacklightDuty = rd(controller, 0xC8258);
++	// The driver never writes BXT_BLC_PWM_FREQ1 when it adopts the firmware's mode without a full modeset, so its scale
++	// cannot be learned from a write. AppleIntelFramebufferController::start picks it from SFUSE_STRAP bit 8:
++	// 0x56CE when set, 0x4571 when clear, and hwSetBacklight computes duty = level * that / 65535.
++	if (has(ScaleBacklight) && driverBacklightFreq == 0)
++		driverBacklightFreq = (rd(controller, 0xC2014) & (1U << 8)) ? 0x56CE : 0x4571;
++	if (has(LateState))
++		takeSnapshot(controller, state.early);
++	if (!has(PublishRegistry | PublishNVRAM))
++		return;
++
++	static const uint32_t regs[] = {
++		TGLReg::TransDdiFuncCtlA, TGLReg::TransClkSelA, TGLReg::TransConfA, TGLReg::DpTpCtlA_TGL, TGLReg::DpTpCtlA_TGL + 4, TGLReg::DdiBufCtlA,
++		0x46010, TGLReg::Dpll0Cfgcr0_TGL, TGLReg::Dpll0Cfgcr1_TGL, 0x46014, TGLReg::Dpll1Cfgcr0_TGL, TGLReg::Dpll1Cfgcr1_TGL, 0x164280, TGLReg::Dssm,
++		0x60000, 0x6000C, 0x6001C, 0x45404, 0x45444, 0x45454, 0x46000
++	};
++	static_assert(sizeof(regs) == sizeof(State::fw), "firmware snapshot size");
++	for (size_t i = 0; i < arrsize(regs); i++)
++		state.fw[i] = rd(controller, regs[i]);
++	publish(controller, true);
++}
++
++// Registers captured by the early and late snapshots (Tiger Lake addresses, read directly)
++static const uint32_t tglSnapshotRegisters[] = {
++	0x70008, 0x60400, 0x46140, 0x60540, 0x60544, 0x64000, 0x60000, 0x6000C,   // TRANS_CONF_A FUNC_CTL_A CLK_SEL_A DP_TP_CTL DP_TP_STATUS DDI_BUF_CTL HTOTAL VTOTAL
++	0x6001C, 0x60030, 0x60040, 0x70030, 0x70040, 0x70000, 0x70180, 0x70188,   // PIPESRC DATAM1 LINKM1 PIPE_MISC FRMCOUNT SCANLINE PLANE_CTL_1A STRIDE
++	0x7018C, 0x70190, 0x7019C, 0x7027C, 0x70240, 0x70080, 0x7017C, 0x45008,   // POS SIZE SURF PLANE_BUF_CFG PLANE_WM0 CURCNTR CUR_BUF_CFG DBUF_CTL_S1
++	0x44FE8, 0x45404, 0x45504, 0x46010, 0x164284, 0x164288, 0x164280, 0xC7200, // DBUF_CTL_S2 PWR_WELL_CTL2 DC_STATE_EN DPLL0_EN CFGCR0 CFGCR1 DPCLKA PP_STATUS
++	0xC7204, 0xC8250, 0xC8254, 0xC8258, 0x60800, 0x60840, 0x44400, 0x44404,   // PP_CONTROL BLC_CTL BLC_FREQ BLC_DUTY PSR_CTL PSR_STATUS DE_PIPE_ISR_A DE_PIPE_IMR_A
++	0x6F400, 0x7F008, 0x68080, 0x70034, 0x4A480, 0x4A400, 0x46000, 0x70040    // (ICL eDP FUNC_CTL, CONF as TGL returns them) PF_CTL_A PIPE_MISC2 GAMMA_MODE_A CSC_MODE? CDCLK FRMCOUNT again
++};
++
++void IGFX::TigerLakeRegisterMap::takeSnapshot(void *controller, uint32_t *out) {
++	static_assert(sizeof(tglSnapshotRegisters) == sizeof(State::early), "snapshot size");
++	auto rd = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32;
++	for (size_t i = 0; i < arrsize(tglSnapshotRegisters); i++)
++		out[i] = rd(controller, tglSnapshotRegisters[i]);
++}
++
++void IGFX::TigerLakeRegisterMap::publishThread(thread_call_param_t param0, thread_call_param_t param1) {
++	// Kernel thread context, no driver locks held. The record goes to a file: NVRAM writes and setProperty were
++	// present in every run that reset when publishing (B, F3, F4), so neither is used here.
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	FileIO::writeBufferToFile("/Users/Shared/tgl-map-state.bin", &self->state, sizeof(self->state));
++}
++
++void IGFX::TigerLakeRegisterMap::lateCheck(void *controller) {
++	// Called on every hooked access; cheap until the time comes.
++	// Stage 1 (wait - 15 s): publish what is already in memory (the firmware snapshot), no register reads.
++	// Stage 2 (wait + 15 s) and stage 3 (3 x wait): read the registers again, then publish.
++	if (!has(LateState) || firstTpEnableTime == 0 || lateTaken >= 3 || !publishCall)
++		return;
++	uint64_t nanos = 0;
++	absolutetime_to_nanoseconds(mach_absolute_time() - firstTpEnableTime, &nanos);
++	uint32_t seconds = static_cast<uint32_t>(nanos / 1000000000ULL);
++	uint32_t due = lateTaken == 0 ? (lateWait > 15 ? lateWait - 15 : lateWait) : lateTaken == 1 ? lateWait + 15 : lateWait * 3;
++	if (seconds < due)
++		return;
++	if (lateTaken > 0) {
++		takeSnapshot(controller, state.late);
++		state.lateCount = lateTaken;
++	}
++	lateTaken++;
++	state.lateSeconds = seconds;
++	state.seq++;
++	thread_call_enter1(publishCall, controller);
++}
++
++void IGFX::TigerLakeRegisterMap::prepareTranscoderA(void *controller) {
++	auto rd = [&](uint32_t a) { return callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, a); };
++	auto wr = [&](uint32_t a, uint32_t v) { callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32(controller, a, v); };
++
++	// 7.a Direct the clock of DDI A to transcoder A
++	uint32_t clk = rd(TGLReg::TransClkSelA);
++	if (((clk >> 28) & 0xF) != 1) {
++		wr(TGLReg::TransClkSelA, 1U << 28);
++		state.synthClkSel++;
++		record(TGLReg::TransClkSelA, 1U << 28, true);
++		if (shouldLog())
++			SYSLOG("igfx", "TGLMAP: TRANS_CLK_SEL_A %08X -> %08X before DP_TP_CTL enable.", clk, 1U << 28);
++	}
++
++	// 7.b DDI select, mode and lane count in TRANS_DDI_FUNC_CTL, transcoder still disabled
++	uint32_t cur = rd(TGLReg::TransDdiFuncCtlA);
++	if (cur & TGLReg::Enable)
++		return;
++	uint32_t base = lastEdpFuncCtl ? lastEdpFuncCtl : fwFuncCtlA;
++	if ((base & TGLReg::ModeMask) != TGLReg::ModeDpSst)
++		base = TGLReg::ModeDpSst | (rd(TGLReg::DdiBufCtlA) & TGLReg::PortWidthMask);
++	uint32_t next = (base & ~TGLReg::Enable & ~(0xFU << 27)) | (1U << 27);
++	if (next != cur) {
++		wr(TGLReg::TransDdiFuncCtlA, next);
++		state.synthFuncCtl++;
++		record(TGLReg::TransDdiFuncCtlA, next, true);
++		if (shouldLog())
++			SYSLOG("igfx", "TGLMAP: TRANS_DDI_FUNC_CTL_A %08X -> %08X before DP_TP_CTL enable.", cur, next);
++	}
++}
++
++uint32_t IGFX::TigerLakeRegisterMap::read(void *controller, uint32_t address) {
++	if (!snapshotTaken)
++		snapshot(controller);
++
++	uint32_t mapped = mapAddress(address, false);
++	uint32_t raw = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, mapped);
++	uint32_t value = raw;
++	if (TGLReg::isFuncCtl(mapped) && has(XlateFuncCtl))
++		value = TGLReg::funcCtlToICL(raw);
++	else if (TGLReg::isClkSel(mapped) && has(XlateClkSel))
++		value = TGLReg::clkSelToICL(raw);
++	else if (TGLReg::isCfgcr0(mapped) && mapped != address && refIs38400)
++		value = TGLReg::doubleFraction(raw);
++
++	if (has(ScaleBacklight) && driverBacklightFreq != 0 && fwBacklightFreq != 0) {
++		if (address == 0xC8254)
++			value = driverBacklightFreq;
++		else if (address == 0xC8258)
++			value = static_cast<uint32_t>((static_cast<uint64_t>(raw) * driverBacklightFreq) / fwBacklightFreq);
++	}
++	if (mapped != address || value != raw)
++		state.mappedReads++;
++	if (address == TGLReg::DpTpCtlA_ICL + 4) {
++		state.lastTpStatus = raw;
++		state.orTpStatus |= raw;
++	}
++
++	if ((mapped != address || value != raw) && shouldLog(true))
++		SYSLOG("igfx", "TGLMAP: R %06X -> %06X = %08X (raw %08X)", address, mapped, value, raw);
++	lateCheck(controller);
++	return value;
++}
++
++void IGFX::TigerLakeRegisterMap::write(void *controller, uint32_t address, uint32_t value) {
++	if (!snapshotTaken)
++		snapshot(controller);
++
++	auto org = callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32;
++	uint32_t mapped = mapAddress(address, true);
++	if (mapped != address && mapped + 0xF000 == address)
++		edpActivated = true;
++	uint32_t out = value;
++
++	if (address == TGLReg::TransDdiFuncCtlEdpICL && value != 0)
++		lastEdpFuncCtl = value;
++	if (TGLReg::isFuncCtl(mapped)) {
++		if (has(XlateFuncCtl))
++			out = TGLReg::funcCtlToTGL(value);
++	} else if (TGLReg::isClkSel(mapped)) {
++		if (has(XlateClkSel))
++			out = TGLReg::clkSelToTGL(value);
++		// LightUpEDP writes TRANS_CLK_SEL(pipe) = 0 right after link training: SetupParams computes 0 for a panel on
++		// DDI A because the ICL eDP transcoder has no clock select. On TGL that removes the clock of transcoder A.
++		if (has(SynthPreEnable) && mapped == TGLReg::TransClkSelA && out == 0 && ddiAActive) {
++			out = 1U << 28;
++			state.synthClkSel++;
++		}
++	} else if (mapped != address && (mapped == TGLReg::Dpll0Cfgcr0_TGL || mapped == TGLReg::Dpll0Cfgcr1_TGL ||
++									 mapped == TGLReg::Dpll1Cfgcr0_TGL || mapped == TGLReg::Dpll1Cfgcr1_TGL)) {
++		if (keepFirmwarePLL) {
++			if (shouldLog())
++				SYSLOG("igfx", "TGLMAP: W %06X = %08X dropped (firmware PLL config kept).", address, value);
++			return;
++		}
++		if (TGLReg::isCfgcr0(mapped) && refIs38400)
++			out = TGLReg::halveFraction(value);
++	}
++
++	// Backlight with brightness control: the hardware keeps the firmware's PWM frequency; duty values arrive on the
++	// driver's own scale (0..the frequency it wrote) and are rescaled. disableDisplay writes a zero duty during every
++	// modeset and LightUpEDP does not restore it, so zero is never written: the previous level stays.
++	if (has(ScaleBacklight) && (address == 0xC8254 || address == 0xC8258)) {
++		uint32_t out = 0;
++		if (address == 0xC8254) {
++			if (value != 0)
++				driverBacklightFreq = value;
++			out = fwBacklightFreq ? fwBacklightFreq : value;
++		} else {
++			uint32_t max = fwBacklightFreq ? fwBacklightFreq : driverBacklightFreq;
++			if (value == 0) {
++				out = lastBacklightDuty ? lastBacklightDuty : (fwBacklightDuty ? fwBacklightDuty : max / 2);
++			} else if (driverBacklightFreq != 0 && fwBacklightFreq != 0) {
++				out = static_cast<uint32_t>((static_cast<uint64_t>(value) * fwBacklightFreq) / driverBacklightFreq);
++				if (out > fwBacklightFreq)
++					out = fwBacklightFreq;
++				if (out == 0)
++					out = 1;
++			} else {
++				out = value;
++			}
++			lastBacklightDuty = out;
++		}
++		record(address, out, true);
++		state.mappedWrites++;
++		if (out != 0)
++			org(controller, address, out);
++		lateCheck(controller);
++		return;
++	}
++
++	// Backlight: keep what the firmware programmed. Nothing on this machine raises the duty again after the driver zeroes it.
++	if (has(KeepBacklight) && (address == 0xC8254 || address == 0xC8258)) {
++		uint32_t keep = address == 0xC8254 ? fwBacklightFreq : fwBacklightDuty;
++		if (keep == 0 && address == 0xC8258)
++			keep = fwBacklightFreq / 2;
++		record(address, keep, true);
++		state.mappedWrites++;
++		if (keep != 0)
++			org(controller, address, keep);
++		lateCheck(controller);
++		return;
++	}
++
++	if (address == TGLReg::DpTpCtlA_ICL)
++		ddiAActive = (value & TGLReg::Enable) != 0;
++	if (ddiAActive && firstTpEnableTime == 0)
++		firstTpEnableTime = mach_absolute_time();
++	bool tpEnable = has(SynthPreEnable) && address == TGLReg::DpTpCtlA_ICL && (value & TGLReg::Enable);
++	if (tpEnable)
++		prepareTranscoderA(controller);
++
++	bool translated = mapped != address || out != value;
++	if (translated)
++		state.mappedWrites++;
++	bool interesting = translated || (mapped >= 0x64000 && mapped <= 0x640FF) || mapped == 0x46010 || mapped == 0x46014 || mapped == 0x164280 ||
++		(mapped >= 0x60000 && mapped <= 0x60FFF) || mapped == TGLReg::TransConfA || TGLReg::isClkSel(mapped) || mapped == 0xC7204;
++	if (interesting)
++		record(mapped, out, translated);
++	if (TGLReg::isFuncCtl(mapped)) {
++		state.lastFuncCtlAddr = address; state.lastFuncCtlDriver = value; state.lastFuncCtlOut = out;
++	} else if (mapped == TGLReg::TransConfA) {
++		state.lastConfAddr = address; state.lastConf = out;
++	} else if (TGLReg::isCfgcr0(mapped)) {
++		state.lastCfgcr0Addr = address; state.lastCfgcr0Driver = value; state.lastCfgcr0Out = out;
++	} else if (mapped == TGLReg::Dpll0Cfgcr1_TGL || mapped == TGLReg::Dpll1Cfgcr1_TGL) {
++		state.lastCfgcr1Addr = address; state.lastCfgcr1Out = out;
++	} else if (mapped == TGLReg::DdiBufCtlA) {
++		state.lastDdiBufCtl = out;
++	} else if (mapped == 0x46010) {
++		state.lastDpll0Enable = out;
++	} else if (mapped == 0x46014) {
++		state.lastDpll1Enable = out;
++	} else if (mapped == 0x164280) {
++		state.lastDpclka = out;
++	} else if (TGLReg::isClkSel(mapped)) {
++		state.lastClkSelOut = out;
++	} else if (address == TGLReg::DpTpCtlA_ICL) {
++		state.lastTpCtl = out;
++		if (out & TGLReg::Enable) state.tpEnables++; else state.tpDisables++;
++	}
++
++	if ((translated || trace) && shouldLog())
++		SYSLOG("igfx", "TGLMAP: W %06X -> %06X = %08X (driver %08X)", address, mapped, out, value);
++	org(controller, mapped, out);
++
++	// Publish the state when link training ends either way: pattern bits 10:8 = 3 is "normal" (trained), disable is a failure or teardown
++	if (address == TGLReg::DpTpCtlA_ICL && (!(out & TGLReg::Enable) || ((out >> 8) & 7) == 3))
++		publish(controller, true);
++
++	// Port disabled: release the transcoder clock once the transcoder itself is off
++	if (has(SynthPreEnable) && address == TGLReg::DpTpCtlA_ICL && !(value & TGLReg::Enable)) {
++		auto rd = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32;
++		uint32_t fc = rd(controller, TGLReg::TransDdiFuncCtlA);
++		if (!(fc & TGLReg::Enable) && !(rd(controller, TGLReg::TransConfA) & TGLReg::Enable)) {
++			if (fc & (0xFU << 27))
++				org(controller, TGLReg::TransDdiFuncCtlA, fc & ~(0xFU << 27));
++			if (rd(controller, TGLReg::TransClkSelA) != 0) {
++				org(controller, TGLReg::TransClkSelA, 0);
++				if (shouldLog())
++					SYSLOG("igfx", "TGLMAP: TRANS_CLK_SEL_A cleared after DP_TP_CTL disable.");
++			}
++		}
++	}
++	lateCheck(controller);
++}
++
+ // MARK: - Force Complete Modeset
+ 
+ void IGFX::ForceCompleteModeset::init() {
+diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
+index af23ba2..e833c20 100644
+--- a/WhateverGreen/kern_igfx.hpp
++++ b/WhateverGreen/kern_igfx.hpp
+@@ -8,6 +8,7 @@
+ #ifndef kern_igfx_hpp
+ #define kern_igfx_hpp
+ 
++#include <kern/thread_call.h>
+ #include "kern_fb.hpp"
+ #include "kern_igfx_lspcon.hpp"
+ #include "kern_igfx_backlight.hpp"
+@@ -2561,6 +2562,191 @@ private:
+ 		void processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) override;
+ 	} modTigerLakeFunctionTracer;
+ 
++	/**
++	 *  A submodule that lets the Ice Lake LP framebuffer drive Tiger Lake display hardware
++	 *
++	 *  @note Enabled by `-igfxtglmap` on a Tiger Lake CPU (the CPU generation may be overridden by `lilucpu=12`
++	 *        so that every Ice Lake fix in this kext stays available).
++	 *  @note The Gen11 driver programs registers that Gen12 moved or re-encoded. Each access that goes through
++	 *        ReadRegister32/WriteRegister32 is translated here. References are to Linux i915 (v6.6) `i915_reg.h`:
++	 *        - eDP transcoder: ICL has TRANSCODER_EDP at 0x6Fxxx/0x7Fxxx; TGL has none, eDP uses transcoder A (0x60xxx/0x70xxx).
++	 *        - DP_TP_CTL/STATUS: ICL per port (0x64040/0x64044); TGL per transcoder (0x60540/0x60544).
++	 *        - DDI_DP_COMP_CTL: ICL 0x640F0..; TGL 0x605F0..
++	 *        - TRANS_DDI_FUNC_CTL DDI select: ICL `port << 28`; TGL `(port + 1) << 27`.
++	 *        - TRANS_CLK_SEL: ICL `(port + 1) << 29`; TGL `(port + 1) << 28`, and required for eDP too.
++	 *        - Combo DPLL config: ICL 0x164000/0x164004 (+0x80); TGL 0x164284/0x164288 (+8). With a 38.4 MHz
++	 *          reference TGL wants half the DCO fraction (ehl_combo_pll_div_frac_wa_needed).
++	 *        - Enable order: TGL needs TRANS_CLK_SEL and the DDI select in TRANS_DDI_FUNC_CTL before DP_TP_CTL
++	 *          is enabled (tgl_ddi_pre_enable_dp steps 7.a-7.c). ICL enables DP_TP_CTL first, so those two writes
++	 *          are synthesized when the driver enables DP_TP_CTL on DDI A.
++	 */
++	class TigerLakeRegisterMap: public PatchSubmodule {
++	public:
++		/**
++		 *  Feature mask, `igfxtglmap=<mask>`. `-igfxtglmap` means every translation and no side effects (0x3F).
++		 *  Side effects (registry, NVRAM, logging) are opt-in: the first 0003 build did them unconditionally at the
++		 *  driver's first register access and that boot reset.
++		 */
++		enum Feature : uint32_t {
++			MapEdpTranscoder = 0x001,  // 0x6Fxxx/0x7Fxxx -> transcoder A
++			MapDpTp          = 0x002,  // DP_TP_CTL/STATUS, DDI_DP_COMP of DDI A -> transcoder A
++			XlateFuncCtl     = 0x004,  // TRANS_DDI_FUNC_CTL DDI select encoding
++			XlateClkSel      = 0x008,  // TRANS_CLK_SEL encoding
++			MapDpll          = 0x010,  // combo DPLL CFGCR0/1 addresses and DCO fraction
++			SynthPreEnable   = 0x020,  // TRANS_CLK_SEL + FUNC_CTL select before DP_TP_CTL enable, cleanup after disable
++			PublishRegistry  = 0x040,  // tgl-map-state property on the controller
++			PublishNVRAM     = 0x080,  // tgl-map-state NVRAM variable
++			Log              = 0x100,  // IOLog translated accesses
++			KeepBacklight    = 0x4000, // drop the driver's writes to BXT_BLC_PWM_FREQ1/DUTY1 (0xC8254/0xC8258) and restore the
++			                           // firmware's values if they were zero: run F5 showed the driver leaves the duty at 0
++			ScaleBacklight   = 0x8000, // brightness control: keep the firmware's PWM frequency, rescale the duty the driver writes
++			                           // (driver scale -> firmware scale) and never write a zero duty
++			LateState        = 0x2000, // snapshot the hardware at the first access and again igfxtglwait seconds (default 60) after the
++			                           // first DP_TP_CTL enable, and only then publish the record to NVRAM and the registry
++			EdpCoreOnly      = 0x800,  // with MapEdpTranscoder: map only timings/M-N (0x6F000-0x6F0FF), FUNC_CTL/MSA (0x6F400-0x6F41F)
++			                           // and the pipe config block (0x7F000-0x7F0FF); leave DIP, VRR and PSR registers unmapped
++			LazyEdpReads     = 0x400,  // with MapEdpTranscoder: map eDP reads only after the driver first writes to that block,
++			                           // so the driver's startup probing sees what it saw without the map
++			AllTranslation   = 0x03F
++		};
++		uint32_t features {0};
++
++		/**
++		 *  Set once the driver has written to the eDP transcoder block (see LazyEdpReads)
++		 */
++		bool edpActivated {false};
++
++		/**
++		 *  True while DP_TP_CTL of DDI A is enabled (last value the driver wrote)
++		 */
++		bool ddiAActive {false};
++
++		/**
++		 *  Firmware backlight PWM frequency and duty, read at the first register access
++		 */
++		uint32_t fwBacklightFreq {0};
++		uint32_t fwBacklightDuty {0};
++
++		/**
++		 *  PWM frequency (= maximum duty) the driver believes it programmed, and the last duty written to the hardware
++		 */
++		uint32_t driverBacklightFreq {0};
++		uint32_t lastBacklightDuty {0};
++		bool has(uint32_t f) const { return (features & f) != 0; }
++
++		/**
++		 *  Log every translated access (not only the first ones); needs the Log feature
++		 */
++		bool trace {false};
++
++		/**
++		 *  Leave the firmware's DPLL configuration alone: drop the driver's writes to the ICL DPLL config registers
++		 */
++		bool keepFirmwarePLL {false};
++
++		/**
++		 *  Firmware state captured at the first register access
++		 */
++		bool snapshotTaken {false};
++		uint32_t fwFuncCtlA {0};
++		uint32_t refIs38400 {0};
++
++		/**
++		 *  Last non-zero value the driver wrote to TRANS_DDI_FUNC_CTL of the eDP transcoder (ICL encoding)
++		 */
++		uint32_t lastEdpFuncCtl {0};
++
++		/**
++		 *  Remaining number of log lines when not tracing
++		 */
++		volatile SInt32 logBudget {600};
++
++		/**
++		 *  Remaining number of log lines for translated reads when not tracing (reads can be polled)
++		 */
++		volatile SInt32 readLogBudget {250};
++
++		/**
++		 *  State record published to the IORegistry (property `tgl-map-state` on the framebuffer controller) and to
++		 *  NVRAM (`4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102:tgl-map-state`), because kext log output is not persisted on
++		 *  recent macOS and a failed attempt leaves a black screen. All fields are little-endian 32-bit words.
++		 */
++		struct State {
++			static constexpr uint32_t Magic = 0x324D4754; // "TGM2"
++			static constexpr uint32_t RingSize = 48;
++			uint32_t magic {Magic};
++			uint32_t seq {0};
++			uint32_t fw[21] {};         // firmware state at first access, see snapshot()
++			uint32_t mappedReads {0};
++			uint32_t mappedWrites {0};
++			uint32_t tpEnables {0};
++			uint32_t tpDisables {0};
++			uint32_t synthClkSel {0};
++			uint32_t synthFuncCtl {0};
++			uint32_t lastTpCtl {0};      // last DP_TP_CTL value written by the driver
++			uint32_t lastTpStatus {0};   // last DP_TP_STATUS value read
++			uint32_t orTpStatus {0};     // OR of every DP_TP_STATUS value read
++			uint32_t lastFuncCtlAddr {0};
++			uint32_t lastFuncCtlDriver {0};
++			uint32_t lastFuncCtlOut {0};
++			uint32_t lastConfAddr {0};
++			uint32_t lastConf {0};
++			uint32_t lastCfgcr0Addr {0};
++			uint32_t lastCfgcr0Driver {0};
++			uint32_t lastCfgcr0Out {0};
++			uint32_t lastCfgcr1Addr {0};
++			uint32_t lastCfgcr1Out {0};
++			uint32_t lastDdiBufCtl {0};
++			uint32_t lastDpll0Enable {0};
++			uint32_t lastDpll1Enable {0};
++			uint32_t lastDpclka {0};
++			uint32_t lastClkSelOut {0};
++			uint32_t now[14] {};        // live values when published, see publish()
++			uint32_t ringNext {0};
++			struct { uint32_t address; uint32_t value; } ring[RingSize] {}; // recent writes to DDI A / transcoder / PLL registers (bit 31 of address: translated)
++			static constexpr uint32_t SnapSize = 48;
++			uint32_t lateCount {0};       // number of late snapshots taken
++			uint32_t lateSeconds {0};     // seconds after the first DP_TP_CTL enable of the last one
++			uint32_t early[SnapSize] {};  // hardware at the driver's first register access (firmware state)
++			uint32_t late[SnapSize] {};   // hardware at the last late snapshot
++		} state;
++
++		/**
++		 *  Late snapshot bookkeeping
++		 */
++		uint64_t firstTpEnableTime {0};
++		uint32_t lateWait {60};
++		uint32_t lateTaken {0};
++		void takeSnapshot(void *controller, uint32_t *out);
++		void lateCheck(void *controller);
++
++		/**
++		 *  Publishing runs on a kernel thread call: doing it inside the register hooks reset the machine (runs B and F3)
++		 */
++		thread_call_t publishCall {nullptr};
++		static void publishThread(thread_call_param_t self, thread_call_param_t controller);
++
++		/**
++		 *  Number of NVRAM publications left; the registry property is always updated
++		 */
++		uint32_t nvramBudget {10};
++
++		uint32_t read(void *controller, uint32_t address);
++		void write(void *controller, uint32_t address, uint32_t value);
++
++		// MARK: Patch Submodule IMP
++		void init() override;
++		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
++
++	private:
++		void publish(void *controller, bool toNVRAM);
++		void record(uint32_t address, uint32_t value, bool translated);
++		void snapshot(void *controller);
++		void prepareTranscoderA(void *controller);
++		bool shouldLog(bool isRead = false);
++		uint32_t mapAddress(uint32_t address, bool isWrite) const;
++	} modTigerLakeRegisterMap;
++
+ 	/**
+ 	 *  A collection of shared submodules
+ 	 */
+@@ -2573,7 +2759,7 @@ private:
+ 	/**
+ 	 *  A collection of submodules
+ 	 */
+-	PatchSubmodule *submodules[23] = {
++	PatchSubmodule *submodules[24] = {
+ 		&modDVMTCalcFix,
+ 		&modDPCDMaxLinkRateFix,
+ 		&modCoreDisplayClockFix,
+@@ -2597,6 +2783,7 @@ private:
+ 		&modDisplayDataBufferEarlyOptimizer,
+ 		&modTigerLakeTracer,
+ 		&modTigerLakeFunctionTracer,
++		&modTigerLakeRegisterMap,
+ 	};
+ 	
+ 	/**

@@ -5,20 +5,29 @@ OpenCore 1.0.7 · Intel i5-1140G7 (Tiger Lake UP4) · Iris Xe 80 EU
 
 > ### This is a research platform, not a usable laptop.
 > No GPU acceleration. No audio, ever. No camera. No touchscreen. If you want a
-> working portable Mac, this is not it — and no amount of configuration will
-> make it one. Read the table below before spending a weekend on this.
+> working portable Mac, this is not it. Read the table below before spending a
+> weekend on this.
+>
+> **What is new (October 2026):** the internal display now runs on Apple's own
+> Intel framebuffer driver instead of VESA: native mode setting, built-in panel,
+> backlight control, display sleep. It needs a patched WhateverGreen, which is
+> documented and included as source. See [`research/LAYER3.md`](research/LAYER3.md).
 
 ## What works
 
 CPU + XCPM power management · NVMe · USB (9-port map) · keyboard · trackpad
 (as a plain mouse) · battery · Bluetooth (3 kexts — [see docs](docs/05b-wifi-and-bluetooth.md)) ·
-Wi-Fi (`itlwm` + HeliPort)
+Wi-Fi (`itlwm` + HeliPort) · **internal display on the native Intel framebuffer**
+(1920×1280 @ 60 Hz, brightness slider, display sleep and wake — patched
+WhateverGreen required)
 
 ## What does not, and why
 
 | Component | Status | Reason |
 |---|---|---|
-| GPU acceleration | ❌ | Iris Xe (Gen12) has no macOS driver. VESA only. |
+| GPU acceleration | ❌ | Iris Xe (Gen12) has no macOS accelerator. The framebuffer works; Metal does not. |
+| Brightness keys | ✅ | `SSDT-DOSI` + `BrightnessKeys.kext`. |
+| System sleep, lid close, external displays | ❔ | Untested since the framebuffer change. |
 | Audio | ❌ | SoundWire (RT711/714/1316). macOS has no SoundWire stack. |
 | Camera | ❌ | Intel IPU6 MIPI. No macOS driver. |
 | Touchscreen / pen | ❌ | macOS has no touch input layer. |
@@ -28,7 +37,8 @@ Wi-Fi (`itlwm` + HeliPort)
 
 Unaccelerated means unaccelerated: no hardware video decode, no Metal, window
 compositing on the CPU. It boots, it runs, and it is slow in the ways you would
-expect.
+expect. The native framebuffer changes how the panel is driven, not how fast
+anything draws.
 
 ---
 
@@ -47,15 +57,23 @@ expect.
 Copy `EFI\` to a FAT32/GPT USB stick. The committed `config.plist` has
 placeholder SMBIOS and **will not boot as-is** — that is deliberate.
 
+The committed config also expects the **patched WhateverGreen**
+([`WhateverGreen-patches/`](WhateverGreen-patches/)); with the stock kext the
+panel stays black. For a first install, use the VESA fallback described in
+[`EFI/OC/Kexts/KEXTS.md`](EFI/OC/Kexts/KEXTS.md#-whatevergreen-must-be-built-from-source)
+and switch once macOS is running.
+
 **You are researching Tiger Lake / Iris Xe graphics on macOS.** Go straight to
 [**`research/README.md`**](research/README.md). It exists so you can skip what
 has already been ruled out.
 
-Short version: the wall is at framebuffer **attach**, not the shader ISA.
-Five distinct Ice Lake personalities fail identically, so it is not a connector
-configuration problem; disabling WhateverGreen changes nothing; `igfxagdc=0`
-changes nothing. **Layers 4–5 were never reached, so this project produced no
-evidence at all about the ISA hypothesis** — do not cite it as if it had.
+Short version: the Ice Lake framebuffer **does** drive this Tiger Lake panel.
+The resets that looked like a wall were a stolen-memory miscalculation that
+WhateverGreen already knows how to fix, but only for CPUs it believes are Ice
+Lake. Behind that were four register-level differences and a backlight
+problem, each small once visible. **Acceleration has not been attempted, so
+this project still has no evidence about the shader-ISA hypothesis** — do not
+cite it as if it had.
 
 ---
 
@@ -64,9 +82,10 @@ evidence at all about the ISA hypothesis** — do not cite it as if it had.
 ```
 EFI/                 scrubbed, ready to personalise. Binaries are fetched, not vendored
 ACPI-sources/        the four SSDTs as readable .dsl, and why XOSI/GPI0 are absent
+WhateverGreen-patches/  the three patches that make the framebuffer work, and how to build
 docs/                the build, split into eight documents
-research/            the negative result: findings, all 11 runs, and the raw dumps
-tools/               fetch, personalise, experiment, scrub
+research/            the graphics work: findings, every run, and the raw evidence
+tools/               fetch, personalise, experiment (Windows and macOS), scrub
 ```
 
 | | |
@@ -79,10 +98,12 @@ tools/               fetch, personalise, experiment, scrub
 | [`docs/05-post-install.md`](docs/05-post-install.md) | verification, and moving OpenCore to the internal ESP |
 | [`docs/05b-wifi-and-bluetooth.md`](docs/05b-wifi-and-bluetooth.md) | the `IntelBTPatcher` trap, and NVRAM safety |
 | [`docs/06-troubleshooting.md`](docs/06-troubleshooting.md) | symptom → cause → fix |
-| [`research/README.md`](research/README.md) | **the findings** |
-| [`research/RESULTS.md`](research/RESULTS.md) | all eleven runs, including the void one |
-| [`research/METHODOLOGY.md`](research/METHODOLOGY.md) | controls, and four measurement traps |
-| [`research/data/`](research/data/) | ACPI tables, `ioreg`, `kextstat`, USB topology |
+| [`research/README.md`](research/README.md) | **the findings**, and what the first write-up got wrong |
+| [`research/LAYER3.md`](research/LAYER3.md) | how the framebuffer was made to work: causes, evidence, fixes |
+| [`research/RESULTS.md`](research/RESULTS.md) | every run of both phases, including the void ones |
+| [`research/METHODOLOGY.md`](research/METHODOLOGY.md) | controls, and the measurement traps |
+| [`research/data/`](research/data/) | ACPI tables, `ioreg`, `kextstat`, USB topology, driver logs, register snapshots |
+| [`WhateverGreen-patches/`](WhateverGreen-patches/) | the patches, the feature mask, build instructions |
 
 ## Key specifics
 
@@ -92,8 +113,9 @@ tools/               fetch, personalise, experiment, scrub
 | iGPU | `8086:9A40`, Iris Xe 80 EU, subsystem `1028:0A45` |
 | SMBIOS | `MacBookPro16,2` |
 | OpenCore | 1.0.7 RELEASE, `ocvalidate` clean |
-| macOS | 26 Tahoe |
-| Kexts | 17 entries — [`EFI/OC/Kexts/KEXTS.md`](EFI/OC/Kexts/KEXTS.md) |
+| macOS | 26 Tahoe (26.6) |
+| Graphics | `AppleIntelICLLPGraphicsFramebuffer` 24.0.5 via `device-id 8A5A`, platform `0x8A5C0002`, patched WhateverGreen |
+| Kexts | 18 entries — [`EFI/OC/Kexts/KEXTS.md`](EFI/OC/Kexts/KEXTS.md) |
 | BIOS | 1.46.0, AHCI, Secure Boot off, TB security off |
 
 Three non-obvious requirements, each of which produces a silent failure if
@@ -107,8 +129,7 @@ because XNU has no entry for model `0x8C`. Details in
 **macOS 26 Tahoe is the last Intel-supporting release.** macOS 27 is Apple
 Silicon only, so there will be no Intel code for OpenCore or OCLP to work with.
 Expect roughly three years of security updates from Tahoe's launch, and then
-nothing. This is a terminal platform by design — which is part of why the
-research here was worth recording rather than continuing.
+nothing. This is a terminal platform by design.
 
 ## Privacy
 
@@ -122,10 +143,12 @@ entirely. What was redacted and what deliberately was not:
 ## Credits
 
 This project is a write-up of other people's work applied to one machine, plus
-one negative result.
+one piece of original work: getting Apple's Ice Lake framebuffer to drive a
+Tiger Lake panel.
 
 - **[acidanthera](https://github.com/acidanthera)** — OpenCore, Lilu,
-  VirtualSMC, WhateverGreen, NVMeFix, VoodooPS2, BrcmPatchRAM
+  VirtualSMC, WhateverGreen, NVMeFix, VoodooPS2, BrcmPatchRAM, BrightnessKeys,
+  MaciASL
 - **[corpnewt](https://github.com/corpnewt)** — SSDTTime, ProperTree, GenSMBIOS,
   MountEFI
 - **[USBToolBox](https://github.com/USBToolBox)** — the port mapping tool and kext
@@ -135,6 +158,8 @@ one negative result.
 - **[lshbluesky](https://github.com/lshbluesky)** — prior Tiger Lake framebuffer
   work, and the IntelBluetoothFirmware fork that actually targets Tahoe
 - **[Dortania](https://dortania.github.io/)** — the guides
+- **Linux i915** — the reference for every Ice Lake / Tiger Lake register
+  difference
 
 ## Licence
 

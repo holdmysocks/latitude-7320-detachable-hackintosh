@@ -9,7 +9,10 @@ Every row here was hit at least once during this build.
 | Installer sees no disks | Dell VMD/RAID mode | BIOS → AHCI — [01](01-bios-and-windows-prep.md#bios-settings) |
 | `INACCESSIBLE_BOOT_DEVICE` in Windows | AHCI switch without safeboot | WinRE → Safe Mode → `bcdedit /deletevalue` — [01](01-bios-and-windows-prep.md#-the-ahci-switch-requires-prep) |
 | Panic on `MSR 0xE2` | CFG Lock (confirmed set) | `AppleXcpmCfgLock = True` |
-| Black screen after picker | graphics injected too early | strip IGPU `DeviceProperties`, `-igfxvesa` |
+| Black screen after picker, machine alive | stock WhateverGreen with the committed config: the link never trains | build the patched kext — [KEXTS.md](../EFI/OC/Kexts/KEXTS.md#-whatevergreen-must-be-built-from-source); or fall back to VESA |
+| Reset the moment graphics start | `lilucpu=12` or `-igfxdvmt` missing, or platform id `0x8A520000` | use the committed boot-args and `0x8A5C0002` — [LAYER3 §1–2](../research/LAYER3.md#1-the-reset-stolen-memory-computed-as-4-gb) |
+| Picture, but nearly black and flickering | `SSDT-PNLF` `_UID` 15 | `_UID` 19 — [LAYER3 §6](../research/LAYER3.md#6-backlight) |
+| Brightness keys do nothing | `SSDT-DOSI.aml` missing or disabled, or `BrightnessKeys.kext` not loaded | enable both — [LAYER3](../research/LAYER3.md#brightness-keys) |
 | CPU pinned to one frequency | XCPM not attached | check `SSDT-PLUG` targets `\_SB.PR00` — [02 §4.3](02-acpi-analysis.md#43-other-conclusions) |
 | Battery absent | Dell EC >8-bit fields | `ECEnabler.kext` |
 | Boot loop, not hang | wrong CPUID spoof | try Samsung reference value |
@@ -44,8 +47,10 @@ These are not symptoms, they are wrong readings. Each one cost real time.
 - The last visible console line before a display death is *where the console
   was*, not the culprit. Observed: `DriverKit-IOUserDockChannelSerial`,
   `AppleKeyStore`. Both routine.
-- `About This Mac` reporting **"Display 9 MB"** is the unaccelerated readout —
-  it describes the VESA linear framebuffer, not a GPU.
+- `About This Mac` reporting **"Display 9 MB"** is the VESA readout. With Apple's
+  framebuffer running it reports 1536 MB, which still does not mean acceleration.
+- A silent reset is not specific to graphics here: writing NVRAM from a kext
+  produces the same symptom.
 
 Full write-up: [`research/METHODOLOGY.md`](../research/METHODOLOGY.md#diagnostic-traps).
 

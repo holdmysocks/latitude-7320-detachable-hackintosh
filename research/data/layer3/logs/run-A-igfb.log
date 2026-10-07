@@ -1,0 +1,808 @@
+2026-10-07 08:36:17.813 Df boot-args = -v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc 
+2026-10-07 08:36:30.621 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][DISPLAY   ] ProAudio - Starting FB driver
+2026-10-07 08:36:30.621 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] VRRTimeStampConfig status - fUseVBL = 0, fLegacyVBLPath = 0, fNotifyCalculatedTimestamp = 1, fReturnFromGamma = 0
+2026-10-07 08:36:30.621 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] IsVRRSupported = 1
+2026-10-07 08:36:30.621 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] IsHDMI_2_1Supported = 0
+2026-10-07 08:36:30.621 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] IsHDMIVRRSupported = 0
+2026-10-07 08:36:30.622 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Insufficient stolen memory
+2026-10-07 08:36:30.622 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] CD clock reference frequency = 2
+2026-10-07 08:36:30.623 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] CD Clock PLL is locked
+2026-10-07 08:36:30.625 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][POWER_WELL] EFI should not enable PG4 power well - overriding
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] PathIndex = 0, pipe = A
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] PathIndex = 1, pipe = B
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] PathIndex = 2, pipe = C
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Registering for addFrameBufferNotificationWithOptions :: GroupID = 16 Event = 801 fb is 0
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Registering for addFrameBufferNotificationWithOptions :: GroupID = 16 Event = 801 fb is 1
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Registering for addFrameBufferNotificationWithOptions :: GroupID = 16 Event = 801 fb is 2
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Boot pipe found - DDI0, pipe A
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Boot plane config: enable 1 pipe gamma enable 0 source pixel format 8 pipe csc 0 tiling 0
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Boot plane size: 1919 x 1279
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Commiting resource set
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Commiting resource set, sleepState 2.
+2026-10-07 08:36:30.626 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][GTPM_SLICESWITCH] : Invalid fRingTables, check if AGPM driver is loaded
+2026-10-07 08:36:30.629 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Value read from Mailbox for MEM_SS_INFO = 0x443
+2026-10-07 08:36:30.629 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] RAM = 0x3
+2026-10-07 08:36:30.629 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Populated Channels = 0x4
+2026-10-07 08:36:30.629 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Number of GV points = 0x4
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 0 h24_maxplanes = 7
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(0) totalbw = 7560
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(0) totalbw = 7600
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(0) totalbw = 7618
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(0) totalbw = 7618
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 1 h24_maxplanes = 3
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(1) totalbw = 12285
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(1) totalbw = 14455
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(1) totalbw = 15237
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(1) totalbw = 15237
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 2 h24_maxplanes = 1
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(2) totalbw = 17550
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(2) totalbw = 22007
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(2) totalbw = 24883
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(2) totalbw = 24883
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 3 h24_maxplanes = 0
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(3) totalbw = 22338
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(3) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(3) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(3) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 4 h24_maxplanes = 134217727
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(4) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(4) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(4) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(4) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At index (plane) 5 h24_maxplanes = 67108863
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 0 and for number of planes(5) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 1 and for number of planes(5) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 2 and for number of planes(5) totalbw = 25000
+2026-10-07 08:36:30.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] At Sagv point 3 and for number of planes(5) totalbw = 25000
+2026-10-07 08:36:30.660 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][DEFAULT   ] Duty Cycle Enabled.
+2026-10-07 08:36:30.665 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][GTPM_SLEEPWAKE] initForPM - fGPUIsAwake init to 1
+2026-10-07 08:36:30.666 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][POWER     ] External power connected
+2026-10-07 08:36:30.667 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VRR       ] FB1: IsVRRSupported = 1 IsASFUSupported = 0 IsPairingSupported = 0 IsRampSupported = 0 IsBurstModeSupported = 0 IsTimingStampSupported = 1
+2026-10-07 08:36:30.667 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][POWER     ] External power connected
+2026-10-07 08:36:30.667 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VRR       ] FB2: IsVRRSupported = 1 IsASFUSupported = 0 IsPairingSupported = 0 IsRampSupported = 0 IsBurstModeSupported = 0 IsTimingStampSupported = 1
+2026-10-07 08:36:30.667 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][POWER     ] External power connected
+2026-10-07 08:36:30.668 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:30.668 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:30.668 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port -1
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Register AGDC callback
+2026-10-07 08:36:30.671 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Enable controller
+2026-10-07 08:36:32.332 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 0 at time 24084226
+2026-10-07 08:36:32.332 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 0
+2026-10-07 08:36:32.332 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB0: FrameBufferNotificationCallback received. Event = 1. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:32.333 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] ProAudio register PMRoot callback
+2026-10-07 08:36:32.340 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][PANEL     ] [key:0x080/on:1] fPSREnablekeys: 0x00000a5d -> 0x00000add (fullset:0x00001fff)
+2026-10-07 08:36:32.340 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][PANEL     ] [key:0x400/on:1] fPSREnablekeys: 0x00000add -> 0x00000edd (fullset:0x00001fff)
+2026-10-07 08:36:32.341 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][PANEL     ] TCON: Aux not ready at HW
+2026-10-07 08:36:32.341 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][PANEL     ] TCON: BAN_DPCD_0x0_EXPECTED failed, got 41c20a14
+2026-10-07 08:36:32.341 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][DISPLAY   ] Setting the fClosedclamshell to true and calling connectionChanged()
+2026-10-07 08:36:32.341 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][VRR       ] Registering for VBL Interrupt - fLegacyVBLPath = 0, Proc = IOG Handler!!
+2026-10-07 08:36:32.342 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 24093533
+2026-10-07 08:36:32.342 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 1
+2026-10-07 08:36:32.343 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:32.343 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Online info for DDI = 0, PortType = 0
+2026-10-07 08:36:32.352 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] DPCD_REV: 1.4
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] MAX_LINK_RATE: 0XA
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] MAX_LANE_COUNT: 2
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] TP3 Supported: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] TP4 Supported: 0
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Enhanced Framing: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Does NOT require AUX CH handshake?: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Number of Receive Ports: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Has downstream Port(s): 0
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Downstream detailed capability available: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Has Main Link channel ANSI coding: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Number of downstream ports: 0
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] OUI Supported?: 1
+2026-10-07 08:36:32.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] DDI=0 MSATimingParamsIgnoreSupport = 0
+2026-10-07 08:36:32.354 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] MST Capable: 0
+2026-10-07 08:36:32.354 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Sink Count 1
+2026-10-07 08:36:32.354 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] eDP Configuration 3
+2026-10-07 08:36:32.354 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] Link Training Interval 0
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DPCD      ] fDPCDParams.DSCSinkCap.FECSupport 0
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: fIsHDMI = 0, fEnableAudio = 0, newOnline = 1, fOnline = 1, fMaxPixelClock = 720000000
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: newOnline: 1, fOnline: 1
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: edid != fEDID
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VRR       ] FB1: Indicate VRR Support in TimingRange
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: Invalid port type
+2026-10-07 08:36:32.355 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][VRR       ] Registering for VBL Interrupt - fLegacyVBLPath = 0, Proc = IOG Handler!!
+2026-10-07 08:36:32.365 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 24116799
+2026-10-07 08:36:32.365 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 1
+2026-10-07 08:36:32.366 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:32.367 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 2 at time 24119187
+2026-10-07 08:36:32.367 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 2
+2026-10-07 08:36:32.367 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB2: FrameBufferNotificationCallback received. Event = 1. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get callback caps
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB0 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0 reported as online to AGDC
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Test resource set config
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0: Testing resource set config
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0: set[0] is single-link
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Commit resource set config
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0: Commiting resource set
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0: Commiting resource set, sleepState 2.
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB0: Display path resource allocation failed for single-link
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Wrong index
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB0: Resources allocation failed
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB1 fOnline = 1 bootdisplay = 1
+2026-10-07 08:36:32.368 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1 reported as online to AGDC
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Test resource set config
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Testing resource set config
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: set[0] is single-link
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Commit resource set config
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Commiting resource set
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Commiting resource set, sleepState 2.
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB2 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][VRR       ] Registering for VBL Interrupt - fLegacyVBLPath = 0, Proc = IOG Handler!!
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 2 at time 24242138
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 2
+2026-10-07 08:36:32.490 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB2: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:32.491 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 0 at time 24242358
+2026-10-07 08:36:32.491 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 0
+2026-10-07 08:36:32.491 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB0: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.059 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get callback caps
+2026-10-07 08:36:37.059 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][ASMF      ] doCmdAction called - cmd:205
+2026-10-07 08:36:37.072 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.072 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.072 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:37.073 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0xfffffffb fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0xfffffffb and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0 Depth:1 Active:1920x1280 Scaled:0x0 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0 Depth:1 Active:1920x1280 Scaled:0x0 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0 Depth:1 Active:1920x1280 Scaled:0x0 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0 Depth:1 Active:1920x1280 Scaled:0x0 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.085 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:960x640 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:960x640 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:640x480 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:640x480 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:800x600 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:800x600 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:800x534 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:800x534 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1024x768 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1024x768 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1024x682 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1024x682 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x720 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x720 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x960 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x960 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x854 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1280x854 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1344x1008 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1344x1008 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1344x896 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1344x896 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1440x900 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1440x900 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1680x1050 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1680x1050 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1600x1200 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1600x1200 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1600x1066 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1600x1066 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1200 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1200 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:2560x1440 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:2560x1440 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:2560x1600 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:2560x1600 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:164250000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001000 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:164250000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:960x640 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:960x640 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:640x480 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:640x480 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:800x600 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:800x600 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:800x534 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:800x534 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1024x768 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1024x768 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1024x682 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1024x682 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x720 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x720 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x960 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x960 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x854 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1280x854 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1344x1008 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1344x1008 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1344x896 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1344x896 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1440x900 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1440x900 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1680x1050 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1680x1050 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1600x1200 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1600x1200 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1600x1066 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1600x1066 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1200 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1200 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:2560x1440 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:2560x1440 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:2560x1600 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:2560x1600 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Requesting VDT: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:131400000 ScalerFlags:0 SignalConfig:0 Requested pixel encoding 1 Colorimetry 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Detailed timing validated by AGDC (response = 0x2)
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: Online:1 Mode:0x80001001 Depth:1 Active:1920x1280 Scaled:1920x1080 PixelClock:131400000 ScalerFlags:0 SignalConfig:0: Requested pixel encoding 1 dynamic range 1
+2026-10-07 08:36:37.086 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][VDT       ] FB1: fEnablePlaneRotation = 1, fittable = 1
+2026-10-07 08:36:37.087 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0xfffffffb fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.087 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Current hardware mode is set for active h=0, v=0 scaled h=0, v=0 pixelClock 0 scalerFlags 0signalConfig 0
+2026-10-07 08:36:37.087 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Not able to get the current timing info
+2026-10-07 08:36:37.091 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0xfffffffb fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.091 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Current hardware mode is set for active h=0, v=0 scaled h=0, v=0 pixelClock 0 scalerFlags 0signalConfig 0
+2026-10-07 08:36:37.091 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Not able to get the current timing info
+2026-10-07 08:36:37.091 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 28842398
+2026-10-07 08:36:37.091 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 1
+2026-10-07 08:36:37.092 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  Transaction  completed in 1 milliseconds
+2026-10-07 08:36:37.092 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: displayMode=80001000, depth=1, fOnline=1
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: fOnline=1 aw=1920, ah=1280, sw=0, sh=0, iw=0, ih=0 pixelClock=164250000 VBLextention=0 pixelEncoding=1 BPC=2 colorimetry=1 dynamicRange=1
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Set display mode for first boot
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Computing transform
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fFitterWidth = 0x0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutWidth = 0x780
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutHeight = 0x500
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingWidth = 0x780
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingHeight = 0x500
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkVerticalOffset = 0x0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkHorizontalOffset = 0x0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Setting hardware mode pipe A
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Enable GPU sub sampling: True
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hwDisableUnderrunInterrupts:Disabling Underrun Interrupts
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Setting up clocks
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting up clocks for DDI = 0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] (FB1:<private>, timing=<private>, params=<private>)
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing ha=1920, va=1280
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing hs=0, vs=0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] scalerFlags=0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] signalConfig=0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] vSyncConfig=0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hSyncConfig=0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HTOTAL     = 0x81f077f
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HBLANK     = 0x81f077f
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HSYNC      = 0x7cf07af
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VTOTAL     = 0x52404ff
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VBLANK     = 0x52404ff
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNC      = 0x50c0502
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNCSHIFT = 0x0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: setting up params for pipe A
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_CLK_SEL = 0x0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] PIPE_SRCSZ = 0x77f04ff
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Encoder bits per color is 8
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Pixel encoding is RGB
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_MSA_MISC = 0x21
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Dither is enabled in pipe misc
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] fCurrentCDClockFrequency = 1305600000, fPendingCDClockFrequency = 1305600000
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: pixelClock=164250000, linkSymbolClock=270000000, colorDepth=24, noLanes=2
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] DataM value: 0x74cccd
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] LinkM value: 0x4dddd
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Calculated -> DataM1=0x7e74cccd, DataN1=0x800000, LinkM1=0x4dddd, LinkN1=0x80000
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_CONF 0->0x80000024, TRANS_DDI_FUNC_CTL 0->0x82000002
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: Change in h/w environment, needs full modeset for pipe 0
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ] FB1: Complete modeset
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Disable display called for without sw dc6 support
+2026-10-07 08:36:37.098 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.099 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  Transaction  completed in 1 milliseconds
+2026-10-07 08:36:37.099 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.115 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling clocks
+2026-10-07 08:36:37.115 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Disabling clocks on DDI = 0
+2026-10-07 08:36:37.118 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Lighting up eDP
+2026-10-07 08:36:37.118 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Enabling clocks for DDI = 0
+2026-10-07 08:36:37.120 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] DDI = 0, PortType = 0
+2026-10-07 08:36:37.141 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Fast link training failed with link status
+2026-10-07 08:36:37.141 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] NumberOfLanes=2, BitRate=10, EnhancedFraming=1, ASR=1, Downspread=0, CR=100, EQ=400
+2026-10-07 08:36:37.166 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Phase 1 of link training failed - notifying AGDC to take display offline
+2026-10-07 08:36:37.166 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Internal cached DBuf values are not set. Failed to distribute DBufs
+2026-10-07 08:36:37.166 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Enabling pipe 0
+2026-10-07 08:36:37.166 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: EDP DisplayPipe property set to 0
+2026-10-07 08:36:37.177 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][MODESET   ] Modeset is unsuccessful. Disabling display
+2026-10-07 08:36:37.177 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.178 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  Transaction  completed in 1 milliseconds
+2026-10-07 08:36:37.178 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.195 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling clocks
+2026-10-07 08:36:37.195 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Disabling clocks on DDI = 0
+2026-10-07 08:36:37.198 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: Hardware mode set failed, err = 0xe00002bc
+2026-10-07 08:36:37.198 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: Setting display mode 1920 x 1280 -> 0 x 0 at 164250000 Hz encoded with 0x1 2 bpc with color 1 and range 1
+2026-10-07 08:36:37.198 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.198 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 28950268
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 1
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.199 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.213 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.213 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.214 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.214 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.214 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.214 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.215 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.215 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.216 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.216 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.219 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.219 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.222 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.223 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.223 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:37.226 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.230 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.230 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 28982830
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 1
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 1. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: displayMode=80001000, depth=1, fOnline=1
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: fOnline=1 aw=1920, ah=1280, sw=0, sh=0, iw=0, ih=0 pixelClock=164250000 VBLextention=0 pixelEncoding=1 BPC=2 colorimetry=1 dynamicRange=1
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Computing transform
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fFitterWidth = 0x0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutWidth = 0x780
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutHeight = 0x500
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingWidth = 0x780
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingHeight = 0x500
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkVerticalOffset = 0x0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkHorizontalOffset = 0x0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Setting hardware mode pipe A
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Enable GPU sub sampling: True
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hwDisableUnderrunInterrupts:Disabling Underrun Interrupts
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Setting up clocks
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting up clocks for DDI = 0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] (FB1:<private>, timing=<private>, params=<private>)
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing ha=1920, va=1280
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing hs=0, vs=0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] scalerFlags=0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] signalConfig=0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] vSyncConfig=0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hSyncConfig=0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HTOTAL     = 0x81f077f
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HBLANK     = 0x81f077f
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HSYNC      = 0x7cf07af
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VTOTAL     = 0x52404ff
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VBLANK     = 0x52404ff
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNC      = 0x50c0502
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNCSHIFT = 0x0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: setting up params for pipe A
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_CLK_SEL = 0x0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] PIPE_SRCSZ = 0x77f04ff
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Encoder bits per color is 8
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Pixel encoding is RGB
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_MSA_MISC = 0x21
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Dither is enabled in pipe misc
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] fCurrentCDClockFrequency = 1305600000, fPendingCDClockFrequency = 1305600000
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: pixelClock=164250000, linkSymbolClock=270000000, colorDepth=24, noLanes=2
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] DataM value: 0x74cccd
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] LinkM value: 0x4dddd
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Calculated -> DataM1=0x7e74cccd, DataN1=0x800000, LinkM1=0x4dddd, LinkN1=0x80000
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1:Path not active, needs full modeset for pipe 0
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ] FB1: Complete modeset
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Disable display called for without sw dc6 support
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Lighting up eDP
+2026-10-07 08:36:37.231 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Enabling clocks for DDI = 0
+2026-10-07 08:36:37.234 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] DDI = 0, PortType = 0
+2026-10-07 08:36:37.255 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Fast link training failed with link status
+2026-10-07 08:36:37.255 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] NumberOfLanes=2, BitRate=10, EnhancedFraming=1, ASR=1, Downspread=0, CR=100, EQ=400
+2026-10-07 08:36:37.280 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Phase 1 of link training failed - notifying AGDC to take display offline
+2026-10-07 08:36:37.280 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Internal cached DBuf values are not set. Failed to distribute DBufs
+2026-10-07 08:36:37.280 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Enabling pipe 0
+2026-10-07 08:36:37.280 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: EDP DisplayPipe property set to 0
+2026-10-07 08:36:37.290 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][MODESET   ] Modeset is unsuccessful. Disabling display
+2026-10-07 08:36:37.290 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.301 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling clocks
+2026-10-07 08:36:37.301 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Disabling clocks on DDI = 0
+2026-10-07 08:36:37.304 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: Hardware mode set failed, err = 0xe00002bc
+2026-10-07 08:36:37.304 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: Setting display mode 1920 x 1280 -> 0 x 0 at 164250000 Hz encoded with 0x1 2 bpc with color 1 and range 1
+2026-10-07 08:36:37.304 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.304 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.305 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 29056382
+2026-10-07 08:36:37.305 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 1
+2026-10-07 08:36:37.305 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.305 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.310 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.310 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.310 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:37.311 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.318 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.343 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.343 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.344 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.344 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.345 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.345 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.345 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.345 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.346 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.346 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.347 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.347 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.348 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.348 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.348 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.348 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0x1, fBootDisplay = 1.
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0x1, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 29102196
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 1
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 1. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: displayMode=80001000, depth=0, fOnline=1
+2026-10-07 08:36:37.350 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: fOnline=1 aw=1920, ah=1280, sw=0, sh=0, iw=0, ih=0 pixelClock=164250000 VBLextention=0 pixelEncoding=1 BPC=2 colorimetry=1 dynamicRange=1
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Computing transform
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fFitterWidth = 0x0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutWidth = 0x780
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutHeight = 0x500
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingWidth = 0x780
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingHeight = 0x500
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkVerticalOffset = 0x0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkHorizontalOffset = 0x0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Setting hardware mode pipe A
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Enable GPU sub sampling: True
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hwDisableUnderrunInterrupts:Disabling Underrun Interrupts
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Setting up clocks
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting up clocks for DDI = 0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] (FB1:<private>, timing=<private>, params=<private>)
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing ha=1920, va=1280
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing hs=0, vs=0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] scalerFlags=0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] signalConfig=0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] vSyncConfig=0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hSyncConfig=0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HTOTAL     = 0x81f077f
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HBLANK     = 0x81f077f
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HSYNC      = 0x7cf07af
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VTOTAL     = 0x52404ff
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VBLANK     = 0x52404ff
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNC      = 0x50c0502
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNCSHIFT = 0x0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: setting up params for pipe A
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_CLK_SEL = 0x0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] PIPE_SRCSZ = 0x77f04ff
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Encoder bits per color is 8
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Pixel encoding is RGB
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_MSA_MISC = 0x21
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Dither is enabled in pipe misc
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] fCurrentCDClockFrequency = 1305600000, fPendingCDClockFrequency = 1305600000
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: pixelClock=164250000, linkSymbolClock=270000000, colorDepth=24, noLanes=2
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] DataM value: 0x74cccd
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] LinkM value: 0x4dddd
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Calculated -> DataM1=0x7e74cccd, DataN1=0x800000, LinkM1=0x4dddd, LinkN1=0x80000
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1:Path not active, needs full modeset for pipe 0
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ] FB1: Complete modeset
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Disable display called for without sw dc6 support
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Lighting up eDP
+2026-10-07 08:36:37.351 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Enabling clocks for DDI = 0
+2026-10-07 08:36:37.353 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] DDI = 0, PortType = 0
+2026-10-07 08:36:37.374 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Fast link training failed with link status
+2026-10-07 08:36:37.374 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] NumberOfLanes=2, BitRate=10, EnhancedFraming=1, ASR=1, Downspread=0, CR=100, EQ=400
+2026-10-07 08:36:37.399 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Phase 1 of link training failed - notifying AGDC to take display offline
+2026-10-07 08:36:37.399 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Internal cached DBuf values are not set. Failed to distribute DBufs
+2026-10-07 08:36:37.399 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Enabling pipe 0
+2026-10-07 08:36:37.399 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: EDP DisplayPipe property set to 0
+2026-10-07 08:36:37.410 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][MODESET   ] Modeset is unsuccessful. Disabling display
+2026-10-07 08:36:37.410 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.421 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling clocks
+2026-10-07 08:36:37.422 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Disabling clocks on DDI = 0
+2026-10-07 08:36:37.424 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: Hardware mode set failed, err = 0xe00002bc
+2026-10-07 08:36:37.424 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: Setting display mode 1920 x 1280 -> 0 x 0 at 164250000 Hz encoded with 0x1 2 bpc with color 1 and range 1
+2026-10-07 08:36:37.424 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.424 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 29176701
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 1
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.425 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB0 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0 reported as online to AGDC
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB1 fOnline = 1 bootdisplay = 1
+2026-10-07 08:36:37.428 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1 reported as online to AGDC
+2026-10-07 08:36:37.429 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:37.429 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB2 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:37.431 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Port enable
+2026-10-07 08:36:37.431 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Port Enable for port index 0 with state = 1
+2026-10-07 08:36:37.431 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:37.431 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:37.434 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.434 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.434 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.434 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.436 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.436 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.437 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.437 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 29356189
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeWillChange notification received on fb 1
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 1. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: displayMode=80001000, depth=0, fOnline=1
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: fOnline=1 aw=1920, ah=1280, sw=0, sh=0, iw=0, ih=0 pixelClock=164250000 VBLextention=0 pixelEncoding=1 BPC=2 colorimetry=1 dynamicRange=1
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Computing transform
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fFitterWidth = 0x0
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutWidth = 0x780
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkScanoutHeight = 0x500
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingWidth = 0x780
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkTimingHeight = 0x500
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkVerticalOffset = 0x0
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Pipe A: displayPath->fLinkHorizontalOffset = 0x0
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Setting hardware mode pipe A
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ]  FB1: Enable GPU sub sampling: True
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hwDisableUnderrunInterrupts:Disabling Underrun Interrupts
+2026-10-07 08:36:37.604 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Setting up clocks
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting up clocks for DDI = 0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] (FB1:<private>, timing=<private>, params=<private>)
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing ha=1920, va=1280
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] timing hs=0, vs=0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] scalerFlags=0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] signalConfig=0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] vSyncConfig=0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] hSyncConfig=0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HTOTAL     = 0x81f077f
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HBLANK     = 0x81f077f
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_HSYNC      = 0x7cf07af
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VTOTAL     = 0x52404ff
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VBLANK     = 0x52404ff
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNC      = 0x50c0502
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ]  TRANS_VSYNCSHIFT = 0x0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: setting up params for pipe A
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_CLK_SEL = 0x0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] PIPE_SRCSZ = 0x77f04ff
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Encoder bits per color is 8
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Pixel encoding is RGB
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] TRANS_MSA_MISC = 0x21
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Dither is enabled in pipe misc
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] fCurrentCDClockFrequency = 1305600000, fPendingCDClockFrequency = 1305600000
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: pixelClock=164250000, linkSymbolClock=270000000, colorDepth=24, noLanes=2
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] DataM value: 0x74cccd
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] LinkM value: 0x4dddd
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Calculated -> DataM1=0x7e74cccd, DataN1=0x800000, LinkM1=0x4dddd, LinkN1=0x80000
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1:Path not active, needs full modeset for pipe 0
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][INFO ][MODESET   ] FB1: Complete modeset
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Disable display called for without sw dc6 support
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] Lighting up eDP
+2026-10-07 08:36:37.605 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Enabling clocks for DDI = 0
+2026-10-07 08:36:37.607 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] DDI = 0, PortType = 0
+2026-10-07 08:36:37.628 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Fast link training failed with link status
+2026-10-07 08:36:37.628 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][LINK_TRAINING] NumberOfLanes=2, BitRate=10, EnhancedFraming=1, ASR=1, Downspread=0, CR=100, EQ=400
+2026-10-07 08:36:37.653 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][LINK_TRAINING] Phase 1 of link training failed - notifying AGDC to take display offline
+2026-10-07 08:36:37.653 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] Internal cached DBuf values are not set. Failed to distribute DBufs
+2026-10-07 08:36:37.653 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Enabling pipe 0
+2026-10-07 08:36:37.653 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: EDP DisplayPipe property set to 0
+2026-10-07 08:36:37.664 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][MODESET   ] Modeset is unsuccessful. Disabling display
+2026-10-07 08:36:37.664 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling Pipe A
+2026-10-07 08:36:37.675 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1: Disabling clocks
+2026-10-07 08:36:37.675 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Disabling clocks on DDI = 0
+2026-10-07 08:36:37.678 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: Hardware mode set failed, err = 0xe00002bc
+2026-10-07 08:36:37.678 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][MODESET   ] FB1: Setting display mode 1920 x 1280 -> 0 x 0 at 164250000 Hz encoded with 0x1 2 bpc with color 1 and range 1
+2026-10-07 08:36:37.678 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.678 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.678 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] frameBufferNotificationcallback notification received on Fb 1 at time 29430243
+2026-10-07 08:36:37.679 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] kIOFBNotifyDisplayModeDidChange notification received on fb 1
+2026-10-07 08:36:37.679 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] TxnHang1: FB1: FrameBufferNotificationCallback received. Event = 2. fTransactionState = kTransComplete, fLiveState = kTransLive
+2026-10-07 08:36:37.679 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Reporting Fake VBL for pipe 0 on Fb 1
+2026-10-07 08:36:37.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.759 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.760 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.760 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.760 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.761 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.761 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.761 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.761 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] getCurrentDisplayMode: FB=1 fCurrentMode = 0x80001000 fCurrentDepth = 0, fBootDisplay = 1.
+2026-10-07 08:36:37.761 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Setting current mode to 0x80001000 and depth=0, bPortraitMode 0, bAnotherRun 0.
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.762 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.763 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.763 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.763 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.763 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.767 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.783 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.829 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.979 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:37.979 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.149 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:38.149 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:38.332 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.333 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.333 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.520 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.520 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.520 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:38.633 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get callback caps
+2026-10-07 08:36:38.633 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:38.633 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB0 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0 reported as online to AGDC
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB1 fOnline = 1 bootdisplay = 1
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1 reported as online to AGDC
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:38.634 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB2 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:38.635 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Port enable
+2026-10-07 08:36:38.635 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Port Enable for port index 0 with state = 1
+2026-10-07 08:36:38.635 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:38.635 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:39.254 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:39.254 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:40.658 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:40.681 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][TRANSACTION] Path is not active in prepareAndSetPipePostCSCGamma
+2026-10-07 08:36:41.772 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:42.664 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][PANEL     ] [key:0x100/on:1] fPSREnablekeys: 0x00000edd -> 0x00000fdd (fullset:0x00001fff)
+2026-10-07 08:36:42.900 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][TRANSACTION] Path is not active in prepareAndSetPipePostCSCGamma
+2026-10-07 08:36:42.916 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][TRANSACTION] Path is not active in prepareAndSetPipePostCSCGamma
+2026-10-07 08:36:43.716 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][TRANSACTION] Path is not active in prepareAndSetPipePostCSCGamma
+2026-10-07 08:36:43.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:44.717 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][TRANSACTION] Path is not active in prepareAndSetPipePostCSCGamma
+2026-10-07 08:36:45.743 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:47.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:48.756 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get callback caps
+2026-10-07 08:36:48.756 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:48.756 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB0 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0 reported as online to AGDC
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB1 fOnline = 1 bootdisplay = 1
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1 reported as online to AGDC
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:48.757 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB2 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:48.758 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Port enable
+2026-10-07 08:36:48.758 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Port Enable for port index 0 with state = 1
+2026-10-07 08:36:48.758 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:48.758 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:49.379 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:49.380 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:49.743 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:51.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:52.679 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] DBUFF optimization ignored, as no active path found
+2026-10-07 08:36:53.742 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:55.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:57.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:36:58.912 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get callback caps
+2026-10-07 08:36:58.912 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Vendor info
+2026-10-07 08:36:58.912 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get GPU caps
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB0 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB0 reported as online to AGDC
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB1 fOnline = 1 bootdisplay = 1
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] FB1 reported as online to AGDC
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get link config
+2026-10-07 08:36:58.913 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] AGDC FB2 fOnline = 0 bootdisplay = 0
+2026-10-07 08:36:58.914 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Port enable
+2026-10-07 08:36:58.914 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Port Enable for port index 0 with state = 1
+2026-10-07 08:36:58.914 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:58.914 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:59.581 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][AGDC      ] Get port caps
+2026-10-07 08:36:59.581 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][LOG  ][DISPLAY   ] Getting port caps for port 0
+2026-10-07 08:36:59.743 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:37:01.743 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:37:03.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled
+2026-10-07 08:37:05.744 Df (AppleIntelICLLPGraphicsFramebuffer) [IGFB][ERROR][DISPLAY   ] FB1: is not enabled

@@ -29,6 +29,7 @@ components=(
   "acidanthera/VirtualSMC|1.3.7|RELEASE[.]zip$|VirtualSMC.kext SMCProcessor.kext SMCBatteryManager.kext SMCDellSensors.kext"
   "acidanthera/WhateverGreen|1.7.0|RELEASE[.]zip$|WhateverGreen.kext"
   "acidanthera/NVMeFix|1.1.3|RELEASE[.]zip$|NVMeFix.kext"
+  "acidanthera/BrightnessKeys|1.0.3|RELEASE[.]zip$|BrightnessKeys.kext"
   "acidanthera/BrcmPatchRAM|2.7.2|RELEASE[.]zip$|BlueToolFixup.kext"
   "acidanthera/VoodooPS2|2.3.7|RELEASE[.]zip$|VoodooPS2Controller.kext"
   "1Revenger1/ECEnabler|1.0.6|RELEASE[.]zip$|ECEnabler.kext"

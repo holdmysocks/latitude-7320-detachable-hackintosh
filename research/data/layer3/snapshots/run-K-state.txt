@@ -1,0 +1,163 @@
+===== /Volumes/TGLDEBUG/results/mac-K-state/tgl-map-state.bin (1024 bytes)
+  publications (seq): 3
+  -- firmware state at the driver's first register access
+     TRANS_DDI_FUNC_CTL_A   00000000
+     TRANS_CLK_SEL_A        00000000
+     TRANS_CONF_A           00000000
+     DP_TP_CTL_A(TGL)       00000000
+     DP_TP_STATUS_A(TGL)    00000000
+     DDI_BUF_CTL_A          00000000
+     DPLL0_ENABLE           00000000
+     DPLL0_CFGCR0(TGL)      00000000
+     DPLL0_CFGCR1(TGL)      00000000
+     DPLL1_ENABLE           00000000
+     DPLL1_CFGCR0(TGL)      00000000
+     DPLL1_CFGCR1(TGL)      00000000
+     DPCLKA_CFGCR0          00000000
+     DSSM                   00000000
+     TRANS_HTOTAL_A         00000000
+     TRANS_VTOTAL_A         00000000
+     PIPE_SRCSZ?(6001C)     00000000
+     PWR_WELL_CTL2          00000000
+     PWR_WELL_CTL_AUX2      00000000
+     PWR_WELL_CTL_DDI2      00000000
+     CDCLK_CTL              00000000
+  -- counters and last values
+     mappedReads            00000007
+     mappedWrites           0000000B
+     tpEnables              00000004
+     tpDisables             00000001
+     synthClkSel            00000002
+     synthFuncCtl           00000000
+     lastTpCtl              80040340   enabled, NORMAL (trained)
+     lastTpStatus           00000000   (bit25 idle done, bit26 active, bit12 min idles sent)
+     orTpStatus             00000000   (bit25 idle done, bit26 active, bit12 min idles sent)
+     lastFuncCtlAddr        00000000
+     lastFuncCtlDriver      00000000
+     lastFuncCtlOut         00000000
+     lastConfAddr           00000000
+     lastConf               00000000
+     lastCfgcr0Addr         00164000
+     lastCfgcr0Driver       01C001A5
+     lastCfgcr0Out          00E001A5
+     lastCfgcr1Addr         00164004
+     lastCfgcr1Out          00000088
+     lastDdiBufCtl          80000083
+     lastDpll0Enable        8C000000
+     lastDpll1Enable        00000000
+     lastDpclka             01E17800
+     lastClkSelOut          10000000
+  -- live registers at the last publication
+     TRANS_DDI_FUNC_CTL_A   00000000
+     TRANS_CLK_SEL_A        00000000
+     TRANS_CONF_A           00000000
+     DP_TP_CTL_A(TGL)       00000000   disabled, pattern1
+     DP_TP_STATUS_A(TGL)    00000000
+     DDI_BUF_CTL_A          00000000
+     DPLL0_ENABLE           00000000
+     DPLL0_CFGCR0(TGL)      00000000
+     DPLL1_ENABLE           00000000
+     DPLL1_CFGCR0(TGL)      00000000
+     DPCLKA_CFGCR0          00000000
+     PP_STATUS              00000000
+     PP_CONTROL             00000000
+     BLC_PWM_CTL(C8250)     00000000
+  -- last 48 recorded writes, oldest first (T = translated or synthesized by the shim); total recorded 330
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 90020001
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C30023F
+       064014 DDI_AUX_DATA_A         = 90021007
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 9003000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 9004000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 9005000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 90051201
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C30023F
+       064014 DDI_AUX_DATA_A         = 90000007
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 90000007
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 90010007
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 90020001
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C30023F
+       064014 DDI_AUX_DATA_A         = 90021007
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C90023F
+       064014 DDI_AUX_DATA_A         = 9003000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 9004000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 9005000C
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4CE0023F
+       064014 DDI_AUX_DATA_A         = 90051201
+       064010 DDI_AUX_CTL_A          = CC40023F
+       064010 DDI_AUX_CTL_A          = 4C30023F
+       064014 DDI_AUX_DATA_A         = 90000007
+       064010 DDI_AUX_CTL_A          = CC40023F
+  -- hardware snapshots: 2 late read(s); last publication 198 s after the first DP_TP_CTL enable
+     register                     firmware   late       late decoded
+     TRANS_CONF_A                 C0000024   C0000024   enable=1 state=1
+     TRANS_DDI_FUNC_CTL_A         8A000002   8A000002   enable=1 ddi_select=1 lanes=2
+     TRANS_CLK_SEL_A              10000000   10000000   ddi_select=1
+     DP_TP_CTL_A                  80040300   80040340   * enabled, NORMAL (trained)
+     DP_TP_STATUS_A               00700000   00700000   
+     DDI_BUF_CTL_A                80000003   80000003   enable=1 idle=0
+     TRANS_HTOTAL_A               081F077F   081F077F   
+     TRANS_VTOTAL_A               052404FF   052404FF   
+     PIPE_SRCSZ_A                 077F04FF   077F04FF   
+     DATAM1_A                     7E74CCCC   7E74CCCC   
+     LINKM1_A                     0004DDDD   0004DDDD   
+     PIPE_MISC_A                  01000000   01000010   * 
+     PIPE_FRMCOUNT_A              000006D3   0000384D   * 
+     PIPE_SCANLINE_A              00000268   00000400   * 
+     PLANE_CTL_1_A                84000008   84000408   * enable=1
+     PLANE_STRIDE_1_A             00000078   0000000F   * 
+     PLANE_POS_1_A                00000000   00000000   
+     PLANE_SIZE_1_A               04FF077F   04FF077F   
+     PLANE_SURF_1_A               00000000   00000000   
+     PLANE_BUF_CFG_1_A            02A90000   03FF0028   * start=40 end=1023
+     PLANE_WM_0_1_A               80008021   80004011   * 
+     CUR_CTL_A                    00000000   00000027   * 
+     CUR_BUF_CFG_A                00000000   00270000   * 
+     DBUF_CTL_S1                  C060C000   C060C000   
+     DBUF_CTL_S2                  C060C000   00000000   * 
+     PWR_WELL_CTL2                000000FF   00000003   * 
+     DC_STATE_EN                  00000000   00000000   
+     DPLL0_ENABLE                 CC000000   CC000000   enable=1 lock=1 power=1
+     DPLL0_CFGCR0                 00E001A5   00E001A5   
+     DPLL0_CFGCR1                 00000088   00000088   
+     DPCLKA_CFGCR0                01E17800   01E17800   
+     PP_STATUS                    80000008   80000008   panel_on=1 seq_state=0
+     PP_CONTROL                   00000067   00000067   power_on=1 backlight_enable=1 vdd_override=0
+     BLC_PWM_CTL (C8250)          80000000   80000000   pwm_enable=1
+     BLC_PWM_FREQ (C8254)         00017700   00017700   
+     BLC_PWM_DUTY (C8258)         0000BC3C   0000BC3C   
+     PSR_CTL_A                    00100001   00100001   psr_enable=0
+     PSR_STATUS_A                 04000000   04000000   
+     DE_PIPE_ISR_A                00000000   00000000   
+     DE_PIPE_IMR_A                FFFFFFFE   FFFFFFF6   * 
+     0x6F400 (ICL eDP FUNC_CTL)   00000000   00000000   
+     0x7F008 (ICL eDP CONF)       00000000   00000000   
+     PF_CTL_A (68080)             00000000   00000000   
+     PIPE_MISC2_A                 00000000   00000000   
+     GAMMA_MODE_A                 20000000   60000001   * 
+     0x4A400                      00000000   00008000   * 
+     CDCLK_CTL                    00380158   00380518   * 
+     PIPE_FRMCOUNT_A (2nd read)   000006D3   0000384D   * frames advance between reads

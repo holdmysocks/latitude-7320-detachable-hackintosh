@@ -24,9 +24,9 @@
 			</dict>
 			<dict>
 				<key>Comment</key>
-				<string>DISABLED - backlight, useless until QE/CI exists</string>
+				<string>Backlight device on GFX0, _UID 19 (needed by AppleBacklight on the ICL framebuffer)</string>
 				<key>Enabled</key>
-				<false/>
+				<true/>
 				<key>Path</key>
 				<string>SSDT-PNLF.aml</string>
 			</dict>
@@ -37,6 +37,14 @@
 				<false/>
 				<key>Path</key>
 				<string>SSDT-RHUB.aml</string>
+			</dict>
+			<dict>
+				<key>Comment</key>
+				<string>Dell OS identity for macOS: lets the firmware forward brightness keys</string>
+				<key>Enabled</key>
+				<true/>
+				<key>Path</key>
+				<string>SSDT-DOSI.aml</string>
 			</dict>
 		</array>
 		<key>Delete</key>
@@ -121,6 +129,17 @@
 			<dict>
 				<key>layout-id</key>
 				<integer>1</integer>
+			</dict>
+			<key>PciRoot(0x0)/Pci(0x2,0x0)</key>
+			<dict>
+				<key>device-id</key>
+				<data>
+				WooAAA==
+				</data>
+				<key>AAPL,ig-platform-id</key>
+				<data>
+				AgBcig==
+				</data>
 			</dict>
 		</dict>
 		<key>Delete</key>
@@ -436,9 +455,44 @@
 				<key>PlistPath</key>
 				<string>Contents/Info.plist</string>
 			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>BundlePath</key>
+				<string>BrightnessKeys.kext</string>
+				<key>Comment</key>
+				<string>ACPI brightness key notifications (Notify LCD 0x86/0x87)</string>
+				<key>Enabled</key>
+				<true/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/BrightnessKeys</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
 		</array>
 		<key>Block</key>
-		<array/>
+		<array>
+			<dict>
+				<key>Arch</key>
+				<string>x86_64</string>
+				<key>Comment</key>
+				<string>TGL experiment: framebuffer only, keep the Ice Lake accelerator out</string>
+				<key>Enabled</key>
+				<true/>
+				<key>Identifier</key>
+				<string>com.apple.driver.AppleIntelICLGraphics</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>Strategy</key>
+				<string>Exclude</string>
+			</dict>
+		</array>
 		<key>Emulate</key>
 		<dict>
 			<key>Cpuid1Data</key>
@@ -661,7 +715,7 @@
 				Rg==
 				</data>
 				<key>boot-args</key>
-				<string>-v debug=0x100 keepsyms=1 -igfxvesa</string>
+				<string>-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F -igfxdbeo</string>
 				<key>csr-active-config</key>
 				<data>
 				AAAAAA==

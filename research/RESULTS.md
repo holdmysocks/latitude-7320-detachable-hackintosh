@@ -1,29 +1,66 @@
 # Results
 
-Eleven runs. Every one rebuilt from `config.KNOWNGOOD.plist`, one variable at a
-time. Method and controls: [`METHODOLOGY.md`](METHODOLOGY.md).
+Two phases. Runs 0–10 are the original configuration-only experiments, which ended in a reset every time a platform
+id was injected. Runs A–N (2026-10-07) found why and got the framebuffer working. What it all means is in
+[`LAYER3.md`](LAYER3.md); method and controls are in [`METHODOLOGY.md`](METHODOLOGY.md).
 
-Hardware: Intel i5-1140G7 (TGL-UP4), Iris Xe 80 EU, **`8086:9A40`**, subsystem
-`1028:0A45`. macOS 26 Tahoe, OpenCore 1.0.7, WhateverGreen 1.7.0.
+Hardware: Intel i5-1140G7 (TGL-UP4), Iris Xe 80 EU, **`8086:9A40`**, subsystem `1028:0A45`. macOS 26 Tahoe (26.6,
+25G72 for runs A–N), OpenCore 1.0.7.
+
+> **Read runs 0–10 with two corrections in mind.** (1) WhateverGreen 1.7.0 has no Tiger Lake case, so it did
+> nothing to the framebuffer in any of them, including its DVMT fix; every run with a defined platform id therefore
+> started the driver believing it had 4 GB of stolen memory. (2) `0x8A520000` is not in Tahoe's platform table, so
+> runs 2, 9 and 10 started the driver with no platform data at all. The verdicts below are annotated accordingly.
 
 ---
+
+## Phase 2: runs A–N (2026-10-07)
+
+All on device-id `8A5A`, platform id `0x8A5C0002`, `lilucpu=12 -igfxdvmt -igfxcdc`, accelerator excluded.
+`igfxtglmap` is the feature mask of patch 0003 ([bit list](../WhateverGreen-patches/README.md)).
+
+| Run | Change | Outcome | What it showed |
+|---|---|---|---|
+| A | WhateverGreen in Ice Lake mode (`lilucpu=12`), DVMT fix, valid platform id | **no reset**; black, alive | `start()` returns. Driver log: eDP link training fails at phase 1 |
+| B | A + first register map: every translation, plus diagnostics written to registry/NVRAM/IOLog at the first register access | reset ×3, nothing logged | later traced to the NVRAM write, not to the translation |
+| C | `igfxtglmap=0x3E`: DP_TP, encodings, DPLL, pre-enable writes; eDP block unmapped; no side effects | black, alive | **`Link Training successful`**, then `Link loss` 17 ms after pipe enable |
+| D | `0x43F`: C + whole eDP block (reads mapped after the driver's first write) | black, frozen, nothing logged | |
+| E | `0xC3F`: D with only the eDP stream registers | black, frozen, nothing logged | not PSR. Cause of C, D, E found by disassembly: the driver writes TRANS_CLK_SEL = 0 after training |
+| F | `0x3E` + clock-select fix | black, alive | link up and stable, modeset complete |
+| F2 | F + `-igfxblr -igfxdbeo` | black, alive | no change |
+| F3 | F2 + register snapshot published to NVRAM from the hook, 60 s after the modeset | self-reboot at ~80 s | |
+| F4 | F3 with the publish moved to a kernel thread call | self-reboot at ~80 s | not the calling context: the NVRAM write itself |
+| F5 | snapshot written to a file instead | black, alive for 4 min | **snapshot: backlight duty 0, everything else running** |
+| K | `0x603E`: F + keep the firmware's backlight values | **picture** | first working display. Panel on FB1 as an external display; display wake panics |
+| M | `0xA83F` + `SSDT-PNLF`: eDP stream registers mapped from the start, rescaling backlight | picture | built-in panel on FB0, AppleBacklight, display sleep/wake works. Brightness range far too low (`_UID` 15) |
+| — | `SSDT-PNLF` `_UID` 19 | picture | brighter; maximum still 23 % (driver's PWM period differs from the firmware's) |
+| N | M + backlight scale from SFUSE_STRAP + `BrightnessKeys.kext` | picture | **full brightness range.** Brightness keys still dead (firmware does not send the events to macOS) |
+| P | N + `SSDT-DOSI` rev. 1: `\_SB.ACOS = 0x20` set from a device `_INI` | picture | keys still dead: SMM was told the OS type before the `_INI` ran |
+| P2 | N + `SSDT-DOSI` rev. 2: set at table load, `STOS ()` repeated | picture | **brightness keys work** |
+
+Run P2 is the committed configuration. Evidence: [`data/layer3/`](data/layer3/) (driver logs for A, C, F, F2, K, M;
+register snapshots for F5 and K; the panic report from K's display wake; the run log).
+
+---
+
+## Phase 1: runs 0–10
 
 ## The table
 
 | # | Configuration | Boot | Framebuffer | Verdict |
 |---|---|---|---|---|
 | 0 | baseline, `-igfxvesa` | ✅ | `IONDRVFramebuffer` | reference |
-| 1 | `-igfxvesa` removed, nothing injected | ✅ | `IONDRVFramebuffer` | **control.** WG forced `ffffffff`; nothing changed |
-| 2 | dev `8A52` + plat `8A520000` + `enable-metal` | ❌ reset | — | first hang |
+| 1 | `-igfxvesa` removed, nothing injected | ✅ | `IONDRVFramebuffer` | **control.** `ffffffff` (from Lilu) anyway; nothing changed |
+| 2 | dev `8A52` + plat `8A520000` + `enable-metal` | ❌ reset | — | first hang. **Invalid:** `8A520000` is not in Tahoe's table |
 | 3 | dev `8A52`, `-igfxvesa` **kept** | ✅ | `IONDRVFramebuffer` | kext **loaded**, never attached — proves PCI matching works |
-| 4 | dev `8A52` only, no plat | ✅ | `IONDRVFramebuffer` | WG supplied `ffffffff`; FB bailed **in probe** |
+| 4 | dev `8A52` only, no plat | ✅ | `IONDRVFramebuffer` | Lilu supplied `ffffffff`; FB bailed **in probe** |
 | — | dev `85A1` (typo / script bug) | ✅ | `IONDRVFramebuffer` | **void.** `85A1` is in no match list |
-| 5 | dev `8A52` + plat `FF05` | ❌ reset | — | generic fallback personality |
-| 6 | dev `8A5C` | ❌ reset | — | |
-| 7 | dev `8A51` | ❌ reset | — | |
-| 8 | dev `8A70` | ❌ reset | — | GT1/UHD variant |
-| 9 | dev `8A52`, **WhateverGreen disabled** | ❌ reset | — | WG is not implicated |
-| 10 | dev `8A52` + `igfxagdc=0` | ❌ reset | — | AGDC is not implicated |
+| 5 | dev `8A52` + plat `FF05` | ❌ reset | — | generic fallback personality. Reset = stolen-memory bug |
+| 6 | dev `8A5C` | ❌ reset | — | stolen-memory bug |
+| 7 | dev `8A51` | ❌ reset | — | stolen-memory bug |
+| 8 | dev `8A70` | ❌ reset | — | GT1/UHD variant. Stolen-memory bug |
+| 9 | dev `8A52`, **WhateverGreen disabled** | ❌ reset | — | **Invalid** (`8A520000`). WG was inert in every run anyway |
+| 10 | dev `8A52` + `igfxagdc=0` | ❌ reset | — | **Invalid** (`8A520000`) |
 
 The void run is kept deliberately. See [below](#the-void-run).
 
@@ -53,9 +90,8 @@ when the display died. Do not chase them.
 still read `<ffffffff>`.
 
 Two things follow. First, removing `-igfxvesa` is by itself harmless, so
-nothing in runs 2–10 can be attributed to its absence. Second — and this was
-not expected — `0xFFFFFFFF` is WhateverGreen's VESA sentinel, and WG applied it
-with no prompting. See [WhateverGreen](#whatevergreen-is-a-participant-not-an-observer).
+nothing in runs 2–10 can be attributed to its absence. Second, `0xFFFFFFFF` is the VESA
+platform id and it is applied with no prompting. See [where it comes from](#where-0xffffffff-comes-from).
 
 Evidence: [`data/ioreg/igpu-novesa-nospoof.txt`](data/ioreg/igpu-novesa-nospoof.txt)
 (`device-id = <409a0000>`, the real `9A40`),
@@ -97,12 +133,12 @@ removed. It booted, and the log captured the rejection:
 Full capture: [`data/ioreg/gfx-minimal.log`](data/ioreg/gfx-minimal.log).
 
 This is the mechanism behind runs 1 and 4 booting safely. With no
-`ig-platform-id` injected, WhateverGreen supplies `0xFFFFFFFF`, the framebuffer
+`ig-platform-id` injected, Lilu supplies `0xFFFFFFFF`, the framebuffer
 reaches `probe()`, finds an undefined platform ID and **declines cleanly**. The
 system stays on VESA and stays alive.
 
-Inject a *defined* platform ID and probe succeeds — and then `start()` takes
-the machine down. That is the difference between run 4 and runs 5–8.
+Inject a *defined* platform ID and probe succeeds, and `start()` runs. Without the DVMT fix that resets the
+machine. That is the difference between run 4 and runs 5–8.
 
 `kextstat` for this run also shows `AppleIntelICLGraphics (24.0.5)` and
 `IOAcceleratorFamily2 (487.4.3)` loaded
@@ -123,30 +159,19 @@ ever created: [`data/ioreg/accel-nub.txt`](data/ioreg/accel-nub.txt) is empty.
 
 ### Runs 5–8 — five personalities, one failure
 
-`8A52`, `FF05`, `8A5C`, `8A51`, `8A70`. These describe **different connector,
-pipe and DDI configurations** — `8A70` is even a different GT tier (GT1/UHD
-rather than Iris Plus). `FF05` is the generic fallback personality.
+`8A52`/`FF05`, `8A5C`, `8A51`, `8A70`. All reset identically.
 
-All five failed identically.
+At the time this was read as "not a connector-layout problem", which is true, and as "the display engine is being
+programmed wrongly", which is not what these runs show. All of them started the driver with WhateverGreen's DVMT fix
+unavailable, so `FBMemMgr_Init` computed 4032 MB of stolen memory from the firmware's 60 MB. That is what reset the
+machine; see [`LAYER3.md`](LAYER3.md#1-the-reset-stolen-memory-computed-as-4-gb).
 
-If the hang were caused by a mismatched connector layout — the obvious
-hypothesis for a 3:2 1920×1280 panel with no external outputs — five different
-layouts would not fail the same way. **Wrong-personality is ruled out.**
+### Runs 9 and 10 — void
 
-### Run 9 — WhateverGreen is not the cause
-
-Same spoof as run 2, with WhateverGreen's `Enabled` flipped to `false`.
-Identical hang.
-
-WG's unrecognised-hardware patching is therefore not what kills the machine.
-(This is separate from WG's *sentinel* behaviour, which is real and is
-described below — WG shapes what the framebuffer receives, but it is not the
-thing that hangs.)
-
-### Run 10 — AGDC is not the cause
-
-Same spoof plus `igfxagdc=0`, which disables the Apple Graphics Device Control
-handoff. Identical hang. AGDC is not implicated.
+Both used `0x8A520000`, which Tahoe's driver has no table entry for
+([`LAYER3.md`](LAYER3.md#2-0x8a520000-does-not-exist-in-tahoe)). Run 9 additionally "disabled" a WhateverGreen that
+was not doing anything to the framebuffer in the first place. Neither supports the conclusions originally drawn from
+them ("WhateverGreen is not implicated", "AGDC is not implicated").
 
 ---
 
@@ -166,26 +191,20 @@ injected base64 verified before boot. See
 
 ---
 
-## WhateverGreen is a participant, not an observer
+## Where `0xFFFFFFFF` comes from
 
-`ig-platform-id` reads `<ffffffff>` even on a boot with `-igfxvesa` removed and
-nothing injected (run 1). `0xFFFFFFFF` is WhateverGreen's VESA sentinel.
+`ig-platform-id` reads `<ffffffff>` even on a boot with `-igfxvesa` removed and nothing injected (run 1).
 
-**WhateverGreen forces VESA on its own, because it does not recognise `9A40`.**
+The value comes from **Lilu**: `DeviceInfo` falls back to the VESA platform id for CPU generations it has no default
+for, and WhateverGreen publishes it as the property. WhateverGreen 1.7.0 itself has no Tiger Lake case in
+`IGFX::init()`, so on this machine it never selects a framebuffer kext to patch.
 
-Three consequences, all of which matter to anyone else working on Tiger Lake:
+Consequences:
 
-1. **`-igfxvesa` is redundant on this hardware.** WG does it regardless. Anyone
-   reporting that removing `-igfxvesa` "did nothing" on a TGL machine is
-   observing this, not a broken boot-arg.
-2. **WG is in the path of every result**, including the ones that look like
-   clean stock-kext behaviour.
-3. Unless an explicit `AAPL,ig-platform-id` is injected, the ICLLP framebuffer
-   always receives `0xFFFFFFFF` and declines in `probe()` — which is precisely
-   what [run 4](#run-4--the-kext-says-why-in-its-own-words) captured.
-
-`-NoWEG` takes WG out of the path as a diagnostic. It also disables WG's
-non-graphics patches, so it is a probe, not a destination.
+1. **`-igfxvesa` is redundant on an unpatched setup.** With nothing injected the framebuffer always receives
+   `0xFFFFFFFF` and declines in `probe()`, which is what [run 4](#run-4--the-kext-says-why-in-its-own-words) captured.
+2. **No WhateverGreen framebuffer feature did anything in runs 0–10**: connector patches, `-igfxdvmt`, `-igfxcdc`, the
+   MMIO hooks. `lilucpu=12` is what makes them available.
 
 ---
 
@@ -226,5 +245,4 @@ match list. The spoof target must be an ID **from the list above**.
 
 ---
 
-Continue to [`README.md`](README.md) for what these results do and do not
-establish.
+Continue to [`LAYER3.md`](LAYER3.md) for what the results establish.

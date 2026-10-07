@@ -33,7 +33,7 @@ Raw dumps: [`research/data/ioreg/`](../research/data/ioreg/) and
 | **Ethernet** | `IOEthernetController = 1`, `AppleUSBNCMData = 1` | adapter is **NCM class**, native driver — not ASIX |
 | **USB map** | 9 ports, exact names — [03](03-usb-mapping.md#62-verified-result) | trimmed `UTBMap` applied |
 
-`kextstat` shows 13 loaded: Lilu 1.7.2, VirtualSMC 1.3.7, SMCProcessor,
+At install time, on VESA with the stock kexts, `kextstat` showed 13 loaded: Lilu 1.7.2, VirtualSMC 1.3.7, SMCProcessor,
 SMCBatteryManager, SMCDellSensors, WhateverGreen 1.7.0, NVMeFix 1.1.3,
 ECEnabler 1.0.6, BlueToolFixup 2.7.2, VoodooPS2Controller 2.3.7,
 VoodooPS2Keyboard, USBToolBox 1.2.0, IntelBluetoothFirmware 2.4.0.
@@ -44,12 +44,29 @@ Two expected absences, neither a fault:
   `kextstat`. Verify via port enumeration instead — [03](03-usb-mapping.md#62-verified-result).
 - **`VoodooInput`** only loads for a Voodoo *trackpad*. Ours is USB HID.
 
+### 6.2b Display, with the patched WhateverGreen
+
+These apply to the committed config, which runs Apple's Ice Lake framebuffer
+([`research/LAYER3.md`](../research/LAYER3.md)). The numbers earlier in this section were captured on VESA.
+
+| Check | Expected |
+|---|---|
+| `ioreg -l \| grep -c "class AppleIntelFramebuffer,"` | 3 |
+| `AppleIntelFramebuffer@0` | `connector-type = <02000000>`, `built-in`, `AAPL,boot-display` |
+| under it | `AppleBacklightDisplay` |
+| `system_profiler SPDisplaysDataType` | Intel Iris Plus Graphics, VRAM 1536 MB, 1920 x 1280 @ 60 Hz, Connection Type: Internal |
+| `kextstat` | `AppleIntelICLLPGraphicsFramebuffer`, `AppleBacklight`, `BrightnessKeys` |
+| Displays → Brightness slider | full range |
+| brightness keys | work |
+| display sleep and wake | works |
+
+Untested: system sleep, lid close, external displays.
+
 ### 6.3 Not working — all expected
 
 | Check | Evidence |
 |---|---|
-| GPU acceleration | `IOAccelerator = 0`, `AppleGraphicsDevicePolicy = 0` |
-| Backlight | `AppleBacklightDisplay = 0`, `IOBacklightDisplay = 0` |
+| GPU acceleration | `ioreg -rw0 -c IOAccelerator` is empty. No Metal |
 | Audio | `IOAudioDevice = 0`, `IOAudioEngine = 0` — SoundWire, [00 §1.4](00-hardware-survey.md#14-audio--permanently-silent) |
 | Camera | no IPU6 driver exists |
 
