@@ -1,0 +1,53 @@
+hook           : routed
+written at     : 46.100 s uptime
+batches        : 141 submitted, 116 walked, 25 other engines, 0 unreadable context image, 0 walks without an end
+commands       : 39719
+kernel pointers: 2366  ->  1231 translated (1133784 bytes), 828 already translated, 56 rejected, 35 rejected before, 0 unmapped, 0 without a base address, 215 empty
+  rejected  0    36749 ms  PS kernel at 4546B040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  1    37883 ms  VS kernel at 41078840: "indirect source 0" at +0x120 (202 instructions before the end of the walk)
+               00600001 20E04B28 01E08000 00000000 03600010 20004B22 4E8D0EA0 3F000000
+  rejected  2    38815 ms  PS kernel at 4559DB00: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  3    44916 ms  PS kernel at 4559DFC0: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  4    44917 ms  PS kernel at 456088C0: "encoder assertion" at +0x548 (91 instructions before the end of the walk)
+               00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  rejected  5    44918 ms  PS kernel at 4560B580: "encoder assertion" at +0xD78 (230 instructions before the end of the walk)
+               00000000 00000000 20010D01 00000107 00000005 202C124C 1600002C FFFEFFFE
+  rejected  6    44923 ms  PS kernel at 4560CF00: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  7    44923 ms  PS kernel at 41AC3040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  8    44924 ms  PS kernel at 41B2EA80: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected  9    44924 ms  PS kernel at 41BFD040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 10    44924 ms  PS kernel at 41C67000: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 11    44924 ms  PS kernel at 41CD0A00: "encoder assertion" at +0x548 (91 instructions before the end of the walk)
+               00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  rejected 12    44925 ms  PS kernel at 41D59040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 13    44925 ms  PS kernel at 41DC3D00: "no free register to replace the NF accumulator" at +0x0 (205 instructions before the end of the walk)
+               0060005B 2000C01C 0720C601 03000406 00000001 216C4F2C 00000000 BFFAE411
+  rejected 14    44926 ms  PS kernel at 41DCAA80: "encoder assertion" at +0x5570 (1408 instructions before the end of the walk)
+               00000000 00000000 00000000 00000000 20022B41 050220E0 20164B41 050276E0
+  rejected 15    44927 ms  PS kernel at 41DD01C0: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 16    44927 ms  PS kernel at 41D596C0: "no end of thread within the buffer" at +0x230 (35 instructions before the end of the walk)
+               00000000 00000000 00000020 34000004 0E001400 00000060 00000001 20004F2C
+  rejected 17    44927 ms  PS kernel at 41D59600: "no end of thread within the buffer" at +0x2F0 (47 instructions before the end of the walk)
+               00000000 00000000 00000020 34000004 0E001400 00000060 00000001 20004F2C
+  rejected 18    44927 ms  PS kernel at 41D59100: "no end of thread within the buffer" at +0x70D0 (2000 instructions before the end of the walk)
+               0060005B 19004108 07214039 09A00432 20724B48 0E01110F 02600033 02430078
+  rejected 19    44928 ms  PS kernel at 41F9B040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 20    44928 ms  PS kernel at 42005000: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 21    44928 ms  PS kernel at 420BE040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 22    44929 ms  PS kernel at 42128440: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007
+  rejected 23    44929 ms  PS kernel at 421D2040: "no end of thread within the buffer" at +0x70F8 (2000 instructions before the end of the walk)
+               24010B38 00000107 20724B41 0E191907 24010B38 00161707 20722B41 0E012007

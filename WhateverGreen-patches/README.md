@@ -3,7 +3,8 @@
 Four patches against [acidanthera/WhateverGreen](https://github.com/acidanthera/WhateverGreen) commit
 `0762cecc2a70054cd4dc3cf4d08979aca6acd9bb` (1.7.1), applied in order. Only 0003 is needed for a working display;
 0001 and 0002 are the diagnostics it was developed on top of, and 0003 does not apply without them. 0004 is the
-accelerator research and is not part of the release build; add it to the loop below to build it.
+accelerator research and is not part of the release build. It includes `tgl_xlate.h`, so it builds only with
+[`tgl-xlate/build-weg2.sh`](tgl-xlate/) (see the README there), not with `build-weg-clt.sh`.
 
 No kext binary is committed. Build it yourself (below).
 
@@ -12,7 +13,7 @@ No kext binary is committed. Build it yourself (below).
 | `0001-tigerlake-icllp-mmio-tracer.patch` | `-igfxtgl`: route the ICL LP framebuffer on a CPU detected as Tiger Lake and count register accesses; `igfxtglstop=N` panics before access N | no |
 | `0002-tgl-function-tracer.patch` | `-igfxtglselftest`, `igfxtglfn=`, `igfxtglfnret=`: hook self-test and function-level tracing | no |
 | `0003-tgl-register-map.patch` | `igfxtglmap=<mask>`: translate the Ice Lake display registers Tiger Lake moved | **yes** |
-| `0004-tgl-accelerator.patch` | accelerator research, on top of 0003: `igfxtglss=<n>` (subslice count for `AppleIntelICLGraphics`), `igfxtglcsb=1` (Gen12 context status buffer reader, log in `/Users/Shared/tgl-csb.bin`), `igfxtglmap` bit `0x80000` (GT fuse probe). Does not give acceleration; see [`../research/LAYER4.md`](../research/LAYER4.md) | no |
+| `0004-tgl-accelerator.patch` | accelerator research, on top of 0003: `igfxtglss=<n>` (subslice count for `AppleIntelICLGraphics`), `igfxtglcsb=1` (Gen12 context status buffer reader), `igfxtglhang=1` (capture of hung batches and their shaders), `igfxtglxl=1` (Gen11 to Gen12 shader translation at batch submission; needs [`tgl-xlate/`](tgl-xlate/)), `igfxtglres=<mask>` (skip the driver's resolve submissions), `igfxtglmap` bit `0x80000` (GT fuse probe). Does not give a working desktop; see [`../research/LAYER4.md`](../research/LAYER4.md) | no |
 
 Use 0003 together with `lilucpu=12`, so that WhateverGreen takes its Ice Lake path and every stock Ice Lake fix
 (`-igfxdvmt`, `-igfxcdc`, connector patching) stays available. 0003 looks at the real CPU model (`0x8C`/`0x8D`), not

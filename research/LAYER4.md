@@ -1,13 +1,15 @@
 # Layer 4: the Ice Lake accelerator on Tiger Lake
 
-**Status (2026-10-08): the accelerator starts and schedules work; nothing is drawn.** `AppleIntelICLGraphics`
-attaches to `9A40`, creates contexts, submits them, and receives their completions. Blitter work and render-engine
-work that draws nothing complete. Every submission that draws hangs with the vertex shader stage busy, the driver
-resets the GPU about every 10 seconds, and the login screen stays black with a live cursor.
+**Status (2026-10-08, after run GA11): the GPU draws, the desktop does not come up.** `AppleIntelICLGraphics`
+attaches to `9A40`, schedules work, and with every shader translated from Ice Lake to Tiger Lake machine code
+before it runs, batches complete and things appear on screen (the cursor over the boot logo, coloured blocks, a
+red stripe). GPU hangs remain in three places: a 340 KB shader that was not translated yet, the driver's own
+fast-clear/resolve batches, and one draw whose cause is open. Nothing here is usable.
 
-Everything here is on top of the working framebuffer ([`LAYER3.md`](LAYER3.md), configuration "R"). Five boots,
+Everything is on top of the working framebuffer ([`LAYER3.md`](LAYER3.md), configuration "R"). Eleven boots,
 2026-10-08. Evidence: [`data/layer4/`](data/layer4/). Patch:
-[`0004-tgl-accelerator.patch`](../WhateverGreen-patches/0004-tgl-accelerator.patch).
+[`0004-tgl-accelerator.patch`](../WhateverGreen-patches/0004-tgl-accelerator.patch); translator:
+[`../WhateverGreen-patches/tgl-xlate/`](../WhateverGreen-patches/tgl-xlate/).
 
 ## What was needed to get this far
 
@@ -16,7 +18,8 @@ Everything here is on top of the working framebuffer ([`LAYER3.md`](LAYER3.md), 
 | 1 | The accelerator refuses PCI revision ≤ 2 | boot-arg `-allow3d` (Apple's own) |
 | 2 | `getGPUInfo()` panics: "Unsupported ICL Sku" | `igfxtglss=6`: patch the subslice count at kext load |
 | 3 | Panic: "Unexpected context status buffer entry" | `igfxtglcsb=1`: read the status buffer in the Gen12 layout |
-| 4 | **Draws hang in the vertex shader stage** | **none** |
+| 4 | Draws hang: shaders are Gen11 EU machine code | `igfxtglxl=1`: translate every shader to Gen12 at batch submission |
+| 5 | Shaders the translator does not cover yet; the driver's fast-clear/resolve batches | open |
 
 `-disablegfxfirmware` was used throughout: the driver's own host scheduler, no GuC.
 
@@ -97,33 +100,93 @@ including lite-restore preemptions and the restart after each GPU reset
 
 The offsets used are those of `AppleIntelICLGraphics` 24.0.5 in macOS 26.6 (25G72) and are listed in the patch.
 
-## 4. Where it stops
+## 4. Shaders are Ice Lake machine code
 
 macOS writes an Intel hang report for every GPU reset (`/Library/Logs/DiagnosticReports/Kernel_*.gpuRestart`), with
 ring registers, `INSTDONE`, execlist status, ring contents and an MMIO dump. They need no kext logging and survive a
 hard power-off. Three are in [`data/layer4/`](data/layer4/).
 
-Every report of a submission that draws shows the same thing, in both GA4 and GA5 and down to identical batch
-addresses (`0x40b75ed8`, `0x42b54104`, `0x43b84520`, `0x42f2474c`, `0x452d78a0`):
+With obstacles 1-3 out of the way every submission that draws hung the same way (GA4, GA5: identical batch
+addresses): the render engine ran a batch, returned to the ring and stopped on the `PIPE_CONTROL` with CS stall
+that follows; `INSTDONE = 0xffdffffb`, **VS and CS not done**. The subslice count is not involved (GA5).
 
-- the render engine ran a batch (`MI_BATCH_BUFFER_START`) and returned to the ring;
-- it stopped on the `PIPE_CONTROL` that follows (`IPEHR = 0x7a000004`, CS stall set);
-- `INSTDONE = 0xffdffffb`: **VS and CS not done**; the common-slice `INSTDONE` has bit 0 clear.
+Run GA6 captured what was executing. `igfxtglhang=1` hooks `IGHardwareRingBuffer::doHangAnalysis`, reads `BB_ADDR`
+and the context's PML4 (`PDP0`), walks the per-process page tables, and saves the batch plus the kernels its
+`STATE_BASE_ADDRESS` / `3DSTATE_VS` / `3DSTATE_PS` point to
+([`hang-capture-GA6.txt`](data/layer4/hang-capture-GA6.txt)). Mesa's Gen11 disassembler reads those kernels as
+ordinary shaders ([`translation-examples.txt`](data/layer4/translation-examples.txt)): a matrix times a vertex and
+a URB write; a texture sample and a render-target write. Every instruction is valid Gen11 and not valid Gen12.
+MOV is opcode `0x01` on Gen11; on Gen12 `0x01` is `sync` and MOV is `0x61`. So the "shader ISA" explanation for
+Iris Xe on macOS is correct, and it is the first thing that stops a draw.
 
-The command streamer is waiting for the 3D pipeline to drain, and the vertex shader stage never finishes.
+## 5. Translating the shaders
 
-What completes: every blitter submission, and render contexts that only load state.
+The shaders come from Apple's user-space Metal/GL drivers, compiled for Ice Lake. They are fixed up in the kernel
+instead: `igfxtglxl=1` hooks `IGHardwareRingBuffer::submitBatchBuffer`, walks each render-engine batch (following
+`MI_BATCH_BUFFER_START`), tracks the instruction base address, and for every `3DSTATE_VS/HS/DS/GS/PS` kernel
+pointer reads the kernel through the context's page tables, translates it and writes it back **in place**. A
+kernel is rewritten only if every instruction in it translates; a cache keyed by physical address and content
+keeps a kernel from being translated twice.
 
-**Reading, not yet tested:** shader programs are compiled in user space by Apple's Ice Lake Metal/GL driver into
-Gen11 EU machine code. Gen12 EUs use a different instruction encoding (Mesa carries separate Gen12 encoders, and
-software scoreboard fields replace thread dependency control). The first stage that runs a shader would then never
-see its threads terminate. That is the "shader ISA" explanation usually given for Iris Xe on macOS, and these hangs
-are what it predicts. The runs do not prove it: no shader kernel from a hung batch has been examined.
+The translator ([`tgl_xlate.c`](../WhateverGreen-patches/tgl-xlate/tgl_xlate.c)) is built on Mesa 23.3.6's own
+code: it decompacts and decodes with Mesa's Gen11 tables, re-emits each instruction through Mesa's emitter set up
+for Gen12, and recompacts with the Gen12 tables. The same file builds as a host tool (`g11to12`, with Mesa's
+disassembler and validator) and into the kext. What it has to do beyond re-encoding:
 
-Ruled out: the subslice count (GA5, `igfxtglss=4`, same hangs at the same batches).
+| Gen11 | Gen12 |
+|---|---|
+| no dependency annotations | software scoreboard: `@1` on every instruction; each send sets a token; a later instruction waits `$n.dst`, or a `sync.nop $n.dst` is inserted; everything outstanding is waited for before a branch or jump target |
+| `sends` / `sendsc` (split sends) | `send` / `sendc` with two payload sources |
+| extended descriptor bits 15:12 only through `a0.n` | immediate, when `a0.n` was loaded with a constant just before; otherwise the register form |
+| accumulator in its native format (`NF`) for plane evaluation: `mad acc0:NF`, `mad dst, acc0:NF` | a general register the kernel never names, as float |
+| `mov` to ARF `0xF0` with thread switch (a yield hint) | `mov null, 0` |
+| compacted instructions | recompacted; where there is no Gen12 compact form the kernel grows |
+| jump distances (`if/else/endif/while/break/continue/halt`, `goto`, `join`, `jmpi`) | recomputed for the new layout. `jmpi` counts from the next instruction, the others from themselves. Mesa has no `join` (`0x2F`): it is handled by raw opcode |
+| `g[a0 + imm]` operands, `acc1` destinations, zero padding inside a kernel, code after the first end-of-thread | carried over |
 
-Not ruled out: the Ice Lake workaround table (`InitIclLpWaTable`) being written to Tiger Lake registers; the power
-and clock state in the context image (`0x20C8`); Gen11 3D state commands that Gen12 re-encoded.
+A kernel may grow into the zero padding up to the next 64-byte boundary (kernel pointers are 64-byte aligned); if
+that is not enough everything compactable is compacted; if it still does not fit it is rejected. Real shaders seen
+so far run from 8 instructions to about 25,000 (a 340 KB image-processing shader).
+
+Checks before each boot: a regression set of captured kernels must give byte-identical output from the host build
+and from the objects built with the kext's kernel flags, Mesa's Gen12 validator must pass, and a fuzzer feeds
+400,000 random and mutated kernels through a sanitizer build (it found an integer overflow and several places
+where arbitrary bytes reached an `unreachable`).
+
+Results, from `/Users/Shared/tgl-xlate.bin` ([`xlate-GA7.txt`](data/layer4/xlate-GA7.txt) ...
+[`xlate-GA11.txt`](data/layer4/xlate-GA11.txt)):
+
+| Run | Batches | Kernels translated | Rejected | On screen |
+|---|---|---|---|---|
+| GA7 | 13 | 15 | 6 | nothing; the batch that hung in GA4-GA6 completes |
+| GA8 | 13 | 18 | 1 | nothing |
+| GA9 | 64 | 249 | 145 | cursor over the boot logo, coloured blocks |
+| GA10 | 141 | 1231 | 56 | a red diagonal stripe; then a machine check (below) |
+| GA11 | 205 | 2049 | 52 | similar; GPU hangs |
+
+## 6. Where it stops now
+
+- **A 340 KB pixel shader** (nine copies in GA11) was rejected because only 100 KB were read; its first jump is an
+  unconditional `jmpi +335432`. Build 0004g reads up to 700 KB. Untested on the machine.
+- **The driver's own resolve batches.** Two GA11 hangs are in the kernel driver's resolve context: a RECTLIST
+  draw with the vertex shader off, `3DSTATE_PS` with *render target fast clear enable*, and the `PIPE_CONTROL`
+  after it never completes although the pipeline is idle
+  ([`hang-capture-GA11.txt`](data/layer4/hang-capture-GA11.txt)). Probable cause, not proven: Tiger Lake re-encoded
+  the auxiliary surface modes (Gen11's CCS_D value means MCS on Gen12) and wants aux-map tables for CCS. Build
+  0004g can skip those submissions (`igfxtglres`), as an experiment.
+- **One hang with a translated shader** whose 8-pixel kernel looks right; the 16- and 32-pixel variants were not
+  captured.
+- Not looked at: compute and media kernels, the kernels the driver itself uses for blits, message descriptor and
+  thread payload differences, whether what is drawn is correct.
+
+## 7. Machine check: do not read stolen memory
+
+GA10 ended in a machine check on every core (`IA32_MC8_ADDR = 0x6C800040`,
+[`panic-GA10-machine-check.txt`](data/layer4/panic-GA10-machine-check.txt)). The kext had been changed to read nine
+pages per kernel instead of two; past the end of a kernel the GPU page tables point at the driver's placeholder
+page, which is in graphics stolen memory, and reading that from the CPU through the kernel's physical map is fatal
+on this machine. Since 0004f every physical access is limited to RAM: below the stolen memory base (from the
+`0x1080C0` / `0x108040` mirrors of BDSM and GGC) or between 4 and 16 GB.
 
 ## Runs
 
@@ -134,9 +197,16 @@ and clock state in the context image (`0x20C8`); Gen11 3D state commands that Ge
 | GA3 | 0003y | `igfxtglcsb=1`, 12-entry reader | black login screen; reader stalled at entry 6 |
 | GA4 | 0003z | 6-entry reader | black login screen; 65 events handled; GPU hang every ~10 s, VS busy |
 | GA5 | 0003z | `igfxtglss=4` | as GA4; 90 events; same batches hang |
+| GA6 | 0004a | `igfxtglhang=1` | hung batches and their kernels captured: Gen11 code |
+| GA7 | 0004b | `igfxtglxl=1` | 15 kernels translated, the old hang is gone; rejected pixel shaders hang; watchdog reboot |
+| GA8 | 0004c | sync insertion, branches, growth | 18 translated, 1 rejected, hang in the batch using it |
+| GA9 | 0004d | exact register tracking | first drawing; 249 translated, 145 rejected |
+| GA10 | 0004e | jmpi, register descriptors, 36 KB kernels | 1231 translated; machine check reading stolen memory |
+| GA11 | 0004f | RAM-only access, goto/join, indirect, padding, 100 KB | 2049 translated, no panic; hangs of section 6 |
 
-Build 0003z is patches 0001–0004. Boot-args of GA4:
-`lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo -allow3d -disablegfxfirmware igfxtglss=6 igfxtglcsb=1`.
+The 0004 builds are patches 0001-0004 plus the translator (`tgl-xlate/build-weg2.sh`). Boot-args of GA11:
+`lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo -allow3d -disablegfxfirmware igfxtglss=6 igfxtglcsb=1 igfxtglhang=1 igfxtglxl=1`.
 
-`igfxtglcsb=1` logs every event to `/Users/Shared/tgl-csb.bin` (`tools/mac/decode-tglcsb.py`). The file is left
-open, so a clean shutdown hangs afterwards: power off by hand.
+Logs: `/Users/Shared/tgl-csb.bin` (`tools/mac/decode-tglcsb.py`), `tgl-hang.bin` (`decode-tglhang.py`),
+`tgl-xlate.bin` (`decode-tglxlate.py`). The status-buffer log file is left open, so a clean shutdown hangs
+afterwards: power off by hand.

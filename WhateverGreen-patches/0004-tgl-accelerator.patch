@@ -1,7 +1,15 @@
 diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
 --- a/WhateverGreen/kern_igfx.cpp
 +++ b/WhateverGreen/kern_igfx.cpp
-@@ -937,6 +937,7 @@
+@@ -11,6 +11,7 @@
+ #include "kern_guc.hpp"
+ #include "kern_agdc.hpp"
+ #include "kern_igfx_kexts.hpp"
++#include "tgl_xlate.h"
+ 
+ #include <Headers/kern_api.hpp>
+ #include <Headers/kern_cpu.hpp>
+@@ -937,6 +938,7 @@
  
  void IGFX::TigerLakeRegisterMap::init() {
  	requiresPatchingFramebuffer = true;
@@ -9,12 +17,36 @@ diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
  	requiresMMIORegistersReadAccess = true;
  	requiresMMIORegistersWriteAccess = true;
  }
-@@ -965,6 +966,12 @@
+@@ -965,6 +967,36 @@
  	PE_parse_boot_argn("igfxtglwait", &lateWait, sizeof(lateWait));
  	if (has(LateState))
  		publishCall = thread_call_allocate(publishThread, this);
 +	PE_parse_boot_argn("igfxtglss", &accelSubSlices, sizeof(accelSubSlices));
 +	PE_parse_boot_argn("igfxtglcsb", &csbMode, sizeof(csbMode));
++	PE_parse_boot_argn("igfxtglxl", &xlateMode, sizeof(xlateMode));
++	if (xlateMode) {
++		xlateRec = static_cast<XlateRecord *>(IOMallocAligned(sizeof(XlateRecord), 4096));
++		xlateCache = static_cast<XlateCacheEntry *>(IOMallocAligned(sizeof(XlateCacheEntry) * XlateCacheSize, 4096));
++		xlateIn = static_cast<uint8_t *>(IOMallocAligned(XlatePages * 4096 + 4096, 4096));
++		xlateOut = static_cast<uint8_t *>(IOMallocAligned(XlatePages * 4096 + 4096, 4096));
++		xlatePage = static_cast<uint8_t *>(IOMallocAligned(4096, 4096));
++		xlateLock = IOLockAlloc();
++		if (xlateRec && xlateCache && xlateIn && xlateOut && xlatePage && xlateLock) {
++			bzero(xlateRec, sizeof(XlateRecord));
++			bzero(xlateCache, sizeof(XlateCacheEntry) * XlateCacheSize);
++			xlateRec->magic = XlateRecord::Magic;
++			xlateCall = thread_call_allocate(xlateThread, this);
++		}
++	}
++	PE_parse_boot_argn("igfxtglres", &resolveSkip, sizeof(resolveSkip));
++	PE_parse_boot_argn("igfxtglhang", &hangDump, sizeof(hangDump));
++	if (hangDump) {
++		hangRec = static_cast<HangRecord *>(IOMallocAligned(sizeof(HangRecord) * HangRecord::Records, 4096));
++		if (hangRec) {
++			bzero(hangRec, sizeof(HangRecord) * HangRecord::Records);
++			hangCall = thread_call_allocate(hangThread, this);
++		}
++	}
 +	if (csbMode)
 +		csbCall = thread_call_allocate(csbThread, this);
 +	if (has(GTFuseProbe))
@@ -22,7 +54,7 @@ diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
  	if (has(TraceDisk)) {
  		traceCall = thread_call_allocate(traceThread, this);
  		PE_parse_boot_argn("igfxtgltraceat", &traceAt, sizeof(traceAt));
-@@ -1111,6 +1118,313 @@
+@@ -1111,8 +1143,818 @@
  	clock_get_uptime(&t);
  	absolutetime_to_nanoseconds(t, &nanos);
  	return static_cast<uint32_t>(nanos / 1000000000ULL);
@@ -66,6 +98,52 @@ diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
 +		uint64_t deadline = 0;
 +		clock_interval_to_deadline(15, kSecondScale, &deadline);
 +		thread_call_enter_delayed(csbCall, deadline);
++	}
++	if (xlateMode && xlateCall) {
++		xlateRec->hooked = 1;
++		sharedBufferVirtualAddress = reinterpret_cast<void *(*)(void *)>(patcher.solveSymbol(index, "__ZNK20IGSharedMappedBuffer17getVirtualAddressEv", address, size));
++		if (!sharedBufferVirtualAddress) {
++			SYSLOG("igfx", "TGLMAP: cannot resolve IGSharedMappedBuffer::getVirtualAddress (%d).", patcher.getError());
++			patcher.clearError();
++			xlateRec->hooked = 2;
++		} else {
++			KernelPatcher::RouteRequest request("__ZN20IGHardwareRingBuffer17submitBatchBufferEyjPjjbb", wrapSubmitBatchBuffer, orgSubmitBatchBuffer);
++			if (!patcher.routeMultiple(index, &request, 1, address, size)) {
++				SYSLOG("igfx", "TGLMAP: cannot route submitBatchBuffer (%d).", patcher.getError());
++				patcher.clearError();
++				xlateRec->hooked = 3;
++			}
++		}
++		uint64_t deadline = 0;
++		clock_interval_to_deadline(20, kSecondScale, &deadline);
++		thread_call_enter_delayed(xlateCall, deadline);
++	}
++	if (resolveSkip & 1) {
++		KernelPatcher::RouteRequest request("__ZN16IntelAccelerator16submitCCSResolveEP15IGAccelResourceP22color_resolve_params_tRK8IGVectorI10_blit_rect25IGIOMallocAllocatorPolicyEP11IGAccelTask", wrapSubmitCCSResolve, orgSubmitCCSResolve);
++		if (!patcher.routeMultiple(index, &request, 1, address, size)) {
++			SYSLOG("igfx", "TGLMAP: cannot route submitCCSResolve (%d).", patcher.getError());
++			patcher.clearError();
++		}
++	}
++	if (resolveSkip & 2) {
++		KernelPatcher::RouteRequest request("__ZN16IntelAccelerator18submitDepthResolveEP22depth_resolve_params_tP11IGAccelTask", wrapSubmitDepthResolve, orgSubmitDepthResolve);
++		if (!patcher.routeMultiple(index, &request, 1, address, size)) {
++			SYSLOG("igfx", "TGLMAP: cannot route submitDepthResolve (%d).", patcher.getError());
++			patcher.clearError();
++		}
++	}
++	if (hangDump && hangRec && hangCall) {
++		accelSafeForceWake = reinterpret_cast<void (*)(void *, bool, uint32_t)>(patcher.solveSymbol(index, "__ZN16IntelAccelerator13SafeForceWakeEbj", address, size));
++		if (!accelSafeForceWake) {
++			SYSLOG("igfx", "TGLMAP: cannot resolve SafeForceWake (%d).", patcher.getError());
++			patcher.clearError();
++		} else {
++			KernelPatcher::RouteRequest request("__ZN20IGHardwareRingBuffer14doHangAnalysisEv", wrapDoHangAnalysis, orgDoHangAnalysis);
++			if (!patcher.routeMultiple(index, &request, 1, address, size)) {
++				SYSLOG("igfx", "TGLMAP: cannot route doHangAnalysis (%d).", patcher.getError());
++				patcher.clearError();
++			}
++		}
 +	}
 +	if (accelSubSlices == 0 || accelSubSlices > 8)
 +		return;
@@ -281,6 +359,463 @@ diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
 +	}
 +}
 +
++// Render engine registers saved with each hang record
++static const uint32_t tglHangRegisters[16] = {
++	0x2140, 0x2168, 0x2270, 0x2274, 0x2074, 0x2068, 0x2034, 0x2030,
++	0x2038, 0x206C, 0x229C, 0x20C8, 0x2180, 0x2234, 0x7100, 0x20B0
++};
++
++/**
++ *  Read physical memory. Kernel memory handed to the GPU is ordinary RAM; a physical-address descriptor needs no
++ *  mapping and no prepare().
++ */
++/**
++ *  Graphics stolen memory (DSM). The GPU's page tables point unmapped ranges at a placeholder page there, and the
++ *  CPU must not touch it: a read through the kernel's physical map raised a machine check (run GA10, address
++ *  0x6C800000). Every physical access below refuses this range.
++ */
++static uint64_t tglStolenBase = 0, tglStolenSize = 0;
++
++static bool tglPhysicalAllowed(uint64_t address, size_t length) {
++	// RAM only: below the stolen memory (which sits just under the PCI hole) or between 4 GB and 16 GB. Stolen
++	// memory, the PCI hole and anything a stray page-table entry might name above the installed memory are out.
++	if (tglStolenSize == 0 || address < 0x100000)
++		return false;
++	if (address + length <= tglStolenBase)
++		return true;
++	return address >= 0x100000000ULL && address + length <= 0x400000000ULL;
++}
++
++/**
++ *  Find the stolen memory range from the MMIO mirrors of the PCI registers (i915: GEN12_DSMBASE 0x1080C0,
++ *  GGC 0x108040; GMS 0xF0.. = 4 MB steps). Until this has run no physical access is made.
++ */
++static void tglFindStolen(volatile uint8_t *mmio) {
++	if (tglStolenSize != 0 || !mmio)
++		return;
++	uint64_t base = *reinterpret_cast<volatile uint64_t *>(mmio + 0x1080C0) & ~0xFFFFFULL;
++	uint32_t gms = (*reinterpret_cast<volatile uint32_t *>(mmio + 0x108040) >> 8) & 0xFF;
++	uint64_t size = gms < 0xF0 ? static_cast<uint64_t>(gms) * 32 * 1048576 : static_cast<uint64_t>(gms - 0xF0 + 1) * 4 * 1048576;
++	// Never trust the register beyond what GA10 showed on this machine (machine check at 0x6C800000)
++	if (base < 0x40000000 || base > 0x6C800000 || size == 0) {
++		base = 0x6C000000;
++		size = 0x8000000;
++	}
++	tglStolenBase = base;
++	tglStolenSize = size;
++}
++
++static bool tglReadPhysical(uint64_t address, void *buffer, size_t length) {
++	if (!tglPhysicalAllowed(address, length))
++		return false;
++	auto md = IOMemoryDescriptor::withPhysicalAddress(static_cast<IOPhysicalAddress>(address), length, kIODirectionOut);
++	if (!md)
++		return false;
++	bool ok = md->readBytes(0, buffer, length) == length;
++	md->release();
++	return ok;
++}
++
++/**
++ *  Walk a 4-level GPU page table (same entry layout as x86-64: bit 0 present, bit 7 large page)
++ */
++static uint64_t tglGpuToPhysical(uint64_t pml4, uint64_t address) {
++	uint64_t table = pml4 & 0x000FFFFFFFFFF000ULL;
++	for (int level = 3; level >= 0; level--) {
++		uint64_t entry = 0;
++		if (!tglReadPhysical(table + ((address >> (12 + 9 * level)) & 0x1FF) * 8, &entry, sizeof(entry)) || !(entry & 1))
++			return 0;
++		if (level > 0 && level < 3 && (entry & 0x80)) {
++			uint64_t mask = (1ULL << (12 + 9 * level)) - 1;
++			uint64_t page = (entry & 0x000FFFFFFFFFF000ULL & ~mask) | (address & mask & ~0xFFFULL);
++			return tglPhysicalAllowed(page, 4096) ? page : 0;
++		}
++		table = entry & 0x000FFFFFFFFFF000ULL;
++	}
++	return tglPhysicalAllowed(table, 4096) ? table : 0;
++}
++
++void IGFX::TigerLakeRegisterMap::hangThread(thread_call_param_t param0, thread_call_param_t) {
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	uint32_t count = self->hangCount;
++	if (count > HangRecord::Records)
++		count = HangRecord::Records;
++	FileIO::writeBufferToFile("/Users/Shared/tgl-hang.bin", self->hangRec, sizeof(HangRecord) * count);
++}
++
++void IGFX::TigerLakeRegisterMap::captureHang(void *ring) {
++	// IGHardwareRingBuffer+0x10 = IntelAccelerator, IntelAccelerator+0x1270 = MMIO mapping
++	auto accel = getMember<uint8_t *>(ring, 0x10);
++	auto mmio = getMember<volatile uint8_t *>(accel, 0x1270);
++	if (!accel || !mmio)
++		return;
++	tglFindStolen(mmio);
++	uint32_t slot = static_cast<uint32_t>(OSIncrementAtomic(reinterpret_cast<volatile SInt32 *>(&hangCount)));
++	if (slot >= HangRecord::Records)
++		return;
++	auto &r = hangRec[slot];
++	r.magic = HangRecord::Magic;
++	r.ms = tglUptimeMilliseconds();
++	accelSafeForceWake(accel, true, 7);
++	for (size_t i = 0; i < arrsize(tglHangRegisters); i++)
++		r.reg[i] = *reinterpret_cast<volatile uint32_t *>(mmio + tglHangRegisters[i]);
++	accelSafeForceWake(accel, false, 7);
++
++	uint64_t bbAddr = (static_cast<uint64_t>(r.reg[1] & 0xFFFF) << 32) | r.reg[0];
++	r.pml4 = (static_cast<uint64_t>(r.reg[3]) << 32) | (r.reg[2] & 0xFFFFF000U);
++	r.batchPage = bbAddr & ~0xFFFULL;
++	if (r.pml4 == 0 || r.batchPage == 0)
++		return;
++	for (uint32_t i = 0; i < HangRecord::BatchPages; i++) {
++		uint64_t gpu = r.batchPage - static_cast<uint64_t>(HangRecord::BatchPages - 1 - i) * 4096;
++		r.batchPhys[i] = tglGpuToPhysical(r.pml4, gpu);
++		if (r.batchPhys[i])
++			tglReadPhysical(r.batchPhys[i], r.batch[i], 4096);
++	}
++
++	// The last STATE_BASE_ADDRESS, 3DSTATE_VS and 3DSTATE_PS before BB_ADDR. Pages before the start of the batch
++	// may hold older commands; the last match wins.
++	auto words = reinterpret_cast<const uint32_t *>(r.batch[0]);
++	size_t end = (HangRecord::BatchPages - 1) * 1024 + (bbAddr & 0xFFF) / 4;
++	uint64_t first = r.batchPage - static_cast<uint64_t>(HangRecord::BatchPages - 1) * 4096;
++	uint64_t ksp[2] {};
++	bool have[2] {};
++	for (size_t i = 0; i + 22 <= end; i++) {
++		uint32_t w = words[i];
++		if (w == 0x61010014) {
++			lilu_os_memcpy(r.sbaCmd, &words[i], sizeof(r.sbaCmd));
++			r.sbaAt = first + i * 4;
++			r.instructionBase = ((static_cast<uint64_t>(words[i + 11]) << 32) | words[i + 10]) & ~0xFFFULL;
++		} else if (w == 0x78100007 || (w & 0xFFFFFF00U) == 0x78200000) {
++			int k = w == 0x78100007 ? 0 : 1;
++			lilu_os_memcpy(r.kernelCmd[k], &words[i], sizeof(r.kernelCmd[k]));
++			ksp[k] = ((static_cast<uint64_t>(words[i + 2]) << 32) | words[i + 1]) & ~0x3FULL;
++			have[k] = true;
++		}
++	}
++	for (int k = 0; k < 2; k++) {
++		if (!have[k])
++			continue;
++		r.kernelAt[k] = r.instructionBase + ksp[k];
++		for (uint32_t i = 0; i < HangRecord::KernelPages; i++) {
++			uint64_t phys = tglGpuToPhysical(r.pml4, (r.kernelAt[k] & ~0xFFFULL) + i * 4096ULL);
++			if (i == 0)
++				r.kernelPhys[k] = phys;
++			if (phys)
++				tglReadPhysical(phys, r.kernel[k][i], 4096);
++		}
++	}
+ }
+ 
++static bool tglWritePhysical(uint64_t address, const void *buffer, size_t length) {
++	if (!tglPhysicalAllowed(address, length))
++		return false;
++	auto md = IOMemoryDescriptor::withPhysicalAddress(static_cast<IOPhysicalAddress>(address), length, kIODirectionOut);
++	if (!md)
++		return false;
++	bool ok = md->writeBytes(0, buffer, length) == length;
++	md->release();
++	return ok;
++}
++
++static uint32_t tglHash(const uint8_t *data, size_t length) {
++	uint32_t h = 2166136261U;
++	for (size_t i = 0; i < length; i++)
++		h = (h ^ data[i]) * 16777619U;
++	return h;
++}
++
++void IGFX::TigerLakeRegisterMap::xlateThread(thread_call_param_t param0, thread_call_param_t) {
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	self->xlateRec->nowMs = tglUptimeMilliseconds();
++	FileIO::writeBufferToFile("/Users/Shared/tgl-xlate.bin", self->xlateRec, sizeof(XlateRecord));
++}
++
++/**
++ *  One dword of a batch, through the context's page tables; the page last read is kept
++ */
++bool IGFX::TigerLakeRegisterMap::xlateDword(uint64_t pml4, uint64_t address, uint32_t &value) {
++	uint64_t page = address & ~0xFFFULL;
++	if (page != xlatePageAt) {
++		xlatePageAt = ~0ULL;
++		uint64_t phys = tglGpuToPhysical(pml4, page);
++		if (!phys || !tglReadPhysical(phys, xlatePage, 4096))
++			return false;
++		xlatePageAt = page;
++	}
++	value = *reinterpret_cast<const uint32_t *>(xlatePage + (address & 0xFFC));
++	return true;
++}
++
++void IGFX::TigerLakeRegisterMap::xlateKernel(uint64_t pml4, uint64_t address, uint32_t command) {
++	auto &rec = *xlateRec;
++	rec.kernelRefs++;
++	// The kernel is read page by page (the pages need not be contiguous physically), two pages first; more only
++	// if the translator says the kernel goes on (image-processing shaders run to hundreds of KB)
++	uint32_t offset = address & 0xFFF;
++	uint32_t have = 0, pagesRead = 0;
++	auto readMore = [&](uint32_t upTo) {
++		for (; pagesRead < upTo && pagesRead < XlatePages; pagesRead++) {
++			uint64_t phys = tglGpuToPhysical(pml4, (address & ~0xFFFULL) + pagesRead * 4096ULL);
++			uint32_t skip = pagesRead == 0 ? offset : 0;
++			if (!phys || !tglReadPhysical(phys + skip, xlateIn + have, 4096 - skip))
++				return false;
++			have += 4096 - skip;
++		}
++		return true;
++	};
++	bool more = readMore(2);
++	if (have == 0) {
++		rec.unmapped++;
++		return;
++	}
++	bzero(xlateIn + have, 8);
++	uint64_t firstPhys = tglGpuToPhysical(pml4, address & ~0xFFFULL);
++	if (*reinterpret_cast<const uint64_t *>(xlateIn) == 0) {
++		rec.empty++;
++		return;
++	}
++
++	// Translated before and unchanged since, or rejected before and unchanged since? (The first 4 KB are compared.)
++	uint64_t key = firstPhys + offset;
++	auto &entry = xlateCache[(key >> 6) % XlateCacheSize];
++	if (entry.key == key && entry.length != 0) {
++		uint32_t length = entry.length & 0x7FFFFFFF;
++		if (length > 4096 - offset)
++			length = 4096 - offset;
++		if (tglHash(xlateIn, length) == entry.hash) {
++			if (entry.length & 0x80000000U)
++				rec.rejectedAgain++;
++			else
++				rec.cacheHits++;
++			return;
++		}
++	}
++
++	tgl_xlate_info info {};
++	int length;
++	for (;;) {
++		length = tgl_xlate_kernel(xlateIn, static_cast<int>(have), xlateOut, &info);
++		if (length > 0 || !info.need_more || !more || pagesRead >= XlatePages)
++			break;
++		more = readMore(pagesRead * 4);
++		if (have + 8 <= XlatePages * 4096)
++			bzero(xlateIn + have, 8);
++	}
++	if (length > 0) {
++		bool ok = true;
++		for (uint32_t i = 0, done = 0; ok && done < static_cast<uint32_t>(length); i++) {
++			uint32_t skip = i == 0 ? offset : 0;
++			uint32_t chunk = static_cast<uint32_t>(length) - done < 4096 - skip ? static_cast<uint32_t>(length) - done : 4096 - skip;
++			uint64_t phys = i < XlatePages ? tglGpuToPhysical(pml4, (address & ~0xFFFULL) + i * 4096ULL) : 0;
++			ok = phys && tglWritePhysical(phys + skip, xlateOut + done, chunk);
++			done += chunk;
++		}
++		if (ok) {
++			entry.key = key;
++			entry.length = static_cast<uint32_t>(length);
++			entry.hash = tglHash(xlateOut, static_cast<uint32_t>(length) < 4096 - offset ? static_cast<size_t>(length) : 4096 - offset);
++			rec.translated++;
++			rec.bytesOut += static_cast<uint32_t>(length);
++			if ((rec.translated & (rec.translated - 1)) == 0)
++				thread_call_enter1(xlateCall, nullptr);
++		}
++		return;
++	}
++
++	rec.rejected++;
++	entry.key = key;
++	entry.length = 0x80000000U | 64;
++	entry.hash = tglHash(xlateIn, 64);
++	if (info.offset < 0)
++		info.offset = 0;
++	if (rec.nfails < XlateRecord::Fails) {
++		auto &f = rec.fail[rec.nfails++];
++		f.ms = tglUptimeMilliseconds();
++		f.command = command;
++		f.offset = static_cast<uint32_t>(info.offset);
++		f.instructions = static_cast<uint32_t>(info.instructions);
++		f.kernelAt = address;
++		if (info.reason)
++			strlcpy(f.reason, info.reason, sizeof(f.reason));
++		uint32_t at = static_cast<uint32_t>(info.offset) < XlatePages * 4096 - sizeof(f.bytes) ? static_cast<uint32_t>(info.offset) : 0;
++		lilu_os_memcpy(f.bytes, xlateIn + at, sizeof(f.bytes));
++		if (rec.nsamples < XlateRecord::Samples)
++			lilu_os_memcpy(rec.sample[rec.nsamples++], xlateIn, 4096);
++	}
++	thread_call_enter1(xlateCall, nullptr);
++}
++
++void IGFX::TigerLakeRegisterMap::xlateBatch(void *ring, uint64_t address) {
++	// IGHardwareRingBuffer+0x20 = IGHardwareContext, +0x98 = its context image (IGSharedMappedBuffer). The image is
++	// the hardware's logical ring context: page 1 holds register offset/value pairs, among them PDP0 (the PML4
++	// with 48-bit addressing).
++	auto &rec = *xlateRec;
++	if (tglStolenSize == 0) {
++		auto accel = getMember<uint8_t *>(ring, 0x10);
++		tglFindStolen(accel ? getMember<volatile uint8_t *>(accel, 0x1270) : nullptr);
++		rec.stolenBaseMB = static_cast<uint32_t>(tglStolenBase >> 20);
++		rec.stolenSizeMB = static_cast<uint32_t>(tglStolenSize >> 20);
++		if (tglStolenSize == 0)
++			return;
++	}
++	auto context = getMember<void *>(ring, 0x20);
++	auto buffer = context ? getMember<void *>(context, 0x98) : nullptr;
++	auto image = buffer ? static_cast<const uint32_t *>(sharedBufferVirtualAddress(buffer)) : nullptr;
++	if (!image) {
++		rec.badImage++;
++		return;
++	}
++	// Find the PDP0 pair instead of trusting one layout: { RING+0x274, high } followed by { RING+0x270, low }.
++	// The standard layout has it at dwords 0x30..0x33.
++	const uint32_t *state = image + 0x1000 / 4;
++	uint32_t found = 0;
++	for (uint32_t i = 0x20; i < 0x40 && !found; i += 2)
++		if ((state[i] & 0xFFF) == 0x274 && (state[i + 2] & 0xFFF) == 0x270 && (state[i] & ~0xFFFU) == (state[i + 2] & ~0xFFFU))
++			found = i;
++	if (!found) {
++		rec.badImage++;
++		return;
++	}
++	if ((state[found] & ~0xFFFU) != 0x2000) {
++		rec.notRender++;
++		return;
++	}
++	uint64_t pml4 = (static_cast<uint64_t>(state[found + 1]) << 32) | (state[found + 3] & 0xFFFFF000U);
++	if (!pml4) {
++		rec.badImage++;
++		return;
++	}
++	rec.walked++;
++	xlatePageAt = ~0ULL;
++
++	static constexpr uint32_t MaxDwords = 96 * 1024;   // 384 KB
++	uint64_t at = address & ~3ULL;
++	uint64_t base = xlateLastBase;
++	bool haveBase = base != 0;
++	uint32_t jumps = 0;
++	bool ended = false;
++	for (uint32_t budget = MaxDwords; budget != 0;) {
++		uint32_t h = 0;
++		if (!xlateDword(pml4, at, h))
++			break;
++		uint32_t type = h >> 29, length = 1;
++		rec.commands++;
++		if (type == 0) {
++			uint32_t opcode = (h >> 23) & 0x3F;
++			if (opcode == 0x0A) {           // MI_BATCH_BUFFER_END
++				ended = true;
++				break;
++			}
++			if (opcode == 0x31) {           // MI_BATCH_BUFFER_START: follow (chained or second level alike)
++				uint32_t lo = 0, hi = 0;
++				if (++jumps > 8 || !xlateDword(pml4, at + 4, lo) || !xlateDword(pml4, at + 8, hi))
++					break;
++				at = ((static_cast<uint64_t>(hi & 0xFFFF) << 32) | lo) & ~3ULL;
++				budget--;
++				continue;
++			}
++			length = opcode < 0x10 ? 1 : (h & 0xFF) + 2;
++		} else if (type == 3) {
++			length = ((h >> 27) & 3) == 1 ? 1 : (h & 0xFF) + 2;
++			uint32_t id = h >> 16;
++			if (id == 0x6101 && length >= 12) {          // STATE_BASE_ADDRESS: instruction base in dwords 10, 11
++				uint32_t lo = 0, hi = 0;
++				if (xlateDword(pml4, at + 40, lo) && xlateDword(pml4, at + 44, hi) && (lo & 1)) {
++					base = ((static_cast<uint64_t>(hi & 0xFFFF) << 32) | lo) & ~0xFFFULL;
++					haveBase = true;
++					xlateLastBase = base;
++				}
++			} else if (id == 0x7810 || id == 0x781B || id == 0x781D || id == 0x7811 || id == 0x7820) {
++				// 3DSTATE_VS / DS / GS / PS: kernel start pointer in dwords 1, 2; PS has two more in 8..11.
++				// 3DSTATE_HS: enable in dword 2 bit 31, kernel start pointer in dwords 3, 4.
++				uint32_t ksp[6] {};
++				bool ok;
++				if (id == 0x781B) {
++					uint32_t enable = 0;
++					ok = xlateDword(pml4, at + 8, enable) && (enable & 0x80000000U) &&
++					     xlateDword(pml4, at + 12, ksp[0]) && xlateDword(pml4, at + 16, ksp[1]);
++				} else {
++					ok = xlateDword(pml4, at + 4, ksp[0]) && xlateDword(pml4, at + 8, ksp[1]);
++				}
++				if (ok && id == 0x7820 && length >= 12)
++					ok = xlateDword(pml4, at + 32, ksp[2]) && xlateDword(pml4, at + 36, ksp[3]) &&
++					     xlateDword(pml4, at + 40, ksp[4]) && xlateDword(pml4, at + 44, ksp[5]);
++				if (ok && !haveBase) {
++					rec.noBase++;
++				} else if (ok) {
++					// 3DSTATE_PS dword 6: bit 0 = 8-pixel dispatch, bit 1 = 16, bit 2 = 32. Kernel 0 serves the 8-pixel
++					// mode (or the only mode enabled), kernel 1 the 32-pixel mode, kernel 2 the 16-pixel mode.
++					uint32_t modes = 7;
++					if (id == 0x7820 && !xlateDword(pml4, at + 24, modes))
++						modes = 7;
++					modes &= 7;
++					bool single = modes == 1 || modes == 2 || modes == 4;
++					for (int k = 0; k < 3; k++) {
++						if (id == 0x7820 && !single && ((k == 0 && !(modes & 1)) || (k == 1 && !(modes & 4)) || (k == 2 && !(modes & 2))))
++							continue;
++						if (id == 0x7820 && single && k != 0)
++							continue;
++						uint64_t pointer = ((static_cast<uint64_t>(ksp[2 * k + 1] & 0xFFFF) << 32) | ksp[2 * k]) & ~0x3FULL;
++						// A stage that is off has a zero pointer; the second and third PS kernels are optional
++						if (k > 0 && (id != 0x7820 || pointer == 0))
++							continue;
++						if (k == 0 && pointer == 0 && id != 0x7820)
++							continue;
++						xlateKernel(pml4, base + pointer, h);
++					}
++					xlatePageAt = ~0ULL;   // xlateKernel does not use the batch page, but keep the walk honest
++				}
++			}
++		} else {
++			break;   // not a render-engine command: lost track of the batch
++		}
++		if (length > budget)
++			break;
++		budget -= length;
++		at += static_cast<uint64_t>(length) * 4;
++	}
++	if (!ended)
++		rec.noEnd++;
++}
++
++uint64_t IGFX::TigerLakeRegisterMap::wrapSubmitCCSResolve(void *that, void *resource, void *params, void *rects, void *task) {
++	// Callers do not look at the result
++	auto self = &callbackIGFX->modTigerLakeRegisterMap;
++	if (self->xlateRec)
++		self->xlateRec->ccsResolvesSkipped++;
++	return 0;
++}
++
++uint64_t IGFX::TigerLakeRegisterMap::wrapSubmitDepthResolve(void *that, void *params, void *task) {
++	auto self = &callbackIGFX->modTigerLakeRegisterMap;
++	if (self->xlateRec)
++		self->xlateRec->depthResolvesSkipped++;
++	return 0;
++}
++
++bool IGFX::TigerLakeRegisterMap::wrapSubmitBatchBuffer(void *that, uint64_t address, uint32_t a, uint32_t *b, uint32_t c, bool d, bool e) {
++	auto self = &callbackIGFX->modTigerLakeRegisterMap;
++	if (self->xlateRec && self->xlateLock && self->sharedBufferVirtualAddress) {
++		IOLockLock(self->xlateLock);
++		self->xlateRec->batches++;
++		self->xlateBatch(that, address);
++		if ((self->xlateRec->batches & (self->xlateRec->batches - 1)) == 0 || (self->xlateRec->batches & 31) == 0)
++			thread_call_enter1(self->xlateCall, nullptr);
++		IOLockUnlock(self->xlateLock);
++	}
++	return FunctionCast(wrapSubmitBatchBuffer, self->orgSubmitBatchBuffer)(that, address, a, b, c, d, e);
++}
++
++uint32_t IGFX::TigerLakeRegisterMap::wrapDoHangAnalysis(void *that) {
++	auto self = &callbackIGFX->modTigerLakeRegisterMap;
++	if (self->hangCount < HangRecord::Records) {
++		self->captureHang(that);
++		thread_call_enter1(self->hangCall, nullptr);
++	}
++	return FunctionCast(wrapDoHangAnalysis, self->orgDoHangAnalysis)(that);
++}
++
 +void IGFX::TigerLakeRegisterMap::gtFuseThread(thread_call_param_t param0, thread_call_param_t) {
 +	auto self = static_cast<TigerLakeRegisterMap *>(param0);
 +	FileIO::writeBufferToFile("/Users/Shared/tgl-gt-fuses.bin", &self->gtFuses, sizeof(self->gtFuses));
@@ -333,10 +868,12 @@ diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
 +			wr(controller, req[d], 0x00010000);
 +	if (gtFuseCall)
 +		thread_call_enter1(gtFuseCall, nullptr);
- }
- 
++}
++
  void IGFX::TigerLakeRegisterMap::traceThread(thread_call_param_t param0, thread_call_param_t) {
-@@ -1287,6 +1601,8 @@
+ 	// Kernel thread context. One synchronous write of the whole record at offset 0.
+ 	auto self = static_cast<TigerLakeRegisterMap *>(param0);
+@@ -1287,6 +2129,8 @@
  void IGFX::TigerLakeRegisterMap::write(void *controller, uint32_t address, uint32_t value) {
  	if (!snapshotTaken)
  		snapshot(controller);
@@ -358,7 +895,7 @@ diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
  			AllTranslation   = 0x03F
  		};
  		uint32_t features {0};
-@@ -2770,6 +2773,85 @@
+@@ -2770,6 +2773,202 @@
  			uint32_t nowUptime {0};
  			struct { uint32_t address; uint32_t value; } ring[RingSize] {};
  		} traceRec;
@@ -441,10 +978,127 @@ diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
 +		void csbNote(void *that, uint8_t action, uint32_t index, uint32_t writePointer, uint32_t lo, uint32_t hi, uint32_t synth, uint32_t flags);
 +		void csbFlush();
 +
++		/**
++		 *  igfxtglhang=1: diagnostic. At each of the first three GPU hangs (IGHardwareRingBuffer::doHangAnalysis of
++		 *  AppleIntelICLGraphics 24.0.5) copy what the render engine was executing to /Users/Shared/tgl-hang.bin:
++		 *  the batch pages up to BB_ADDR, read through the hung context's page tables, and the vertex and pixel
++		 *  shader kernels the batch points to (STATE_BASE_ADDRESS instruction base + 3DSTATE_VS / 3DSTATE_PS).
++		 */
++		uint32_t hangDump {0};
++		struct HangRecord {
++			static constexpr uint32_t Magic = 0x41484754; // "TGHA"
++			static constexpr uint32_t Records = 3;
++			static constexpr uint32_t BatchPages = 8;
++			static constexpr uint32_t KernelPages = 2;
++			uint32_t magic {Magic};
++			uint32_t ms {0};
++			uint32_t reg[16] {};        // see tglHangRegisters
++			uint64_t pml4 {0};
++			uint64_t batchPage {0};     // GPU address of the last batch page (the one BB_ADDR is in)
++			uint64_t batchPhys[BatchPages] {}; // physical address of each batch page, 0 = not mapped
++			uint64_t instructionBase {0};
++			uint64_t sbaAt {0};         // GPU address where STATE_BASE_ADDRESS was found (0 = not found)
++			uint64_t kernelAt[2] {};    // GPU address of the VS and PS kernel (0 = command not found)
++			uint64_t kernelPhys[2] {};
++			uint32_t kernelCmd[2][12] {}; // the 3DSTATE_VS / 3DSTATE_PS command
++			uint32_t sbaCmd[22] {};
++			uint32_t pad[2] {};
++			uint8_t batch[BatchPages][4096] {};  // oldest first; batch[BatchPages - 1] holds BB_ADDR
++			uint8_t kernel[2][KernelPages][4096] {};
++		};
++		HangRecord *hangRec {nullptr};
++		volatile uint32_t hangCount {0};
++		thread_call_t hangCall {nullptr};
++		mach_vm_address_t orgDoHangAnalysis {};
++		void (*accelSafeForceWake)(void *, bool, uint32_t) {nullptr};
++		static void hangThread(thread_call_param_t self, thread_call_param_t);
++		static uint32_t wrapDoHangAnalysis(void *that);
++		void captureHang(void *ring);
++
++		/**
++		 *  igfxtglxl=1: translate shader kernels from Gen11 to Gen12 EU code when a batch is submitted.
++		 *
++		 *  Apple's user-space drivers compile shaders for Ice Lake. Tiger Lake's EUs use another instruction
++		 *  encoding (MOV is 0x01 on Gen11 and 0x61 on Gen12, where 0x01 is SYNC), so every draw hangs. The hook
++		 *  on IGHardwareRingBuffer::submitBatchBuffer walks the batch, follows STATE_BASE_ADDRESS and the
++		 *  3DSTATE_VS/HS/DS/GS/PS kernel pointers through the context's page tables and rewrites each kernel in
++		 *  place (tgl_xlate.c, built on Mesa's encoder). A kernel is rewritten only if every instruction in it
++		 *  translates; statistics and rejected kernels go to /Users/Shared/tgl-xlate.bin.
++		 */
++		uint32_t xlateMode {0};
++		struct XlateRecord {
++			static constexpr uint32_t Magic = 0x4C584754; // "TGXL"
++			static constexpr uint32_t Fails = 24;
++			static constexpr uint32_t Samples = 6;
++			uint32_t magic {Magic};
++			uint32_t hooked {0};        // 1 routed, 2 a symbol was missing, 3 routing failed
++			uint32_t nowMs {0};
++			uint32_t batches {0};       // submitBatchBuffer calls
++			uint32_t walked {0};        // batches walked (render engine, page table found)
++			uint32_t notRender {0};     // other engines
++			uint32_t badImage {0};      // context image did not look as expected
++			uint32_t noEnd {0};         // walk ended without MI_BATCH_BUFFER_END (limit, unmapped page, unknown command)
++			uint32_t commands {0};
++			uint32_t kernelRefs {0};    // kernel pointers seen
++			uint32_t translated {0};
++			uint32_t cacheHits {0};     // already translated, unchanged
++			uint32_t rejected {0};
++			uint32_t rejectedAgain {0}; // seen again, still the rejected bytes
++			uint32_t unmapped {0};      // kernel address not mapped
++			uint32_t noBase {0};        // kernel pointer before any STATE_BASE_ADDRESS
++			uint32_t bytesOut {0};
++			uint32_t nfails {0};
++			uint32_t nsamples {0};
++			uint32_t empty {0};         // kernel pointer to zeros (stage or dispatch mode not in use)
++			uint32_t stolenBaseMB {0};  // graphics stolen memory, never touched
++			uint32_t stolenSizeMB {0};
++			uint32_t ccsResolvesSkipped {0};   // igfxtglres bit 0
++			uint32_t depthResolvesSkipped {0}; // igfxtglres bit 1
++			struct Fail {
++				uint32_t ms;
++				uint32_t command;       // 3DSTATE_xx header
++				uint32_t offset;        // offset of the instruction in the kernel
++				uint32_t instructions;
++				uint64_t kernelAt;      // GPU address
++				char reason[56];
++				uint8_t bytes[48];      // the kernel from that instruction on
++			} fail[Fails] {};
++			uint8_t sample[Samples][4096] {};  // first rejected kernels, from their start
++		};
++		XlateRecord *xlateRec {nullptr};
++		struct XlateCacheEntry { uint64_t key; uint32_t length; uint32_t hash; };
++		static constexpr uint32_t XlateCacheSize = 2048;
++		XlateCacheEntry *xlateCache {nullptr};
++		static constexpr uint32_t XlatePages = 176; // longest kernel handled: 704 KB (image-processing shaders run to 340 KB)
++		uint8_t *xlateIn {nullptr};      // XlatePages pages
++		uint8_t *xlateOut {nullptr};     // XlatePages pages
++		uint8_t *xlatePage {nullptr};    // batch page being walked
++		uint64_t xlatePageAt {~0ULL};
++		uint64_t xlateLastBase {0};      // last instruction base address seen (state is inherited between batches)
++		IOLock *xlateLock {nullptr};
++		thread_call_t xlateCall {nullptr};
++		mach_vm_address_t orgSubmitBatchBuffer {};
++		void *(*sharedBufferVirtualAddress)(void *) {nullptr};
++		/**
++		 *  igfxtglres=<mask>: diagnostic. Skip the driver's own resolve submissions, which build Gen11 fast-clear /
++		 *  HiZ batches: bit 0 IntelAccelerator::submitCCSResolve, bit 1 IntelAccelerator::submitDepthResolve.
++		 *  (Tiger Lake encodes auxiliary surface modes differently; run GA11 hung in such a batch.)
++		 */
++		uint32_t resolveSkip {0};
++		static uint64_t wrapSubmitCCSResolve(void *that, void *resource, void *params, void *rects, void *task);
++		static uint64_t wrapSubmitDepthResolve(void *that, void *params, void *task);
++		mach_vm_address_t orgSubmitCCSResolve {};
++		mach_vm_address_t orgSubmitDepthResolve {};
++		static void xlateThread(thread_call_param_t self, thread_call_param_t);
++		static bool wrapSubmitBatchBuffer(void *that, uint64_t address, uint32_t a, uint32_t *b, uint32_t c, bool d, bool e);
++		void xlateBatch(void *ring, uint64_t address);
++		void xlateKernel(uint64_t pml4, uint64_t address, uint32_t command);
++		bool xlateDword(uint64_t pml4, uint64_t address, uint32_t &value);
++
  		bool traceArmed {false};
  		bool traceDone {false};
  		uint32_t traceAt {0};
-@@ -2792,6 +2874,7 @@
+@@ -2792,6 +2991,7 @@
  		// MARK: Patch Submodule IMP
  		void init() override;
  		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;

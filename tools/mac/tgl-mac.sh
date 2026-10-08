@@ -62,6 +62,13 @@ SHA_0003Q=54316b4c874662dc80489c8961462ff1a208537a32e7e3bb8250ecabc0ece829
 SHA_0003S=3de7190c5c321b24e3671051cbd533596faaf2b98bf1cda2a9b9c5cee5b4395a
 SHA_0003V=c91b158a49dfc7ff4f86357cc64ed7280e9e1a3765df3839316f31dd32d3f107
 SHA_0003X=d22c6d004808110a6ee3db13804bce7a60447a8fd87e1540e9370e0d51433f44
+SHA_0004G=2c345fb5c501a4dc4f87446bbbbe7d4b3b8b3baa9ae7c63e43657d34e6a2d153
+SHA_0004F=27ccf76cb22b8c1b5f5b681953f87aef126ede39087c886d4915c3953eff9cac
+SHA_0004E=ff22a31af8828575e2cc5527897c7c4f6ac65ca88863604dc43cd0addd0acb64
+SHA_0004D=5d288720d9a5432b50db764ec105a4a0aacd921a7949568be9d46285a98841ed
+SHA_0004C=e4490610a9dad4ce5957bd413c9e922d62f3e43c4a7cfa3b962e5a0685ced17b
+SHA_0004B=b59e008bfa675d36535c83ecfb26b68186f4178afa95e6468e7ad2d72e61209b
+SHA_0004A=60e3e2b382b71262973aa9102c6c3939d51e6128b0d0ca4e0b60883743108deb
 SHA_0003Z=b3ebf1b26314d16a9875373e66de9d2e02664e009c127f77a2d9cbc9e50de91f
 SHA_0003Y=a2f061ba24d0d52e706633b9fd574cd9a1b95a79cfee0c238a285a32053c99c4
 SHA_0003T=02a7f9735077560f7acc0c76d7dc3616679c4edd07b2ca81c30055e82f8ad458
@@ -140,6 +147,13 @@ weg_label(){
     "$SHA_0003X") echo "0003x accelerator-work build (0003v + igfxtglss subslice patch for AppleIntelICLGraphics + GT fuse probe) (v$v)";;
     "$SHA_0003Y") echo "0003y accelerator-work build (0003x + igfxtglcsb Gen12 context status buffer reader, log in /Users/Shared/tgl-csb.bin) (v$v)";;
     "$SHA_0003Z") echo "0003z accelerator-work build (0003y with a 6-entry context status buffer) (v$v)";;
+    "$SHA_0004A") echo "0004a accelerator-work build (0003z + igfxtglhang: batch and shader kernels of a GPU hang to /Users/Shared/tgl-hang.bin) (v$v)";;
+    "$SHA_0004B") echo "0004b accelerator-work build (0004a + igfxtglxl: Gen11->Gen12 shader translation at batch submission, log /Users/Shared/tgl-xlate.bin) (v$v)";;
+    "$SHA_0004C") echo "0004c accelerator-work build (0004b + translator: inserted waits, branches, growth into padding, 3DSTATE_HS fix) (v$v)";;
+    "$SHA_0004D") echo "0004d accelerator-work build (0004c + exact register-usage tracking in the translator) (v$v)";;
+    "$SHA_0004E") echo "0004e accelerator-work build (0004d + translator: jmpi, register descriptors, kernels up to 36 KB) (v$v)";;
+    "$SHA_0004F") echo "0004f accelerator-work build (0004e + never touches stolen memory or the PCI hole; translator: goto/join, indirect addressing, padding, acc1, 100 KB kernels) (v$v)";;
+    "$SHA_0004G") echo "0004g accelerator-work build (0004f + shaders up to 700 KB, pixel-shader dispatch modes, igfxtglres resolve skip) (v$v)";;
     "$SHA_0003T") echo "0003t DIAGNOSTIC build (0003v + GT fuse probe, igfxtglmap 0x80000) (v$v)";;
     *) echo "v$v, sha ${s:0:12} (stock or unknown)";;
   esac
@@ -149,7 +163,7 @@ weg_running_matches(){
   run=$(kextstat 2>/dev/null | awk '/WhateverGreen/{print $8}')
   if [ -z "$run" ]; then echo "NO - WhateverGreen is NOT LOADED in this boot"; elif [ "$run" = "$want" ]; then echo "yes ($run)"; else echo "NO - running $run, ESP has $want (not rebooted since install, or booted from the rescue stick)"; fi
 }
-weg_tag(){ local s; s=$(sha "$1/Contents/MacOS/WhateverGreen" 2>/dev/null); case "$s" in "$SHA_0001") echo 0001;; "$SHA_0002") echo 0002;; "$SHA_0003") echo 0003a;; "$SHA_0003B") echo 0003b;; "$SHA_0003C") echo 0003c;; "$SHA_0003D") echo 0003d;; "$SHA_0003E") echo 0003e;; "$SHA_0003F") echo 0003f;; "$SHA_0003G") echo 0003g;; "$SHA_0003H") echo 0003h;; "$SHA_0003I") echo 0003i;; "$SHA_0003J") echo 0003j;; "$SHA_0003K") echo 0003k;; "$SHA_0003L") echo 0003l;; "$SHA_0003M") echo 0003m;; "$SHA_0003N") echo 0003n;; "$SHA_0003O") echo 0003o;; "$SHA_0003P") echo 0003p;; "$SHA_0003Q") echo 0003q;; "$SHA_0003S") echo 0003s;; "$SHA_0003V") echo 0003;; "$SHA_0003X") echo 0003x;; "$SHA_0003Y") echo 0003y;; "$SHA_0003Z") echo 0003z;; "$SHA_0003T") echo 0003t;; *) echo other;; esac; }
+weg_tag(){ local s; s=$(sha "$1/Contents/MacOS/WhateverGreen" 2>/dev/null); case "$s" in "$SHA_0001") echo 0001;; "$SHA_0002") echo 0002;; "$SHA_0003") echo 0003a;; "$SHA_0003B") echo 0003b;; "$SHA_0003C") echo 0003c;; "$SHA_0003D") echo 0003d;; "$SHA_0003E") echo 0003e;; "$SHA_0003F") echo 0003f;; "$SHA_0003G") echo 0003g;; "$SHA_0003H") echo 0003h;; "$SHA_0003I") echo 0003i;; "$SHA_0003J") echo 0003j;; "$SHA_0003K") echo 0003k;; "$SHA_0003L") echo 0003l;; "$SHA_0003M") echo 0003m;; "$SHA_0003N") echo 0003n;; "$SHA_0003O") echo 0003o;; "$SHA_0003P") echo 0003p;; "$SHA_0003Q") echo 0003q;; "$SHA_0003S") echo 0003s;; "$SHA_0003V") echo 0003;; "$SHA_0003X") echo 0003x;; "$SHA_0003Y") echo 0003y;; "$SHA_0003Z") echo 0003z;; "$SHA_0004A") echo 0004a;; "$SHA_0004B") echo 0004b;; "$SHA_0004C") echo 0004c;; "$SHA_0004D") echo 0004d;; "$SHA_0004E") echo 0004e;; "$SHA_0004F") echo 0004f;; "$SHA_0004G") echo 0004g;; "$SHA_0003T") echo 0003t;; *) echo other;; esac; }
 cur_get(){ [ -f "$CUR" ] && python3 -c "import json,sys;print(json.load(open(sys.argv[1])).get(sys.argv[2],''))" "$CUR" "$1"; }
 runs_add(){ # time,label,experiment,expected_args,outcome,notes
   [ -f "$RUNS" ] || echo '"time","label","experiment","expected_args","outcome","notes"' > "$RUNS"
@@ -199,6 +213,13 @@ cmd_apply(){
   local tag; tag=$(weg_tag "$OC/Kexts/WhateverGreen.kext")
   case "$exp" in
     B|B-*|C|C-*|D|D-*|E|E-*|F|F-*|F2|F2-*|F3|F4|F5|K|K-*|M|M-*|N|P|P2|Q|R|S|G|G-*|G2|G3|H) [ "$tag" = 0003 ] || die "'$exp' needs the current 0003v WhateverGreen build on the ESP (have: $tag). Run: sudo $0 install-kext 0003";;
+    GA12) [ "$tag" = 0004g ] || die "'$exp' needs the 0004g accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004g";;
+    GA11) [ "$tag" = 0004f ] || die "'$exp' needs the 0004f accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004f";;
+    GA10) [ "$tag" = 0004e ] || die "'$exp' needs the 0004e accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004e";;
+    GA9) [ "$tag" = 0004d ] || die "'$exp' needs the 0004d accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004d";;
+    GA8) [ "$tag" = 0004c ] || die "'$exp' needs the 0004c accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004c";;
+    GA7) [ "$tag" = 0004b ] || die "'$exp' needs the 0004b accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004b";;
+    GA6) [ "$tag" = 0004a ] || die "'$exp' needs the 0004a accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0004a";;
     GA4|GA5) [ "$tag" = 0003z ] || die "'$exp' needs the 0003z accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0003z";;
     GA3) [ "$tag" = 0003y ] || die "'$exp' needs the 0003y accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0003y";;
     GA1|GA2) [ "$tag" = 0003x ] || die "'$exp' needs the 0003x accelerator-work build on the ESP (have: $tag). Run: sudo $0 install-kext 0003x";;
@@ -206,7 +227,7 @@ cmd_apply(){
     stop=*) [ "$tag" = 0001 ] || [ "$tag" = 0002 ] || [ "$tag" = 0003 ] || die "'$exp' needs the 0001 or 0002 build (have: $tag)";;
   esac
   case "$(weg_running_matches "$OC/Kexts/WhateverGreen.kext")" in yes*) ;; *) say "note: the kext on the ESP is not the one running now (same toolchain as the 0003 build that is proven to load).";; esac
-  { [ "$exp" != P ] && [ "$exp" != P2 ] && [ "$exp" != Q ] && [ "$exp" != R ] && [ "$exp" != S ] && [ "$exp" != GA1 ] && [ "$exp" != GA2 ] && [ "$exp" != GA3 ] && [ "$exp" != GA4 ] && [ "$exp" != GA5 ]; } || [ -f "$OC/ACPI/SSDT-DOSI.aml" ] || die "experiment P needs SSDT-DOSI.aml on the ESP. Run: sudo $0 install-acpi SSDT-DOSI"
+  { [ "$exp" != P ] && [ "$exp" != P2 ] && [ "$exp" != Q ] && [ "$exp" != R ] && [ "$exp" != S ] && [ "$exp" != GA1 ] && [ "$exp" != GA2 ] && [ "$exp" != GA3 ] && [ "$exp" != GA4 ] && [ "$exp" != GA5 ] && [ "$exp" != GA6 ] && [ "$exp" != GA7 ] && [ "$exp" != GA8 ] && [ "$exp" != GA9 ] && [ "$exp" != GA10 ] && [ "$exp" != GA11 ] && [ "$exp" != GA12 ]; } || [ -f "$OC/ACPI/SSDT-DOSI.aml" ] || die "experiment P needs SSDT-DOSI.aml on the ESP. Run: sudo $0 install-acpi SSDT-DOSI"
   case "$exp" in N|P) ;; *) false;; esac && { [ -f "$OC/Kexts/BrightnessKeys.kext/Contents/Info.plist" ] || die "experiment $exp needs BrightnessKeys.kext on the ESP. Run: sudo $0 install-extra BrightnessKeys"; }
   [ "$exp" != __never__ ] || die "experiment N needs BrightnessKeys.kext on the ESP. Run: sudo $0 install-extra BrightnessKeys"
   local tmp; tmp=$(mktemp /tmp/tgl-exp.XXXXXX)
@@ -330,6 +351,13 @@ cmd_install_kext(){
     0003x) src=$STICK/built/0003x/WhateverGreen.kext;;
     0003y) src=$STICK/built/0003y/WhateverGreen.kext;;
     0003z) src=$STICK/built/0003z/WhateverGreen.kext;;
+    0004a) src=$STICK/built/0004a/WhateverGreen.kext;;
+    0004b) src=$STICK/built/0004b/WhateverGreen.kext;;
+    0004c) src=$STICK/built/0004c/WhateverGreen.kext;;
+    0004d) src=$STICK/built/0004d/WhateverGreen.kext;;
+    0004e) src=$STICK/built/0004e/WhateverGreen.kext;;
+    0004f) src=$STICK/built/0004f/WhateverGreen.kext;;
+    0004g) src=$STICK/built/0004g/WhateverGreen.kext;;
     0003q) src=$STICK/built/0003q/WhateverGreen.kext;;
     0003p) src=$STICK/built/0003p/WhateverGreen.kext;;
     0003o) src=$STICK/built/0003o/WhateverGreen.kext;;

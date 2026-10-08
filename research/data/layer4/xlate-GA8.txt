@@ -1,0 +1,7 @@
+hook           : routed
+written at     : 36.313 s uptime
+batches        : 13 submitted, 9 walked, 4 other engines, 0 unreadable context image, 0 walks without an end
+commands       : 1149
+kernel pointers: 26  ->  18 translated (4568 bytes), 4 already translated, 1 rejected, 0 rejected before, 0 unmapped, 0 without a base address, 3 empty
+  rejected  0    36313 ms  PS kernel at 40B99140: "no free register to replace the NF accumulator" at +0x0 (83 instructions before the end of the walk)
+               0060005B 2000C01C 0720D601 03400404 00000001 2EA04F2C 00000000 00000000

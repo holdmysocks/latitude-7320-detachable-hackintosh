@@ -1,0 +1,14 @@
+--- a/src/intel/compiler/brw_eu_emit.c
++++ b/src/intel/compiler/brw_eu_emit.c
+@@ -826,9 +826,10 @@
+    assert(src2.address_mode == BRW_ADDRESS_DIRECT);
+ 
+    if (brw_inst_access_mode(devinfo, inst) == BRW_ALIGN_1) {
++      /* tgl_xlate: Apple's compiler also uses acc1 as a destination; the Gen12 encoding takes any register number */
+       assert(dest.file == BRW_GENERAL_REGISTER_FILE ||
+              (dest.file == BRW_ARCHITECTURE_REGISTER_FILE &&
+-              dest.nr == BRW_ARF_ACCUMULATOR));
++              (dest.nr & 0xF0) == BRW_ARF_ACCUMULATOR));
+ 
+       if (devinfo->ver >= 12) {
+          brw_inst_set_3src_a1_dst_reg_file(devinfo, inst, dest.file);

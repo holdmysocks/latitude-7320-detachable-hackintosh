@@ -1,0 +1,92 @@
+=== hang0-vs.bin: Gen11 as captured
+0000   shl(8)          g0<1>D          g2<8,8,1>D      3W              { align1 1Q };
+0010   mov(1)          g116.2<1>F      0x0F             /* 0F */       { align1 WE_all 1N };
+0020   send(8)         g117<1>F        g0<0,1,0>F      0x02206c00
+                            dp data 1 MsgDesc: (untyped surface read, Surface = 0, SIMD8, Mask = 0xc)  mlen 1 rlen 2 { align1 1Q };
+0030   mov(8)          g119<1>F        0x0F             /* 0F */       { align1 1Q };
+0040   send(16)        g4<1>W          g116<0,1,0>F    0x02284302
+                            data MsgDesc: (DC unaligned OWORD block read, bti 2, 3)  mlen 1 rlen 2 { align1 WE_all 1H };
+0050   mov(8)          g120<1>F        0x0F             /* 0F */       { align1 1Q };
+0060   mov(8)          g121<1>F        0x0F             /* 0F */       { align1 1Q };
+0070   mov(8)          g122<1>F        0x0F             /* 0F */       { align1 1Q };
+0080 c mov(8)          g127<1>F        g1<8,8,1>F                      { align1 WE_all 1Q compacted };
+0088   mov(1)          ARF240<1>UD     0W                              { align1 WE_all 1N switch };
+0098 c mul(8)          acc0<1>F        g4<0,1,0>F      g117<8,8,1>F    { align1 1Q compacted };
+00a0 c mul(8)          g115<1>F        g4.1<0,1,0>F    g117<8,8,1>F    { align1 1Q compacted };
+00a8 c mul(8)          g6<1>F          g4.2<0,1,0>F    g117<8,8,1>F    { align1 1Q compacted };
+00b0 c mul(8)          g114<1>F        g4.3<0,1,0>F    g117<8,8,1>F    { align1 1Q compacted };
+00b8 c mac(8)          g7<1>F          g4.4<0,1,0>F    g118<8,8,1>F    { align1 1Q compacted };
+00c0   mad(8)          acc0<1>F        g115<8,8,1>F    g4.5<0,1,0>F    g118<1,1,1>F { align1 1Q };
+00d0   mad(8)          g8<1>F          g6<8,8,1>F      g4.6<0,1,0>F    g118<1,1,1>F { align1 1Q };
+00e0   mad(8)          g112<1>F        g114<8,8,1>F    g4.7<0,1,0>F    g118<1,1,1>F { align1 1Q };
+00f0 c add(8)          g123<1>F        g7<8,8,1>F      g5.4<0,1,0>F    { align1 1Q compacted };
+00f8 c add(8)          g124<1>F        acc0<8,8,1>F    g5.5<0,1,0>F    { align1 1Q compacted };
+0100 c add(8)          g125<1>F        g8<8,8,1>F      g5.6<0,1,0>F    { align1 1Q compacted };
+0108 c add(8)          g126<1>F        g112<8,8,1>F    g5.7<0,1,0>F    { align1 1Q compacted };
+0110   sends(8)        nullUD          g127UD          g119UD          0x02080007                0x00000200
+                            urb MsgDesc: offset 0 SIMD8 write  mlen 1 ex_mlen 8 rlen 0 { align1 1Q EOT };
+
+=== translated to Gen12
+   23 instructions, 288 bytes
+-- Gen12 result:
+0000   shl(8)          g0<1>D          g2<8,8,1>D      3W              { align1 1Q };
+0010   mov(1)          g116.2<1>F      0x0F             /* 0F */       { align1 WE_all 1N @1 };
+0020   send(8)         g117UD          g0UD            nullUD          0x02206c00                0x00000000
+                            dp data 1 MsgDesc: (untyped surface read, Surface = 0, SIMD8, Mask = 0xc)  mlen 1 ex_mlen 0 rlen 2 { align1 1Q @1 $0 };
+0030   mov(8)          g119<1>F        0x0F             /* 0F */       { align1 1Q $0.dst };
+0040   send(16)        g4UD            g116UD          nullUD          0x02284302                0x00000000
+                            data MsgDesc: (DC unaligned OWORD block read, bti 2, 3)  mlen 1 ex_mlen 0 rlen 2 { align1 WE_all 1H @1 $0 };
+0050   mov(8)          g120<1>F        0x0F             /* 0F */       { align1 1Q $0.dst };
+0060   mov(8)          g121<1>F        0x0F             /* 0F */       { align1 1Q @1 };
+0070   mov(8)          g122<1>F        0x0F             /* 0F */       { align1 1Q @1 };
+0080 c mov(8)          g127<1>F        g1<8,8,1>F                      { align1 WE_all 1Q @1 compacted };
+0088   mov(1)          null<1>UD       0x00000000UD                    { align1 WE_all 1N @1 };
+0098 c mul(8)          acc0<1>F        g4<0,1,0>F      g117<8,8,1>F    { align1 1Q @1 compacted };
+00a0 c mul(8)          g115<1>F        g4.1<0,1,0>F    g117<8,8,1>F    { align1 1Q @1 compacted };
+00a8 c mul(8)          g6<1>F          g4.2<0,1,0>F    g117<8,8,1>F    { align1 1Q @1 compacted };
+00b0 c mul(8)          g114<1>F        g4.3<0,1,0>F    g117<8,8,1>F    { align1 1Q @1 compacted };
+00b8 c mac(8)          g7<1>F          g4.4<0,1,0>F    g118<8,8,1>F    { align1 1Q @1 compacted };
+00c0   mad(8)          acc0<1>F        g115<8,8,1>F    g4.5<0,1,0>F    g118<1,1,1>F { align1 1Q @1 };
+00d0   mad(8)          g8<1>F          g6<8,8,1>F      g4.6<0,1,0>F    g118<1,1,1>F { align1 1Q @1 };
+00e0   mad(8)          g112<1>F        g114<8,8,1>F    g4.7<0,1,0>F    g118<1,1,1>F { align1 1Q @1 };
+00f0 c add(8)          g123<1>F        g7<8,8,1>F      g5.4<0,1,0>F    { align1 1Q @1 compacted };
+00f8 c add(8)          g124<1>F        acc0<8,8,1>F    g5.5<0,1,0>F    { align1 1Q @1 compacted };
+0100 c add(8)          g125<1>F        g8<8,8,1>F      g5.6<0,1,0>F    { align1 1Q @1 compacted };
+0108 c add(8)          g126<1>F        g112<8,8,1>F    g5.7<0,1,0>F    { align1 1Q @1 compacted };
+0110   send(8)         nullUD          g127UD          g119UD          0x02080007                0x00000200
+                            urb MsgDesc: offset 0 SIMD8 write  mlen 1 ex_mlen 8 rlen 0 { align1 1Q @1 $0 EOT };
+-- validation: passed
+
+=== hang1-ps.bin: Gen11 as captured
+0000   mad(8)          acc0<1>NF       g4.3<0,1,0>F    g2<8,8,1>F      g4.0<0,1,0>F { align1 WE_all 1Q };
+0010   mov(1)          ARF240<1>UD     0W                              { align1 WE_all 1N switch };
+0020   mad(8)          g0<1>F          acc0<4,4,1>NF   g3<8,8,1>F      g4.1<0,1,0>F { align1 WE_all 1Q };
+0030   mad(8)          acc0<1>NF       g4.7<0,1,0>F    g2<8,8,1>F      g4.4<0,1,0>F { align1 WE_all 1Q };
+0040   mad(8)          g123<1>F        acc0<4,4,1>NF   g3<8,8,1>F      g4.5<0,1,0>F { align1 WE_all 1Q };
+0050   sends(8)        g5UD            g0UD            g123UD          0x02420001                0x00000040
+                            sampler MsgDesc: sample SIMD8 Surface = 1 Sampler = 0  mlen 1 ex_mlen 1 rlen 4 { align1 1Q };
+0060   add.sat(8)      g127<1>F        g8<8,8,1>F      0x3f800000F  /* 1F */ { align1 1Q };
+0070 c mov(8)          g124<1>F        g5<8,8,1>F                      { align1 1Q compacted };
+0078 c mov(8)          g125<1>F        g6<8,8,1>F                      { align1 1Q compacted };
+0080 c mov(8)          g126<1>F        g7<8,8,1>F                      { align1 1Q compacted };
+0088   sendsc(8)       nullUD          g124UD          nullUD          0x08031400                0x00000000
+                            render MsgDesc: RT write SIMD8 LastRT Surface = 0  mlen 4 ex_mlen 0 rlen 0 { align1 1Q EOT };
+
+=== translated to Gen12
+   11 instructions, 152 bytes
+-- Gen12 result:
+0000   mad(8)          g122<1>F        g4.3<0,1,0>F    g2<8,8,1>F      g4.0<0,1,0>F { align1 WE_all 1Q };
+0010   mov(1)          null<1>UD       0x00000000UD                    { align1 WE_all 1N @1 };
+0020   mad(8)          g0<1>F          g122<8,8,1>F    g3<8,8,1>F      g4.1<0,1,0>F { align1 WE_all 1Q @1 };
+0030   mad(8)          g122<1>F        g4.7<0,1,0>F    g2<8,8,1>F      g4.4<0,1,0>F { align1 WE_all 1Q @1 };
+0040   mad(8)          g123<1>F        g122<8,8,1>F    g3<8,8,1>F      g4.5<0,1,0>F { align1 WE_all 1Q @1 };
+0050   send(8)         g5UD            g0UD            g123UD          0x02420001                0x00000040
+                            sampler MsgDesc: sample SIMD8 Surface = 1 Sampler = 0  mlen 1 ex_mlen 1 rlen 4 { align1 1Q @1 $0 };
+0060   add.sat(8)      g127<1>F        g8<8,8,1>F      0x3f800000F  /* 1F */ { align1 1Q $0.dst };
+0070 c mov(8)          g124<1>F        g5<8,8,1>F                      { align1 1Q @1 compacted };
+0078 c mov(8)          g125<1>F        g6<8,8,1>F                      { align1 1Q @1 compacted };
+0080 c mov(8)          g126<1>F        g7<8,8,1>F                      { align1 1Q @1 compacted };
+0088   sendc(8)        nullUD          g124UD          nullUD          0x08031400                0x00000000
+                            render MsgDesc: RT write SIMD8 LastRT Surface = 0  mlen 4 ex_mlen 0 rlen 0 { align1 1Q @1 $0 EOT };
+-- validation: passed
+

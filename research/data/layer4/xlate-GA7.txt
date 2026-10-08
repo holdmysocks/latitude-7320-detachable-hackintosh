@@ -1,0 +1,17 @@
+hook           : routed
+written at     : 35.691 s uptime
+batches        : 13 submitted, 9 walked, 4 other engines, 0 unreadable context image, 0 walks without an end
+commands       : 1149
+kernel pointers: 30  ->  15 translated (2968 bytes), 0 already translated, 6 rejected, 9 rejected before, 0 unmapped, 0 without a base address, 0 empty
+  rejected  0    35633 ms  HS kernel at DF0040B95000: "no Gen12 compact form" at +0x0 (1001 instructions before the end of the walk)
+               EBE2C001 00000001 EBE2C001 00000001 EBE2C001 00000001 EBE2C001 00000001
+  rejected  1    35691 ms  PS kernel at 40B95000: "no end of thread within the buffer" at +0x0 (0 instructions before the end of the walk)
+               00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  rejected  2    35691 ms  PS kernel at 40B95700: "send depends on an outstanding send (needs a sync instr" at +0x140 (21 instructions before the end of the walk)
+               05802034 00000060 00000F00 90031800 00000000 00000000 00000000 00000000
+  rejected  3    35691 ms  PS kernel at 40B95640: "send depends on an outstanding send (needs a sync instr" at +0xA0 (11 instructions before the end of the walk)
+               05800034 00000060 00000F00 90031000 00000000 00000000 00000000 00000000
+  rejected  4    35691 ms  PS kernel at 40B98D00: "no Gen12 compact form" at +0xB0 (79 instructions before the end of the walk)
+               23026D10 00770007 03600010 20004B27 4E8D0F00 00000000 00710002 24004B24
+  rejected  5    35691 ms  PS kernel at 40B99140: "no free register to replace the NF accumulator" at +0x0 (83 instructions before the end of the walk)
+               0060005B 2000C01C 0720D601 03400404 00000001 2EA04F2C 00000000 00000000

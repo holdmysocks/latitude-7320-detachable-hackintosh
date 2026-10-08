@@ -1,0 +1,54 @@
+hook           : routed
+written at     : 132.499 s uptime
+batches        : 205 submitted, 172 walked, 33 other engines, 0 unreadable context image, 0 walks without an end
+commands       : 61352
+stolen memory  : 64 MB at 0x6C800000 (never read or written)
+kernel pointers: 3758  ->  2049 translated (1987224 bytes), 1303 already translated, 52 rejected, 40 rejected before, 0 unmapped, 0 without a base address, 313 empty
+  rejected  0    36362 ms  PS kernel at 45473040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  1    38410 ms  PS kernel at 4559DB00: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  2    44982 ms  PS kernel at 4559E000: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  3    44989 ms  PS kernel at 4560C940: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  4    44989 ms  PS kernel at 41ACD040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  5    44990 ms  PS kernel at 41B38500: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  6    44990 ms  PS kernel at 41C11040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  7    44990 ms  PS kernel at 41C7B000: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  8    44991 ms  PS kernel at 41D6D040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected  9    44991 ms  PS kernel at 41DD7D00: "no free register to replace the NF accumulator" at +0x0 (205 instructions before the end of the walk)
+               0060005B 2000C01C 0720C601 03000406 00000001 216C4F2C 00000000 BFFAE411
+  rejected 10    44992 ms  PS kernel at 41D6D6C0: "unknown opcode" at +0x10 (0 instructions before the end of the walk)
+               008D0000 00000000 00610002 2380430A 428D0000 008D0400 00600001 20204308
+  rejected 11    44992 ms  PS kernel at 41D6D600: "unknown opcode" at +0x0 (0 instructions before the end of the walk)
+               008D0400 00000000 00600001 24004308 008D0240 00000000 00000020 34000004
+  rejected 12    44992 ms  PS kernel at 41D6D100: "unknown opcode" at +0x10 (0 instructions before the end of the walk)
+               00000600 00000000 00000001 24004F2C 00000000 0000002E 00600040 2F20126C
+  rejected 13    44995 ms  PS kernel at 41DE41C0: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 14    44995 ms  PS kernel at 41FAF040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 15    44995 ms  PS kernel at 42019000: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 16    44995 ms  PS kernel at 420D2040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 17    44995 ms  PS kernel at 4213C440: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 18    44996 ms  PS kernel at 421DC040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 19    44997 ms  PS kernel at 42247840: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 20    44998 ms  PS kernel at 42308040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 21    44998 ms  PS kernel at 42372600: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 22    44999 ms  PS kernel at 42408040: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001
+  rejected 23    45026 ms  PS kernel at 40B955C0: "jump out of the kernel" at +0xAF8 (0 instructions before the end of the walk)
+               00000020 34000004 0E001400 00051E48 00000001 2178470C 00000000 00010001

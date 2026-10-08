@@ -1,0 +1,53 @@
+hook           : routed
+written at     : 43.192 s uptime
+batches        : 64 submitted, 46 walked, 18 other engines, 0 unreadable context image, 0 walks without an end
+commands       : 16245
+kernel pointers: 768  ->  249 translated (137432 bytes), 218 already translated, 145 rejected, 77 rejected before, 0 unmapped, 0 without a base address, 79 empty
+  rejected  0    34064 ms  PS kernel at 42C74040: "send depends on an instruction that may still be in fli" at +0x1F8 (39 instructions before the end of the walk)
+               05600034 00000000 00000F80 88031400 00000000 00000000 00000000 00000000
+  rejected  1    34064 ms  PS kernel at 42C74280: "send depends on an instruction that may still be in fli" at +0x238 (43 instructions before the end of the walk)
+               05800034 00000060 00000F00 90031000 00000000 00000000 00000000 00000000
+  rejected  2    34794 ms  PS kernel at 4456B040: "no end of thread within the buffer" at +0x1FC0 (554 instructions before the end of the walk)
+               00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+  rejected  3    34794 ms  VS kernel at 445D4500: "flow control (jmpi/call/ret)" at +0x50 (190 instructions before the end of the walk)
+               00010020 34000007 0E001400 00000438 01600010 20002A66 1E000EC0 00010001
+  rejected  4    35504 ms  PS kernel at 40C45040: "send with register descriptor" at +0x110 (18 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected  5    35504 ms  PS kernel at 40C45180: "send with register descriptor" at +0x1A0 (27 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected  6    35504 ms  PS kernel at 40C45480: "send with register descriptor" at +0x178 (27 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected  7    35504 ms  PS kernel at 40C45640: "send with register descriptor" at +0x228 (38 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00200001 2040260C
+  rejected  8    35504 ms  VS kernel at 40C45880: "flow control (jmpi/call/ret)" at +0x120 (414 instructions before the end of the walk)
+               00010020 34000007 0E001400 00000030 00600001 45804B28 000003D0 00000000
+  rejected  9    35504 ms  PS kernel at 40C47000: "send with register descriptor" at +0x88 (10 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected 10    35504 ms  PS kernel at 40C47180: "send with register descriptor" at +0xA8 (16 instructions before the end of the walk)
+               0580C034 20000060 00020040 48031001 00802001 2F804708 00000000 00000000
+  rejected 11    35504 ms  PS kernel at 40C470C0: "send with register descriptor" at +0x88 (10 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected 12    35505 ms  VS kernel at 40C47280: "flow control (jmpi/call/ret)" at +0x148 (133 instructions before the end of the walk)
+               00010020 34000005 0E001400 00000030 00600001 41A04B28 00000EB0 00000000
+  rejected 13    35505 ms  PS kernel at 40C479C0: "send with register descriptor" at +0x1A8 (29 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 20010D01 00000A07
+  rejected 14    35505 ms  PS kernel at 40C47B80: "send with register descriptor" at +0x268 (41 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 20010D01 00000607
+  rejected 15    35505 ms  PS kernel at 40C48340: "send with register descriptor" at +0x110 (18 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected 16    35505 ms  PS kernel at 40C48480: "send with register descriptor" at +0x1A0 (27 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected 17    35505 ms  PS kernel at 40C48640: "send with register descriptor" at +0x510 (97 instructions before the end of the walk)
+               05610034 20000003 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected 18    35505 ms  PS kernel at 40C48B80: "send with register descriptor" at +0x620 (114 instructions before the end of the walk)
+               05810034 20000062 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected 19    36042 ms  PS kernel at 41063040: "send with register descriptor" at +0x110 (18 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 00000000 00000000
+  rejected 20    36042 ms  PS kernel at 41063180: "send with register descriptor" at +0x1A0 (27 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected 21    36042 ms  PS kernel at 41063480: "send with register descriptor" at +0x368 (60 instructions before the end of the walk)
+               05600034 20000000 00020F80 C8031401 00000000 00000000 0060005B 2000C01C
+  rejected 22    36042 ms  PS kernel at 41063800: "send with register descriptor" at +0x408 (71 instructions before the end of the walk)
+               05800034 20000060 00020F80 C8031001 00000000 00000000 00000000 00000000
+  rejected 23    36043 ms  VS kernel at 41063C40: "flow control (jmpi/call/ret)" at +0xF0 (329 instructions before the end of the walk)
+               00010020 34000007 0E001400 00000030 00600001 45C04B28 00000408 00000000

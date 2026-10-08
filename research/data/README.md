@@ -11,7 +11,8 @@ data/
 ├── sysreport/    CPU / GOP / PCI / driver text reports
 ├── usb/          USBToolBox topology and both port maps
 ├── layer3/       phase 2: driver logs, register snapshots, register traces, panic reports, run log
-├── layer4/       accelerator: GT fuses, context status buffer logs, GPU hang reports, the GA2 panic
+├── layer4/       accelerator: GT fuses, status buffer logs, GPU hang reports and captures, shader translation
+│                 logs and examples, the GA2 and GA10 panics
 └── icllp-match.txt
 ```
 

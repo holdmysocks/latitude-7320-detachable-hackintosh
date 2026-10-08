@@ -73,9 +73,9 @@ The resets that looked like a wall were a stolen-memory miscalculation that
 WhateverGreen already knows how to fix, but only for CPUs it believes are Ice
 Lake. Behind that were four register-level differences and a backlight
 problem, each small once visible. **Acceleration was then attempted:** the Ice Lake accelerator can
-be made to start and schedule work, and every draw hangs in the vertex shader
-stage. That fits the shader-ISA hypothesis and does not prove it; see
-[`research/LAYER4.md`](research/LAYER4.md).
+be made to start, its shaders turn out to be Gen11 machine code (the shader-ISA
+hypothesis, now shown), and translating them in the kernel makes the GPU draw.
+There is no working desktop on it; see [`research/LAYER4.md`](research/LAYER4.md).
 
 ---
 
