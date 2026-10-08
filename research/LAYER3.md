@@ -40,7 +40,7 @@ What each piece does:
 | `igfxtglmap` `0x01` `0x800` | panel treated as an external display; panic on display wake | [5](#5-built-in-panel-and-display-wake-the-edp-transcoder-block) |
 | `igfxtglmap` `0x8000`, `igfxtglblmax=0xAD9`, `SSDT-PNLF` `_UID` 15 | black panel (zero duty), then wrong brightness range | [6](#6-backlight) |
 | patch 0003 leaves the transcoder alone after the port is disabled | hard freeze at every display sleep | [7](#7-the-display-sleep-freeze) |
-| `dc6config=0` | the driver does not load Ice Lake DMC firmware into a Tiger Lake chip. In the config for every run that passed display sleep at full brightness; **whether it is required was not isolated** | [7](#7-the-display-sleep-freeze) |
+| `dc6config=0` | the driver does not load Ice Lake DMC firmware into a Tiger Lake chip. **Not needed for anything demonstrated here** (display sleep passes without it); kept as the safer default | [7](#7-the-display-sleep-freeze) |
 | `-igfxcdc`, `-igfxdbeo` | stock WhateverGreen Ice Lake fixes used by the other Tiger Lake reports; **not isolated here** | — |
 | `Kernel/Block` | keeps the accelerator from attaching; **not isolated here** (the kext still appears in `kextstat`) | — |
 
@@ -254,9 +254,13 @@ both registers again before the next enable.
 and 6 of 6 on two clean boots of the committed configuration, including the first cycle after boot and 45–60 s off.
 Lid close and open: display off and back on, on both builds.
 
-**Not established.** Why that access hangs the machine on some boots and not others. Whether `dc6config=0` is needed:
-with the clean-up present it changed the outcome only while the blocking trace was running, and every run without
-the clean-up had it set.
+**`dc6config=0` is not part of the fix.** With the clean-up gone and the boot-arg removed (run Q on the final build),
+display sleep at full brightness passed 15 of 15 over three boots. With the clean-up still present it had changed the
+outcome only while the blocking trace was running. It stays in the committed configuration because the firmware it
+keeps out is for a different chip, and because both bad retrains seen so far (below) happened without it: 2 in about
+41 wakes without, 0 in about 22 with. That difference is not significant.
+
+**Not established.** Why that access hangs the machine on some boots and not others.
 
 ---
 
@@ -299,12 +303,12 @@ Still logged by the driver on a working boot, apparently harmless: `Insufficient
 ## Open items
 
 - **Hibernation** as the only real suspend this firmware has.
-- **Is `dc6config=0` needed?** It keeps the driver from loading Ice Lake DMC firmware (`hwInitializeCState`). Not
-  isolated; see [section 7](#7-the-display-sleep-freeze).
 - **Hardware cursor.** On some boots the cursor is drawn doubled and coarse (the cursor plane; screenshots do not
   show it). Not tied to any setting tried, and a display sleep/wake does not clear it.
-- **One bad retrain.** After about ten sleep/wake cycles in a row the panel once came back as vertical colour bars;
-  another cycle fixed it. The driver logs `Timeout powering ON the panel` on every wake.
+- **Bad retrains.** Twice the panel came back from display sleep as vertical colour bars; the next sleep/wake cycle
+  (or closing and opening the lid) fixed it. The driver's log for such a wake is identical, message for message, to
+  a good one, including `Link Training successful`, so it cannot be detected there. Both were without `dc6config=0`.
+  The driver logs `Timeout powering ON the panel` and `Fast link training failed` on every wake.
 - **Acceleration.** `AppleIntelICLGraphics` still shows in `kextstat` despite the `Exclude` entry, and attaches
   nothing. Whether it can be made to is untested.
 

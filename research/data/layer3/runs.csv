@@ -48,3 +48,5 @@
 "2026-10-08T08:08:08","RT-manual","R","S froze at 100% and at 5% (first sleep). RT = R + no-wait trace (igfxtglmap 0x5A83F) on 0003r","applied",""
 "2026-10-08T08:35:59","R-0003s-manual","R","0003s (no hook clean-up after port disable) survived 4/4 at 100% with no-wait trace; panic at 262 s was the trace file close. Now R (trace off) on 0003s","applied",""
 "2026-10-08T08:46:07","R-20261008-071629","R","-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo","booted","capture=mac-R-20261008-071629-collect-20261008-084514 panics=0 source=experiment"
+"2026-10-08T09:13:41","Q-20261008-091341","Q","-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 -igfxdbeo","applied",""
+"2026-10-08T09:38:40","Q-20261008-091341","Q","-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 -igfxdbeo","booted","capture=mac-Q-20261008-091341-collect-20261008-093814 panics=0 source=experiment"

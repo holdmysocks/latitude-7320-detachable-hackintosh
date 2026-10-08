@@ -44,6 +44,7 @@ All on device-id `8A5A`, platform id `0x8A5C0002`, `lilucpu=12 -igfxdvmt -igfxcd
 | R′, S | the same without the trace; with a paced power-down | freeze | it was not |
 | RT | no-wait trace (`0x40000`), `dc6config=0` | freeze | same last entry at full speed: the clean-up itself, not a timer |
 | **R** | clean-up removed from patch 0003; Q + `dc6config=0` | picture | **display sleep/wake 7/7 and 6/6 at full brightness on clean boots; lid close and open work** |
+| Q (final build) | R without `dc6config=0`, three boots | picture | display sleep/wake 15/15: the boot-arg is not part of the fix. One wake came back as colour bars |
 
 Run R is the committed configuration. Evidence: [`data/layer3/`](data/layer3/) (driver logs for A, C, F, F2, K, M;
 register snapshots for F5 and K; the panic report from K's display wake; the register traces of the display-sleep
