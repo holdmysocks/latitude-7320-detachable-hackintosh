@@ -48,6 +48,11 @@ Register-map experiments (need the 0003b WhateverGreen build on the ESP). igfxtg
   P         N + SSDT-DOSI.aml in ACPI/Add (must be in EFI/OC/ACPI): presets the Dell firmware's OS identity to "Vista" on
             macOS so that it forwards brightness key events (Notify LCD 0x86/0x87) to BrightnessKeys.kext.
   P2        P with SSDT-DOSI revision 2 (OS identity set at table load, STOS repeated). Brightness keys work.
+  Q         P2 on the 0003l build with SSDT-PNLF _UID 15 and igfxtglblmax=0xAD9: full brightness without _UID 19,
+            which freezes the machine when the display powers off.
+  R         Q + dc6config=0 (the driver skips its Ice Lake DMC firmware and hardware DC6). Without it the machine
+            hard-freezes a few ms after the display engine goes idle at display sleep.
+  S         R with igfxtglmap=0x2A83F on the 0003q build: the display power-down is paced (2 ms between register writes).
   M-fb      igfxtglmap=0x683F -igfxdbeo: only the eDP mapping change relative to K (backlight still pinned, no PNLF).
   M-pnlf    K's mask with 0x8000 instead of 0x4000 (0xA03E) and SSDT-PNLF enabled: no eDP mapping change.
   F5        Same arguments as F3, on the 0003h build: the snapshot goes to /Users/Shared/tgl-map-state.bin in three
@@ -130,13 +135,14 @@ def main():
         if exp == 'A-nocdc': extra.remove("-igfxcdc")
         if exp == 'A-static': extra.remove("-igfxdvmt"); static = True
         if exp not in ('A', 'A-sam', 'A-cam0', 'A-nocdc', 'A-static'): sys.exit("unknown experiment %r" % exp)
-    elif exp in ('B', 'B-fwpll', 'B-state', 'C', 'C-fwpll', 'D', 'D-fwpll', 'E', 'E-fwpll', 'E-dc6', 'F', 'F-fwpll', 'F2', 'F2-blr', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'K-min', 'M', 'N', 'P', 'P2', 'M-fb', 'M-pnlf', 'G', 'G-fwpll', 'G-dc6', 'G2', 'G3', 'H'):
-        mask = {'B': 0x3F, 'B-fwpll': 0x3F, 'B-state': 0xFF, 'C': 0x3E, 'C-fwpll': 0x3E, 'D': 0x43F, 'D-fwpll': 0x43F, 'E': 0xC3F, 'E-fwpll': 0xC3F, 'E-dc6': 0xC3F, 'F': 0x3E, 'F-fwpll': 0x3E, 'F2': 0x3E, 'F2-blr': 0x3E, 'F2-dbeo': 0x3E, 'F3': 0x203E, 'F4': 0x203E, 'F5': 0x203E, 'K': 0x603E, 'K-min': 0x403E, 'M': 0xA83F, 'N': 0xA83F, 'P': 0xA83F, 'P2': 0xA83F, 'M-fb': 0x683F, 'M-pnlf': 0xA03E, 'G3': 0x2C3F, 'G2': 0xC3F, 'G': 0xC3F, 'G-fwpll': 0xC3F, 'G-dc6': 0xC3F, 'H': 0x200}[exp]
+    elif exp in ('B', 'B-fwpll', 'B-state', 'C', 'C-fwpll', 'D', 'D-fwpll', 'E', 'E-fwpll', 'E-dc6', 'F', 'F-fwpll', 'F2', 'F2-blr', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'K-min', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-fb', 'M-pnlf', 'G', 'G-fwpll', 'G-dc6', 'G2', 'G3', 'H'):
+        mask = {'B': 0x3F, 'B-fwpll': 0x3F, 'B-state': 0xFF, 'C': 0x3E, 'C-fwpll': 0x3E, 'D': 0x43F, 'D-fwpll': 0x43F, 'E': 0xC3F, 'E-fwpll': 0xC3F, 'E-dc6': 0xC3F, 'F': 0x3E, 'F-fwpll': 0x3E, 'F2': 0x3E, 'F2-blr': 0x3E, 'F2-dbeo': 0x3E, 'F3': 0x203E, 'F4': 0x203E, 'F5': 0x203E, 'K': 0x603E, 'K-min': 0x403E, 'M': 0xA83F, 'N': 0xA83F, 'P': 0xA83F, 'P2': 0xA83F, 'Q': 0xA83F, 'R': 0xA83F, 'S': 0x2A83F, 'M-fb': 0x683F, 'M-pnlf': 0xA03E, 'G3': 0x2C3F, 'G2': 0xC3F, 'G': 0xC3F, 'G-fwpll': 0xC3F, 'G-dc6': 0xC3F, 'H': 0x200}[exp]
         extra = ["lilucpu=12", "-igfxdvmt", "-igfxcdc", "igfxtglmap=0x%X" % mask]
         if exp.endswith('-fwpll'): extra.append("-igfxtglfwpll")
-        if exp.endswith('-dc6'): extra.append("dc6config=0")
+        if exp in ('Q', 'R', 'S'): extra.append("igfxtglblmax=0xAD9")
+        if exp.endswith('-dc6') or exp in ('R', 'S'): extra.append("dc6config=0")
         if exp in ('F2', 'G2', 'F2-blr', 'F3', 'F4', 'F5', 'G3'): extra.append("-igfxblr")
-        if exp in ('F2', 'G2', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'M', 'N', 'P', 'P2', 'M-fb', 'M-pnlf', 'G3'): extra.append("-igfxdbeo")
+        if exp in ('F2', 'G2', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-fb', 'M-pnlf', 'G3'): extra.append("-igfxdbeo")
     elif exp in ('selftest', 'alive'):
         keep_vesa, with_plat, static = True, False, True
         extra = ["-igfxtgl", "-igfxtgl" + exp]
@@ -156,17 +162,17 @@ def main():
         p['Kernel'].setdefault('Block', []).append(block_accel())
         if static:
             p['Kernel'].setdefault('Patch', []).append(static_dvmt_patch(dvmt_mb))
-        if exp in ('M', 'N', 'P', 'P2', 'M-pnlf'):
+        if exp in ('M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-pnlf'):
             hit = [a for a in p['ACPI']['Add'] if a.get('Path') == 'SSDT-PNLF.aml']
             if not hit: sys.exit("SSDT-PNLF.aml is not listed in ACPI/Add of the base config")
             hit[0]['Enabled'] = True
 
-    if exp in ('N', 'P', 'P2'):
+    if exp in ('N', 'P', 'P2', 'Q', 'R', 'S'):
         if not any(k['BundlePath'] == 'BrightnessKeys.kext' for k in p['Kernel']['Add']):
             p['Kernel']['Add'].append({'Arch': 'x86_64', 'BundlePath': 'BrightnessKeys.kext', 'Comment': 'ACPI brightness key notifications (Notify LCD 0x86/0x87)',
                 'Enabled': True, 'ExecutablePath': 'Contents/MacOS/BrightnessKeys', 'MaxKernel': '', 'MinKernel': '', 'PlistPath': 'Contents/Info.plist'})
 
-    if exp in ('P', 'P2'):
+    if exp in ('P', 'P2', 'Q', 'R', 'S'):
         if not any(a.get('Path') == 'SSDT-DOSI.aml' for a in p['ACPI']['Add']):
             p['ACPI']['Add'].append({'Comment': 'Dell OS identity for macOS: lets the firmware forward brightness keys', 'Enabled': True, 'Path': 'SSDT-DOSI.aml'})
 

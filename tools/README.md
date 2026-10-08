@@ -128,6 +128,9 @@ macOS, and expect the working files on a FAT32 stick mounted at `/Volumes/TGLDEB
 | [`mac/extract_kext.py`](mac/extract_kext.py) | copies one kext out of a kernel collection into an inspect-only Mach-O |
 | [`mac/dis-icllp.py`](mac/dis-icllp.py) | annotated disassembly of one framebuffer function |
 | [`mac/bright.py`](mac/bright.py) | read or set brightness through DisplayServices |
+| [`mac/dstest.sh`](mac/dstest.sh), [`mac/ptylog.py`](mac/ptylog.py) | display sleep/wake test that logs the kernel line by line to a file which survives a hard reset |
+| [`mac/decode-tgltrace.py`](mac/decode-tgltrace.py) | decodes the on-disk register trace of patch 0003 (`igfxtglmap` `0x10000`) |
+| [`mac/lidwatch.sh`](mac/lidwatch.sh) | display off when the lid closes, for a machine with system sleep disabled |
 | [`mac/collect-mact.sh`](mac/collect-mact.sh) | the earlier capture script (phase 1 handoff) |
 
 `tgl-mac.sh apply <experiment>` generates the config from `config.BASE-VESA.plist` on the ESP, validates it with

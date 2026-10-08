@@ -62,7 +62,7 @@ planned to disable with `_STA` overrides disable themselves for free.
 |---|---|---|
 | `SSDT-PLUG.aml` | ✅ | `plugin-type=1` on `\_SB.PR00` → attaches `X86PlatformPlugin` (XCPM) |
 | `SSDT-EC-USBX.aml` | ✅ | dummy `Device(EC)` in `\_SB.PC00.LPCB` + `USBX` power props (laptop values, 2100 mA) |
-| `SSDT-PNLF.aml` | ✅ | backlight device on `GFX0`, `_UID` 19. Works with Apple's framebuffer; does nothing on VESA |
+| `SSDT-PNLF.aml` | ✅ | backlight device on `GFX0`, `_UID` 15 (pairs with boot-arg `igfxtglblmax=0xAD9`). Works with Apple's framebuffer; does nothing on VESA |
 | `SSDT-DOSI.aml` | ✅ | sets the firmware's own OS identity (`\_SB.ACOS`) on macOS so it forwards the brightness keys |
 | `SSDT-RHUB.aml` | ❌ | forces macOS to rebuild the USB port map. Enable only if mapping misbehaves |
 

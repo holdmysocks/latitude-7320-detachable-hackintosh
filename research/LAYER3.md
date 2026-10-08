@@ -19,14 +19,14 @@ Everything is relative to a config that boots on VESA (`-igfxvesa`, no IGPU `Dev
 | What | Value |
 |---|---|
 | WhateverGreen | upstream `0762cec` (1.7.1) + [`WhateverGreen-patches/`](../WhateverGreen-patches/) 0001, 0002, 0003 |
-| boot-args | `lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F -igfxdbeo` (and no `-igfxvesa`) |
+| boot-args | `lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo` (and no `-igfxvesa`) |
 | `DeviceProperties` → `PciRoot(0x0)/Pci(0x2,0x0)` | `device-id` = `5A8A0000`, `AAPL,ig-platform-id` = `02005C8A` (0x8A5C0002) |
 | `Kernel/Block` | `com.apple.driver.AppleIntelICLGraphics`, `Exclude` |
-| ACPI | `SSDT-PNLF` with `_UID` 19 and `SSDT-DOSI`, both enabled |
+| ACPI | `SSDT-PNLF` with `_UID` 15 and `SSDT-DOSI`, both enabled |
 | Kernel/Emulate | `Cpuid1Data` Ice Lake spoof (already part of the base config) |
 
 The committed [`EFI/OC/config.plist`](../EFI/OC/config.plist) is exactly this.
-`tools/mac/make-experiment.py <vesa-config> <out> N` regenerates it.
+`tools/mac/make-experiment.py <vesa-config> <out> R` regenerates it.
 
 What each piece does:
 
@@ -38,7 +38,9 @@ What each piece does:
 | `igfxtglmap` `0x04` `0x08` `0x10` | DDI select, clock select and PLL in the Tiger Lake encoding/location | [3](#3-link-training-registers-tiger-lake-moved) |
 | `igfxtglmap` `0x20` | link drops, or the machine freezes, right after training | [4](#4-the-driver-removes-the-transcoders-clock) |
 | `igfxtglmap` `0x01` `0x800` | panel treated as an external display; panic on display wake | [5](#5-built-in-panel-and-display-wake-the-edp-transcoder-block) |
-| `igfxtglmap` `0x8000`, `SSDT-PNLF` `_UID` 19 | black panel (zero duty), then wrong brightness range | [6](#6-backlight) |
+| `igfxtglmap` `0x8000`, `igfxtglblmax=0xAD9`, `SSDT-PNLF` `_UID` 15 | black panel (zero duty), then wrong brightness range | [6](#6-backlight) |
+| patch 0003 leaves the transcoder alone after the port is disabled | hard freeze at every display sleep | [7](#7-the-display-sleep-freeze) |
+| `dc6config=0` | the driver does not load Ice Lake DMC firmware into a Tiger Lake chip. In the config for every run that passed display sleep at full brightness; **whether it is required was not isolated** | [7](#7-the-display-sleep-freeze) |
 | `-igfxcdc`, `-igfxdbeo` | stock WhateverGreen Ice Lake fixes used by the other Tiger Lake reports; **not isolated here** | — |
 | `Kernel/Block` | keeps the accelerator from attaching; **not isolated here** (the kext still appears in `kextstat`) | — |
 
@@ -172,9 +174,10 @@ address reads as nothing, so the firmware's transcoder A is taken as a DisplayPo
 block are left unmapped.
 
 **Result (run M).** `FB0: Boot pipe found - DDI0, pipe A`; connector type LVDS, `built-in`, `AppleBacklightDisplay`
-attached, "Connection Type: Internal". The driver adopts the firmware's mode without retraining. Display sleep and
-wake work: the driver logs `Timeout powering ON the panel` (2 s) and AUX NACKs at DPCD `0x4E0`, then retrains
-successfully.
+attached, "Connection Type: Internal". The driver adopts the firmware's mode without retraining. One display sleep
+and wake passed on this run: the driver logs `Timeout powering ON the panel` (2 s) and AUX NACKs at DPCD `0x4E0`, then
+retrains successfully. That single pass was luck: display sleep froze the machine on most later boots until the fault
+in [section 7](#7-the-display-sleep-freeze) was removed.
 
 **Inference.** The panic in run K came from the driver's and the hardware's state diverging across the power
 transition. It did not recur once the block was mapped; the exact sequence was not reconstructed.
@@ -199,17 +202,61 @@ exist yet. WhateverGreen's `-igfxblr` does not help: it rescales, and zero stays
 
 **b. Wrong range (`_UID` 15).** `hwSetBacklight(level)` computes `duty = level × period / 65535`. `SSDT-PNLF` with
 `_UID` 15 selects AppleBacklight profile `F15Txxxx`, whose table ends at 2777, so full brightness was about 4 % duty.
-`_UID` 19 (`F19Txxxx`) spans the 16-bit range.
+`_UID` 19 (`F19Txxxx`) spans the 16-bit range and was used for a while; the committed configuration keeps `_UID` 15
+and lets the patch rescale instead (`igfxtglblmax=0xAD9`, the top of the `F15T` table).
 
 **c. Wrong period.** `AppleIntelFramebufferController::start` sets its PWM period to `0x56CE` or `0x4571` from
 SFUSE_STRAP (`0xC2014`) bit 8. The firmware's period is `0x17700`. When the driver adopts the firmware's mode it never
 rewrites the frequency register, so duty values on the driver's scale reached a register on the firmware's scale:
 full brightness was 23 %.
 
-**Fix.** `igfxtglmap` `0x8000`: keep the firmware's period, rescale every duty write from the driver's period (taken
-from the same strap) to the firmware's, and never write zero.
+**Fix.** `igfxtglmap` `0x8000`: keep the firmware's period and rescale every duty write to it. The scale is
+`firmware period / (driver period × igfxtglblmax / 65535)`, the driver period taken from the same strap. A zero duty
+is passed through (the driver writes it before powering the panel down), and because `LightUpEDP` does not restore
+it, the patch writes the last level back when the driver enables the PWM again.
 
 **Result.** Full brightness range through the Displays slider.
+
+## 7. The display sleep freeze
+
+**Symptom.** On most boots, any display power-off (`pmset displaysleepnow`, the idle timer, closing the lid) froze
+the whole machine: no panic, no log, hard power-off needed. Within one boot the outcome never changed: a boot that
+survived one cycle survived every later one.
+
+**What it was not.** A day went into things that only shifted the odds, each of which looked like the cause for a
+few runs: `pmset` settings, `SSDT-PNLF` `_UID` 19, the brightness level (100 % froze, 97 % and below did not, on one
+kext revision), the backlight duty value, `BrightnessKeys.kext`, `SSDT-DOSI`, pacing the driver's power-down, the
+"first cycle after boot". None survived a clean retest.
+
+**How it was found.** Patch 0003 gained a diagnostic (`igfxtglmap` `0x10000`): once armed, every register access the
+driver makes goes into a ring that a kernel thread writes to `/Users/Shared/tgl-trace.bin` with `IO_SYNC`, and the
+hook holds the driver until each write access is on disk. After a freeze the file holds the driver's last accesses.
+A second mode (`0x40000`) records without holding the driver, so its timing is not disturbed.
+
+**Fact.** Six traces, with and without `dc6config=0`, held back (milliseconds between steps) and at full speed
+(microseconds), end at the same entry. The driver's power-down sequence is complete up to the port:
+
+```
+W BLC_PWM_DUTY 0 · W BLC_PWM_CTL 0 · W PP_CONTROL 0x63 · planes off · pipe interrupts off
+W PIPE_EDP_CONF 0x40000024 · W TRANS_DDI_FUNC_CTL_EDP 0x02000002 · W TRANS_CLK_SEL_A 0
+W DDI_BUF_CTL_A 0x00000003 · W DP_TP_CTL_A 0x00040300
+```
+
+and then the last thing on disk is a marker inside **patch 0003's own code**: the clean-up that feature `0x20` ran
+after the driver disabled DP_TP_CTL. That clean-up cleared the DDI select in `TRANS_DDI_FUNC_CTL_A` and then read
+and cleared `TRANS_CLK_SEL_A`. The traces end after the FUNC_CTL write, at the read of `TRANS_CLK_SEL_A`; with the
+transcoder reported off (`TRANS_CONF_A = 0x24`), and also after the clear of `TRANS_CLK_SEL_A` had been removed.
+
+**Fix.** The clean-up is gone. After the port is disabled the patch touches nothing; `prepareTranscoderA` programs
+both registers again before the next enable.
+
+**Result (run R).** Display sleep and wake at full brightness: 4 of 4 on the first build without the clean-up, 7 of 7
+and 6 of 6 on two clean boots of the committed configuration, including the first cycle after boot and 45–60 s off.
+Lid close and open: display off and back on, on both builds.
+
+**Not established.** Why that access hangs the machine on some boots and not others. Whether `dc6config=0` is needed:
+with the clean-up present it changed the outcome only while the blocking trace was running, and every run without
+the clean-up had it set.
 
 ---
 
@@ -240,7 +287,8 @@ The same check selects the firmware's lid path (`GLID` instead of `ILID`).
 | | State |
 |---|---|
 | Graphics acceleration | None. No `IOAccelerator`, no Metal. Not attempted; see [`README.md`](README.md). |
-| System sleep (S3), lid close | Untested. |
+| System sleep | The firmware offers no S3: the DSDT has `Name (SS3, Zero)` and defines `_S3` only `If (SS3)`. macOS's attempt hangs ("Darkwake Entry Failure"). Use `pmset -a disablesleep 1`. Hibernation (S4) is offered and untested. |
+| Lid close | With system sleep disabled nothing turns the panel off; the lid switch itself works (`AppleACPILid`). `tools/mac/lidwatch.sh` puts the display to sleep on close; opening the lid wakes it. |
 | External displays | Untested. Type-C ports use the Dekel PHY on Tiger Lake; the driver has MG PHY code only. |
 
 Still logged by the driver on a working boot, apparently harmless: `Insufficient stolen memory`,
@@ -250,9 +298,13 @@ Still logged by the driver on a working boot, apparently harmless: `Insufficient
 
 ## Open items
 
-- **System sleep and lid.**
-- **The driver uploads Ice Lake DMC firmware** (`hwInitializeCState`; `dc6config=0` skips it). No fault has been
-  traced to it.
+- **Hibernation** as the only real suspend this firmware has.
+- **Is `dc6config=0` needed?** It keeps the driver from loading Ice Lake DMC firmware (`hwInitializeCState`). Not
+  isolated; see [section 7](#7-the-display-sleep-freeze).
+- **Hardware cursor.** On some boots the cursor is drawn doubled and coarse (the cursor plane; screenshots do not
+  show it). Not tied to any setting tried, and a display sleep/wake does not clear it.
+- **One bad retrain.** After about ten sleep/wake cycles in a row the panel once came back as vertical colour bars;
+  another cycle fixed it. The driver logs `Timeout powering ON the panel` on every wake.
 - **Acceleration.** `AppleIntelICLGraphics` still shows in `kextstat` despite the `Exclude` entry, and attaches
   nothing. Whether it can be made to is untested.
 

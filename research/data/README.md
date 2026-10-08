@@ -10,7 +10,7 @@ data/
 ├── kextstat/     loaded-kext lists, baseline and per-experiment
 ├── sysreport/    CPU / GOP / PCI / driver text reports
 ├── usb/          USBToolBox topology and both port maps
-├── layer3/       phase 2: driver logs, register snapshots, panic report, run log
+├── layer3/       phase 2: driver logs, register snapshots, register traces, panic reports, run log
 └── icllp-match.txt
 ```
 

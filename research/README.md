@@ -1,7 +1,8 @@
 # Iris Xe (Gen12 / `8086:9A40`) on macOS: the display path
 
-**Status (2026-10-07): the framebuffer works.** Apple's `AppleIntelICLLPGraphicsFramebuffer` drives the internal
-panel of `9A40` on macOS 26.6: native resolution, built-in display, backlight, display sleep and wake.
+**Status (2026-10-08): the framebuffer works.** Apple's `AppleIntelICLLPGraphicsFramebuffer` drives the internal
+panel of `9A40` on macOS 26.6: native resolution, built-in display, backlight, brightness keys, display sleep and
+wake, lid.
 **Graphics acceleration is not working and has not been attempted.**
 
 - [`LAYER3.md`](LAYER3.md) — how it was done: every cause, the evidence, the fix
@@ -99,7 +100,8 @@ Nobody has reported acceleration on Tiger Lake.
 - **Software:** macOS 26.6 (25G72), OpenCore 1.0.7, Lilu 1.7.2, WhateverGreen 1.7.1 (`0762cec`) + three patches,
   `AppleIntelICLLPGraphicsFramebuffer` 24.0.5
 - **Result:** the Ice Lake framebuffer drives the Tiger Lake internal panel: modeset, link, built-in display,
-  backlight, display sleep/wake. Colours and cursor are correct.
+  backlight, display sleep/wake. Colours are correct; the hardware cursor is drawn corrupted on some boots.
 - **Method:** one change per boot from a known-good config; the driver's own `os_log` output and register snapshots
   written to disk as the feedback channel; every cause confirmed by disassembly of the Tahoe binary against Linux i915
-- **Not established:** anything about acceleration (layers 4–5), system sleep, external displays.
+- **Not established:** anything about acceleration (layers 4–5), hibernation, external displays. System sleep is
+  not available: the firmware has no S3.

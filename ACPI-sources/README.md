@@ -48,8 +48,10 @@ port current limit).
 Backlight device under `\_SB.PC00.GFX0` (`_ADR 0x00020000`). `AppleBacklight` attaches to it now that the panel is
 driven by Apple's framebuffer as a built-in display.
 
-**`_UID` must be 19.** It selects AppleBacklight profile `F19Txxxx`, whose table spans the 16-bit range the Ice Lake
-driver expects. With `_UID` 15 the table ends at 2777 and full brightness is about 4 % duty.
+**`_UID` is 15 and pairs with the boot-arg `igfxtglblmax=0xAD9`.** `_UID` 15 selects AppleBacklight profile
+`F15Txxxx`, whose levels end at `0xAD9` (2777); the Ice Lake driver expects a 16-bit range, so the WhateverGreen
+patch rescales by that maximum. Without the boot-arg full brightness is about 4 % duty. Change one, change the
+other (`_UID` 19 would need `igfxtglblmax=0xFFFF`, the default).
 
 The firmware's own tables define no `PNLF` device (the `PNLF` name in the DSDT is an unrelated field), so there is no
 conflict. See [`../research/LAYER3.md`](../research/LAYER3.md#6-backlight).

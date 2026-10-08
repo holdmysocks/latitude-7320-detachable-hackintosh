@@ -28,7 +28,7 @@ Why each translation exists: [`../research/LAYER3.md`](../research/LAYER3.md).
 | `0x0004` | TRANS_DDI_FUNC_CTL DDI select encoding, both directions |
 | `0x0008` | TRANS_CLK_SEL encoding, both directions |
 | `0x0010` | combo DPLL CFGCR0/1 addresses (`0x164000…` → `0x164284…`); DCO fraction halved at a 38.4 MHz reference |
-| `0x0020` | set TRANS_CLK_SEL_A and the DDI select before DP_TP_CTL is enabled; turn the driver's write of 0 to TRANS_CLK_SEL_A into "DDI A" while the port is active; release both after the port is disabled |
+| `0x0020` | set TRANS_CLK_SEL_A and the DDI select before DP_TP_CTL is enabled; turn the driver's write of 0 to TRANS_CLK_SEL_A into "DDI A" while the port is active. Nothing is released after the port is disabled: doing so froze the machine at display sleep |
 | `0x0040` | publish a state record to the IORegistry (**from inside the hook**) |
 | `0x0080` | publish the state record to NVRAM (**resets this machine; do not use**) |
 | `0x0100` | `IOLog` translated accesses (not visible in the unified log on Tahoe) |
@@ -36,10 +36,15 @@ Why each translation exists: [`../research/LAYER3.md`](../research/LAYER3.md).
 | `0x0800` | with `0x0001`: map only the stream registers (`0x6F000–0FF`, `0x6F400–41F`, `0x7F000–0FF`), not PSR/VRR/DIP |
 | `0x2000` | diagnostic snapshot of 48 registers to `/Users/Shared/tgl-map-state.bin` (firmware state at the first access; again 75 s and 180 s after the first DP_TP_CTL enable). Decode with `tools/mac/decode-tglmap.py` |
 | `0x4000` | backlight: keep the firmware's PWM frequency and duty (drops the driver's writes) |
-| `0x8000` | backlight with brightness control: keep the firmware's PWM frequency, rescale duty from the driver's period, never write zero. Use this **or** `0x4000`, and not together with `-igfxblr` |
+| `0x8000` | backlight with brightness control: keep the firmware's PWM frequency, rescale duty from the driver's period and the level range given by `igfxtglblmax`; a zero duty is passed through and the level restored when the PWM is enabled again. Use this **or** `0x4000`, and not together with `-igfxblr` |
+| `0x10000` | **diagnostic.** Register trace on disk (`/Users/Shared/tgl-trace.bin`, decode with `tools/mac/decode-tgltrace.py`). Armed by a zero backlight duty (brightness slider to minimum) or at `igfxtgltraceat=<uptime s>`; runs for 120 s; holds the driver until each write access is on disk. The file is never closed, so a clean shutdown hangs afterwards: power off by hand |
+| `0x40000` | with `0x10000`: do not hold the driver; it runs at normal speed and the last millisecond or two may be lost |
 
-`-igfxtglmap` alone means `0x3F`. The working configuration is **`igfxtglmap=0xA83F`**
-(`0x01 0x02 0x04 0x08 0x10 0x20 0x800 0x2000 0x8000`). The `0x2000` snapshot never fires in that configuration
+`igfxtglblmax=<level>` is the highest backlight level AppleBacklight sends for the `SSDT-PNLF` `_UID` in use
+(default `0xFFFF`; `_UID` 15 needs `0xAD9`).
+
+`-igfxtglmap` alone means `0x3F`. The working configuration is **`igfxtglmap=0xA83F igfxtglblmax=0xAD9`**
+(`0x01 0x02 0x04 0x08 0x10 0x20 0x800 0x2000 0x8000`), together with the driver's own `dc6config=0`. The `0x2000` snapshot never fires in that configuration
 (the boot is seamless, so DP_TP_CTL is not re-enabled) and can be dropped: `0x883F`.
 
 `-igfxtglfwpll` additionally drops the driver's DPLL config writes and keeps whatever the firmware programmed.
@@ -74,3 +79,6 @@ symbols are identical to the Xcode build of the same source.
 - **Never write NVRAM from this kext.** On this machine it resets the platform, from any context.
 - **Do not call blocking kernel services from inside the register hooks.** Read registers there if you must;
   publish from a thread call, to a file.
+- **Do not tidy up the hardware after the driver.** The one piece of this patch that wrote registers the driver had
+  not asked for (releasing the transcoder after port disable) froze the machine at display sleep.
+- **`vnode_close` from a thread call panics** (`zone_require_ro failed`): there is no process context.

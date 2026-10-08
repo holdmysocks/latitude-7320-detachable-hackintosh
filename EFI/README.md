@@ -88,9 +88,11 @@ stock build the panel stays black.
 | boot-arg `lilucpu=12` | | makes Lilu report Ice Lake so WhateverGreen's Ice Lake fixes apply |
 | boot-arg `-igfxdvmt` | | without it the driver computes 4 GB of stolen memory and the machine resets |
 | boot-arg `igfxtglmap=0xA83F` | | the Tiger Lake register map (patch 0003) |
+| boot-arg `igfxtglblmax=0xAD9` | | backlight level range of `SSDT-PNLF` `_UID` 15, for the patch's brightness scaling |
+| boot-arg `dc6config=0` | | Apple's driver does not load its Ice Lake DMC firmware. Present in every run that passed display sleep; not isolated |
 | boot-args `-igfxcdc -igfxdbeo` | | stock Ice Lake fixes, carried along, not individually verified |
 | `Kernel/Block` `AppleIntelICLGraphics` | `Exclude` | no accelerator; framebuffer only |
-| `ACPI/Add` `SSDT-PNLF.aml` | enabled | backlight; `_UID` must be 19 |
+| `ACPI/Add` `SSDT-PNLF.aml` | enabled | backlight; `_UID` 15, matching `igfxtglblmax=0xAD9` |
 | `ACPI/Add` `SSDT-DOSI.aml` | enabled | brightness keys (with `BrightnessKeys.kext`) |
 
 There is **no graphics acceleration**. Full account: [`research/LAYER3.md`](../research/LAYER3.md).

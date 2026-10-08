@@ -36,10 +36,18 @@ All on device-id `8A5A`, platform id `0x8A5C0002`, `lilucpu=12 -igfxdvmt -igfxcd
 | — | `SSDT-PNLF` `_UID` 19 | picture | brighter; maximum still 23 % (driver's PWM period differs from the firmware's) |
 | N | M + backlight scale from SFUSE_STRAP + `BrightnessKeys.kext` | picture | **full brightness range.** Brightness keys still dead (firmware does not send the events to macOS) |
 | P | N + `SSDT-DOSI` rev. 1: `\_SB.ACOS = 0x20` set from a device `_INI` | picture | keys still dead: SMM was told the OS type before the `_INI` ran |
-| P2 | N + `SSDT-DOSI` rev. 2: set at table load, `STOS ()` repeated | picture | **brightness keys work** |
+| P2 | N + `SSDT-DOSI` rev. 2: set at table load, `STOS ()` repeated | picture | **brightness keys work.** Display sleep, not retested since M, **hard-freezes the machine** |
+| — | a day of display-sleep runs on P2, N, M and variants (`pmset` settings, `_UID`, kext revisions, brightness 5–100 %) | freeze on most boots | nothing reproducible: each suspect shifted the odds and failed a clean retest. Constant within a boot |
+| Q | P2 with `_UID` 15 + `igfxtglblmax=0xAD9` (scaling moved into the patch) | picture | full brightness without `_UID` 19; display sleep still freezes |
+| QT | Q + on-disk register trace (`0x10000`) | freeze ×5 | **all traces end in patch 0003's clean-up after the driver disables DP_TP_CTL** |
+| QT + `dc6config=0` | no Ice Lake DMC firmware | survived ×5 (trace running) | looked like the fix |
+| R′, S | the same without the trace; with a paced power-down | freeze | it was not |
+| RT | no-wait trace (`0x40000`), `dc6config=0` | freeze | same last entry at full speed: the clean-up itself, not a timer |
+| **R** | clean-up removed from patch 0003; Q + `dc6config=0` | picture | **display sleep/wake 7/7 and 6/6 at full brightness on clean boots; lid close and open work** |
 
-Run P2 is the committed configuration. Evidence: [`data/layer3/`](data/layer3/) (driver logs for A, C, F, F2, K, M;
-register snapshots for F5 and K; the panic report from K's display wake; the run log).
+Run R is the committed configuration. Evidence: [`data/layer3/`](data/layer3/) (driver logs for A, C, F, F2, K, M;
+register snapshots for F5 and K; the panic report from K's display wake; the register traces of the display-sleep
+freeze; the run log).
 
 ---
 

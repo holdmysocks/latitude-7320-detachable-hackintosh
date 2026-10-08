@@ -10,7 +10,7 @@ OpenCore 1.0.7 · Intel i5-1140G7 (Tiger Lake UP4) · Iris Xe 80 EU
 >
 > **What is new (October 2026):** the internal display now runs on Apple's own
 > Intel framebuffer driver instead of VESA: native mode setting, built-in panel,
-> backlight control, display sleep. It needs a patched WhateverGreen, which is
+> backlight control, display sleep, lid. It needs a patched WhateverGreen, which is
 > documented and included as source. See [`research/LAYER3.md`](research/LAYER3.md).
 
 ## What works
@@ -18,7 +18,7 @@ OpenCore 1.0.7 · Intel i5-1140G7 (Tiger Lake UP4) · Iris Xe 80 EU
 CPU + XCPM power management · NVMe · USB (9-port map) · keyboard · trackpad
 (as a plain mouse) · battery · Bluetooth (3 kexts — [see docs](docs/05b-wifi-and-bluetooth.md)) ·
 Wi-Fi (`itlwm` + HeliPort) · **internal display on the native Intel framebuffer**
-(1920×1280 @ 60 Hz, brightness slider, display sleep and wake — patched
+(1920×1280 @ 60 Hz, brightness slider and keys, display sleep and wake, lid — patched
 WhateverGreen required)
 
 ## What does not, and why
@@ -27,7 +27,8 @@ WhateverGreen required)
 |---|---|---|
 | GPU acceleration | ❌ | Iris Xe (Gen12) has no macOS accelerator. The framebuffer works; Metal does not. |
 | Brightness keys | ✅ | `SSDT-DOSI` + `BrightnessKeys.kext`. |
-| System sleep, lid close, external displays | ❔ | Untested since the framebuffer change. |
+| System sleep | ❌ | The firmware offers no S3 (Modern Standby only); macOS hangs if it tries. Disable it with `pmset -a disablesleep 1`. The lid turns the display off and on with a small helper script. Hibernation is untested. |
+| External displays | ❔ | Untested. |
 | Audio | ❌ | SoundWire (RT711/714/1316). macOS has no SoundWire stack. |
 | Camera | ❌ | Intel IPU6 MIPI. No macOS driver. |
 | Touchscreen / pen | ❌ | macOS has no touch input layer. |

@@ -11,7 +11,10 @@ Every row here was hit at least once during this build.
 | Panic on `MSR 0xE2` | CFG Lock (confirmed set) | `AppleXcpmCfgLock = True` |
 | Black screen after picker, machine alive | stock WhateverGreen with the committed config: the link never trains | build the patched kext — [KEXTS.md](../EFI/OC/Kexts/KEXTS.md#-whatevergreen-must-be-built-from-source); or fall back to VESA |
 | Reset the moment graphics start | `lilucpu=12` or `-igfxdvmt` missing, or platform id `0x8A520000` | use the committed boot-args and `0x8A5C0002` — [LAYER3 §1–2](../research/LAYER3.md#1-the-reset-stolen-memory-computed-as-4-gb) |
-| Picture, but nearly black and flickering | `SSDT-PNLF` `_UID` 15 | `_UID` 19 — [LAYER3 §6](../research/LAYER3.md#6-backlight) |
+| Picture, but nearly black and flickering | `igfxtglblmax=0xAD9` missing, or it does not match the `SSDT-PNLF` `_UID` | `_UID` 15 with `igfxtglblmax=0xAD9` — [LAYER3 §6](../research/LAYER3.md#6-backlight) |
+| Machine freezes when the display sleeps or the lid closes (no panic) | a WhateverGreen built from patch 0003 before 2026-10-08 | rebuild from the current patch — [LAYER3 §7](../research/LAYER3.md#7-the-display-sleep-freeze) |
+| Black screen and hang when macOS tries to sleep | the firmware has no S3 | `sudo pmset -a disablesleep 1` — [LAYER3](../research/LAYER3.md#what-does-not-work) |
+| Lid close does not turn the screen off | system sleep is disabled, so nothing does | run [`tools/mac/lidwatch.sh`](../tools/mac/lidwatch.sh) |
 | Brightness keys do nothing | `SSDT-DOSI.aml` missing or disabled, or `BrightnessKeys.kext` not loaded | enable both — [LAYER3](../research/LAYER3.md#brightness-keys) |
 | CPU pinned to one frequency | XCPM not attached | check `SSDT-PLUG` targets `\_SB.PR00` — [02 §4.3](02-acpi-analysis.md#43-other-conclusions) |
 | Battery absent | Dell EC >8-bit fields | `ECEnabler.kext` |

@@ -3,9 +3,9 @@
 // AppleBacklight attaches to it once the panel is driven by AppleIntelICLLPGraphicsFramebuffer as a built-in
 // (LVDS) display - see research/LAYER3.md.
 //
-// _UID 19 (0x13) is required. It selects AppleBacklight profile F19Txxxx, whose table spans the full 16-bit range
-// that the Ice Lake driver's hwSetBacklight() expects (duty = level * period / 65535). With _UID 15 the table tops
-// out at 2777 and "100 %" is about 4 % duty: a nearly black, flickering panel.
+// _UID 15 (0x0F) selects AppleBacklight profile F15Txxxx, whose levels run from 0 to 0xAD9 (2777). The Ice Lake
+// driver's hwSetBacklight() computes duty = level * period / 65535, so on its own that range gives a nearly black
+// panel. The WhateverGreen patch rescales it: boot-arg igfxtglblmax=0xAD9 must match this _UID.
 DefinitionBlock ("", "SSDT", 2, "OCLT", "PNLF", 0x00000000)
 {
     External (_SB_.PC00.GFX0, DeviceObj)
@@ -15,7 +15,7 @@ DefinitionBlock ("", "SSDT", 2, "OCLT", "PNLF", 0x00000000)
         Name (_ADR, Zero)
         Name (_HID, EisaId ("APP0002"))
         Name (_CID, "backlight")
-        Name (_UID, 0x13)
+        Name (_UID, 0x0F)
         Name (_STA, 0x0B)
     }
 }

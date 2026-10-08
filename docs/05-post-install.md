@@ -59,8 +59,12 @@ These apply to the committed config, which runs Apple's Ice Lake framebuffer
 | Displays → Brightness slider | full range |
 | brightness keys | work |
 | display sleep and wake | works |
+| lid close and open | display off and on, with [`tools/mac/lidwatch.sh`](../tools/mac/lidwatch.sh) running |
 
-Untested: system sleep, lid close, external displays.
+**Disable system sleep:** `sudo pmset -a disablesleep 1`. The firmware offers no S3, and macOS hangs when it tries
+to sleep. Leave the other `pmset` values at their defaults.
+
+Untested: hibernation, external displays.
 
 ### 6.3 Not working — all expected
 

@@ -1,0 +1,42 @@
+magic 52544754 seq 32 entries 41 armedBy 1 flushes 24 waitTimeouts 0 armed at 114 s, last flush at 129 s
+     0 W 0C8258 BLC_PWM_DUTY           00000000
+     1 W 0C8258 BLC_PWM_DUTY           0000021D
+     2 r 0700AC                        x1
+     3 W 070080 CUR_CTL_A              00000000
+     4 W 070084 CUR_BASE_A             04040000
+     5 W 0C8258 BLC_PWM_DUTY           000002F1
+     6 W 0C8258 BLC_PWM_DUTY           00000000
+     7 W 0C8258 BLC_PWM_DUTY           00000000
+     8 W 0C8250 BLC_PWM_CTL            00000000
+     9 W 0C7204 PP_CONTROL             00000063
+    10 W 070180 PLANE_CTL_1_A          00000000
+    11 W 070680                        00000000
+    12 r 046520                        x1
+    13 W 068280                        00000000
+    14 W 068274                        00000000
+    15 W 046520                        00000000
+    16 r 07069C                        x1
+    17 r 07019C PLANE_SURF_1_A         x1
+    18 W 07069C                        00000000
+    19 W 07019C PLANE_SURF_1_A         00000000
+    20 W 044404 DE_PIPE_IMR_A          FFFFFFF7
+    21 W 04440C DE_PIPE_IER_A          00000008
+    22 W 044408 DE_PIPE_IIR_A          00000001
+    23 W 044408 DE_PIPE_IIR_A          00000001
+    24 W 044404 DE_PIPE_IMR_A          FFFFFFFF
+    25 W 04440C DE_PIPE_IER_A          00000000
+    26 W 044408 DE_PIPE_IIR_A          00000018
+    27 W 044408 DE_PIPE_IIR_A          00000018
+    28 W 07F008 PIPE_EDP_CONF          40000024
+    29 r 07F008 PIPE_EDP_CONF          x2
+    30 r 06F400 TRANS_DDI_FUNC_CTL_EDP x1
+    31 W 06F400 TRANS_DDI_FUNC_CTL_EDP 02000002
+    32 W 046140 TRANS_CLK_SEL_A        00000000
+    33 r 046520                        x1
+    34 W 068180                        00000200
+    35 W 068174                        00000000
+    36 W 046520                        00000000
+    37 r 064000 DDI_BUF_CTL_A          x1
+    38 W 064000 DDI_BUF_CTL_A          00000003
+    39 r 064040 DP_TP_CTL_A(icl)       x1
+    40 W 064040 DP_TP_CTL_A(icl)       00040300

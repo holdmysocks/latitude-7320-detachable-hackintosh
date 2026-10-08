@@ -24,7 +24,7 @@
 			</dict>
 			<dict>
 				<key>Comment</key>
-				<string>Backlight device on GFX0, _UID 19 (needed by AppleBacklight on the ICL framebuffer)</string>
+				<string>Backlight device on GFX0, _UID 15 (pairs with igfxtglblmax=0xAD9)</string>
 				<key>Enabled</key>
 				<true/>
 				<key>Path</key>
@@ -715,7 +715,7 @@
 				Rg==
 				</data>
 				<key>boot-args</key>
-				<string>-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F -igfxdbeo</string>
+				<string>-v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0xA83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo</string>
 				<key>csr-active-config</key>
 				<data>
 				AAAAAA==

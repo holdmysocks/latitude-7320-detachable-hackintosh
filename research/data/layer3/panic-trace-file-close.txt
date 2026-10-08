@@ -1,0 +1,60 @@
+Kernel panic of 2026-10-08 08:32 (diagnostic build 0003s with the trace enabled): the trace's thread call closed its file 120 s after arming.
+Cause: vnode_close from a thread call (no process context). The close was removed; the trace now leaves the file open.
+
+panic(cpu 0 caller 0xffffff80027a9027): zone_require_ro failed: address not in a ro zone (addr: 0) @zalloc.c:6833
+Panicked task 0xffffff908a8e69a0: 195 threads: pid 0: kernel_task
+Backtrace (CPU 0), panicked thread: 0xffffff908bacc520, Frame : Return Address
+0xffffffb6f580c880 : 0xffffff8001f58d31 mach_kernel : _handle_debugger_trap + 0x421
+0xffffffb6f580c8d0 : 0xffffff80020e5512 mach_kernel : _kdp_i386_trap + 0x122
+0xffffffb6f580c910 : 0xffffff80020d47c8 mach_kernel : _kernel_trap + 0x778
+0xffffffb6f580c9d0 : 0xffffff8001eeb971 mach_kernel : _return_from_trap + 0xc1
+0xffffffb6f580c9f0 : 0xffffff8001f59107 mach_kernel : _DebuggerTrapWithState + 0x67
+0xffffffb6f580caf0 : 0xffffff8001f58799 mach_kernel : _panic_trap_to_debugger + 0x269
+0xffffffb6f580cc60 : 0xffffff80027a068d mach_kernel : _panic + 0x81
+0xffffffb6f580cd50 : 0xffffff80027a9027 mach_kernel : _thread_corpse_continue + 0x2707
+0xffffffb6f580cd90 : 0xffffff8001fdc9a8 mach_kernel : _get_bsdthreadtask_info + 0x78
+0xffffffb6f580cda0 : 0xffffff8002197bb7 mach_kernel : _vfs_context_proc + 0x17
+0xffffffb6f580cdb0 : 0xffffff8004d7a388 com.apple.filesystems.apfs : _apfs_vnop_close + 0x2e
+0xffffffb6f580cdf0 : 0xffffff800218feb7 mach_kernel : _vn_close + 0xf7
+0xffffffb6f580ce40 : 0xffffff8002168595 mach_kernel : _vnode_close + 0x25
+0xffffffb6f580ce60 : 0xffffff8005dff8b0 as.vit9696.WhateverGreen + 47280
+0xffffffb6f580cea0 : 0xffffff8001fbc678 mach_kernel : _thread_call_delayed_timer + 0x588
+0xffffffb6f580cee0 : 0xffffff8001fbd688 mach_kernel : _thread_call_delayed_timer + 0x1598
+0xffffffb6f580cfa0 : 0xffffff8001eeb19e mach_kernel : _call_continuation + 0x2e
+      Kernel Extensions in backtrace:
+         as.vit9696.WhateverGreen(1.7.1)[00EBB9E3-13D1-3BC9-A0E2-02F2B9FEAB87]@0xffffff8005df4000->0xffffff8005e7ffff
+            dependency: com.apple.iokit.IOPCIFamily(2.9)[806E705F-19AA-3438-A285-4638FA70A8FE]@0xffffff80045e4000->0xffffff8004637fff
+            dependency: as.vit9696.Lilu(1.7.2)[C2A303B8-6D22-3163-A905-5DB8E340D285]@0xffffff8005d78000->0xffffff8005da3fff
+         com.apple.filesystems.apfs(2811.160.7)[AE6E10D9-440C-3907-8F36-DF62C371511D]@0xffffff8004d14000->0xffffff8004ecefff
+            dependency: com.apple.driver.AppleEFINVRAM(2.1)[7E2D300F-3D59-35BF-879C-EA5F7C54D47B]@0xffffff800355c000->0xffffff8003566fff
+            dependency: com.apple.driver.AppleEffaceableStorage(1.0)[B0373F96-094C-3E28-A0B5-76374DED146A]@0xffffff8003573000->0xffffff8003578fff
+            dependency: com.apple.iokit.CoreAnalyticsFamily(1)[C2AB7174-29B1-3101-8E7A-5F5FB4E9E0BD]@0xffffff8003b73000->0xffffff8003b7dfff
+            dependency: com.apple.iokit.IOStorageFamily(2.1)[42A6D7C8-EAF6-3F8F-88EE-31C0AE9F16C2]@0xffffff8004751000->0xffffff8004767fff
+            dependency: com.apple.kec.corecrypto(26.0)[054C32E8-7085-33FB-A9B8-1FD60CBF50C5]@0xffffff8004f15000->0xffffff8004fa7fff
+            dependency: com.apple.security.AppleImage4(7.0.0)[98647EE4-B92D-3690-8846-FE66DFF257A4]@0xffffff80035e5000->0xffffff800360cfff
+
+Process name corresponding to current thread (0xffffff908bacc520): kernel_task
+Boot args: -v debug=0x100 keepsyms=1 lilucpu=12 -igfxdvmt -igfxcdc igfxtglmap=0x5A83F igfxtglblmax=0xAD9 dc6config=0 -igfxdbeo 
+
+Mac OS version:
+25G72
+
+Kernel version:
+Darwin Kernel Version 25.6.0: Sat Jul 11 15:22:40 PDT 2026; root:xnu-12377.161.13~4/RELEASE_X86_64
+Kernel UUID: 87453B1D-A163-31FA-B33B-0FB4BE78E6E8
+roots installed: 0
+KernelCache slide: 0x0000000001c00000
+KernelCache base:  0xffffff8001e00000
+Kernel slide:      0x0000000001ce8000
+Kernel text base:  0xffffff8001ee8000
+__HIB  text base: 0xffffff8001d00000
+System model name: MacBookPro16,2 (Mac-5F9802EFE386AA28)
+System shutdown begun: NO
+Panic diags file available: YES (0x0)
+Hibernation exit count: 0
+
+System uptime in nanoseconds: 262665373114
+Last Sleep:           absolute           base_tsc          base_nano
+  Uptime  : 0x0000003d281388ad
+  Sleep   : 0x0000000000000000 0x0000000000000000 0x0000000000000000
+  Wake    : 0x0000000000000000 0x00000006a589b5ab 0x0000000000000000

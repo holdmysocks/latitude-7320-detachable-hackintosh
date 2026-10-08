@@ -1,5 +1,5 @@
 diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
-index e1e4c49..00bc26f 100644
+index e1e4c49..c62e791 100644
 --- a/WhateverGreen/kern_igfx.cpp
 +++ b/WhateverGreen/kern_igfx.cpp
 @@ -5,6 +5,7 @@
@@ -10,7 +10,17 @@ index e1e4c49..00bc26f 100644
  #include "kern_igfx.hpp"
  #include "kern_fb.hpp"
  #include "kern_guc.hpp"
-@@ -507,7 +508,8 @@ uint32_t IGFX::MMIORegistersReadSupport::wrapReadRegister32(void *controller, ui
+@@ -17,6 +18,9 @@
+ #include <Headers/kern_iokit.hpp>
+ 
+ #include <IOKit/pci/IOPCIDevice.h>
++#include <sys/vnode.h>
++#include <sys/uio.h>
++#include <sys/fcntl.h>
+ 
+ IGFX *IGFX::callbackIGFX;
+ 
+@@ -507,7 +511,8 @@ uint32_t IGFX::MMIORegistersReadSupport::wrapReadRegister32(void *controller, ui
  	// Invoke the original function
  	auto &tracer = callbackIGFX->modTigerLakeTracer;
  	size_t slot = tracer.enabled ? tracer.onAccess(false, address, 0) : 0;
@@ -20,7 +30,7 @@ index e1e4c49..00bc26f 100644
  	if (tracer.enabled)
  		tracer.ring[slot].value = retVal;
  	if (callbackIGFX->modMMIORegistersReadSupport.verbose)
-@@ -601,7 +603,10 @@ void IGFX::MMIORegistersWriteSupport::wrapWriteRegister32(void *controller, uint
+@@ -601,7 +606,10 @@ void IGFX::MMIORegistersWriteSupport::wrapWriteRegister32(void *controller, uint
  	// Invoke the original function
  	if (callbackIGFX->modTigerLakeTracer.enabled)
  		callbackIGFX->modTigerLakeTracer.onAccess(true, address, value);
@@ -32,7 +42,7 @@ index e1e4c49..00bc26f 100644
  	if (callbackIGFX->modMMIORegistersWriteSupport.verbose)
  		DBGLOG("igfx", "RWS: Write MMIO Register = 0x%x; Value = 0x%x.", address, value);
  	
-@@ -875,6 +880,450 @@ void IGFX::TigerLakeFunctionTracer::panicWithRing(const char *head) {
+@@ -875,6 +883,562 @@ void IGFX::TigerLakeFunctionTracer::panicWithRing(const char *head) {
  	PANIC("igfx", "%s", report);
  }
  
@@ -101,6 +111,10 @@ index e1e4c49..00bc26f 100644
 +	if (mask == 0)
 +		return;
 +
++	uint32_t levelMax = 0;
++	if (PE_parse_boot_argn("igfxtglblmax", &levelMax, sizeof(levelMax)) && levelMax != 0 && levelMax <= 0xFFFF)
++		backlightLevelMax = levelMax;
++
 +	// The generation may have been overridden with lilucpu, so look at the real CPU model
 +	auto model = BaseDeviceInfo::get().cpuModel;
 +	if (model != 0x8C && model != 0x8D) {
@@ -114,6 +128,10 @@ index e1e4c49..00bc26f 100644
 +	PE_parse_boot_argn("igfxtglwait", &lateWait, sizeof(lateWait));
 +	if (has(LateState))
 +		publishCall = thread_call_allocate(publishThread, this);
++	if (has(TraceDisk)) {
++		traceCall = thread_call_allocate(traceThread, this);
++		PE_parse_boot_argn("igfxtgltraceat", &traceAt, sizeof(traceAt));
++	}
 +	keepFirmwarePLL = checkKernelArgument("-igfxtglfwpll");
 +	SYSLOG("igfx", "TGLMAP: Translating Ice Lake display registers for Tiger Lake (features 0x%X, fwpll %d).", features, keepFirmwarePLL);
 +}
@@ -251,6 +269,96 @@ index e1e4c49..00bc26f 100644
 +	FileIO::writeBufferToFile("/Users/Shared/tgl-map-state.bin", &self->state, sizeof(self->state));
 +}
 +
++static uint32_t tglUptimeSeconds() {
++	uint64_t t = 0, nanos = 0;
++	clock_get_uptime(&t);
++	absolutetime_to_nanoseconds(t, &nanos);
++	return static_cast<uint32_t>(nanos / 1000000000ULL);
++}
++
++void IGFX::TigerLakeRegisterMap::traceThread(thread_call_param_t param0, thread_call_param_t) {
++	// Kernel thread context. One synchronous write of the whole record at offset 0.
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	uint32_t seq = self->traceRec.seq;
++	if (!self->traceContext)
++		self->traceContext = vfs_context_create(nullptr);
++	auto ctx = static_cast<vfs_context_t>(self->traceContext);
++	if (!self->traceVnode && ctx) {
++		vnode_t vp = NULLVP;
++		if (vnode_open("/Users/Shared/tgl-trace.bin", O_WRONLY | O_CREAT, 0666, VNODE_LOOKUP_NOFOLLOW, &vp, ctx) == 0)
++			self->traceVnode = vp;
++	}
++	if (self->traceVnode && ctx) {
++		self->traceRec.flushes++;
++		self->traceRec.nowUptime = tglUptimeSeconds();
++		// The uio is not freed: uio_free is not among the symbols this kext is known to link against, and the
++		// trace runs for two minutes at most.
++		uio_t uio = uio_create(1, 0, UIO_SYSSPACE, UIO_WRITE);
++		if (uio) {
++			uio_addiov(uio, CAST_USER_ADDR_T(&self->traceRec), sizeof(self->traceRec));
++			VNOP_WRITE(static_cast<vnode_t>(self->traceVnode), uio, IO_SYNC, ctx);
++		}
++	}
++	self->traceFlushed = seq;
++	// The file stays open. Closing it from here panics (vnode_close needs a process context), and an open file
++	// blocks unmounting at shutdown: after a traced run, power the machine off by hand.
++}
++
++void IGFX::TigerLakeRegisterMap::traceArm(uint32_t by) {
++	if (traceArmed || traceDone || !traceCall)
++		return;
++	traceRec.armedBy = by;
++	traceRec.armUptime = tglUptimeSeconds();
++	traceArmed = true;
++}
++
++void IGFX::TigerLakeRegisterMap::traceNote(uint32_t address, uint32_t value, bool isWrite) {
++	if (!traceArmed) {
++		if (traceAt == 0 || traceDone || !traceCall || tglUptimeSeconds() < traceAt)
++			return;
++		traceArm(2);
++		if (!traceArmed)
++			return;
++	}
++	if (!isWrite) {
++		// Polling loops read one register thousands of times: count them in one entry, and put the entry on disk
++		// when it is new and each time the count reaches a power of four, so a loop that never ends is visible.
++		bool flush = true;
++		if (traceRec.next != 0 && traceRec.ring[(traceRec.next - 1) % TraceRecord::RingSize].address == address) {
++			uint32_t n = ++traceRec.ring[(traceRec.next - 1) % TraceRecord::RingSize].value;
++			flush = n >= 4 && (n & (n - 1)) == 0 && (__builtin_ctz(n) & 1) == 0;
++		} else {
++			auto &slot = traceRec.ring[traceRec.next % TraceRecord::RingSize];
++			slot.address = address;
++			slot.value = 1;
++			traceRec.next++;
++		}
++		if (!flush)
++			return;
++	} else {
++		auto &slot = traceRec.ring[traceRec.next % TraceRecord::RingSize];
++		slot.address = address | 0x80000000U;
++		slot.value = value;
++		traceRec.next++;
++	}
++	uint32_t seq = ++traceRec.seq;
++	thread_call_enter1(traceCall, nullptr);
++	// Give the writer up to 30 ms to put this access on disk before the driver carries on. No blocking calls here.
++	if (!has(TraceNoWait) && ml_get_interrupts_enabled()) {
++		uint32_t spins = 0;
++		while (static_cast<int32_t>(traceFlushed - seq) < 0 && spins < 300) {
++			IODelay(100);
++			spins++;
++		}
++		if (spins >= 300)
++			traceRec.waitTimeouts++;
++	}
++	if (tglUptimeSeconds() > traceRec.armUptime + 120) {
++		traceArmed = false;
++		traceDone = true;
++	}
++}
++
 +void IGFX::TigerLakeRegisterMap::lateCheck(void *controller) {
 +	// Called on every hooked access; cheap until the time comes.
 +	// Stage 1 (wait - 15 s): publish what is already in memory (the firmware snapshot), no register reads.
@@ -307,6 +415,8 @@ index e1e4c49..00bc26f 100644
 +uint32_t IGFX::TigerLakeRegisterMap::read(void *controller, uint32_t address) {
 +	if (!snapshotTaken)
 +		snapshot(controller);
++	if (has(TraceDisk))
++		traceNote(address, 0, false);
 +
 +	uint32_t mapped = mapAddress(address, false);
 +	uint32_t raw = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32(controller, mapped);
@@ -322,7 +432,7 @@ index e1e4c49..00bc26f 100644
 +		if (address == 0xC8254)
 +			value = driverBacklightFreq;
 +		else if (address == 0xC8258)
-+			value = static_cast<uint32_t>((static_cast<uint64_t>(raw) * driverBacklightFreq) / fwBacklightFreq);
++			value = static_cast<uint32_t>((static_cast<uint64_t>(raw) * driverDutyMax()) / fwBacklightFreq);
 +	}
 +	if (mapped != address || value != raw)
 +		state.mappedReads++;
@@ -340,6 +450,11 @@ index e1e4c49..00bc26f 100644
 +void IGFX::TigerLakeRegisterMap::write(void *controller, uint32_t address, uint32_t value) {
 +	if (!snapshotTaken)
 +		snapshot(controller);
++	if (has(TraceDisk)) {
++		if (address == 0xC8258 && value == 0)
++			traceArm(1);
++		traceNote(address, value, true);
++	}
 +
 +	auto org = callbackIGFX->modMMIORegistersWriteSupport.orgWriteRegister32;
 +	uint32_t mapped = mapAddress(address, true);
@@ -373,33 +488,45 @@ index e1e4c49..00bc26f 100644
 +	}
 +
 +	// Backlight with brightness control: the hardware keeps the firmware's PWM frequency; duty values arrive on the
-+	// driver's own scale (0..the frequency it wrote) and are rescaled. disableDisplay writes a zero duty during every
-+	// modeset and LightUpEDP does not restore it, so zero is never written: the previous level stays.
-+	if (has(ScaleBacklight) && (address == 0xC8254 || address == 0xC8258)) {
-+		uint32_t out = 0;
-+		if (address == 0xC8254) {
++	// driver's own scale and are rescaled. A zero duty is passed on: the driver writes it before it powers the panel
++	// down, and holding the backlight at a high duty through that power-down freezes this machine. disableDisplay also
++	// writes zero during every modeset and LightUpEDP restores only the control and frequency registers, so the last
++	// level is written back when the driver switches the PWM on again.
++	if (has(ScaleBacklight) && (address == 0xC8250 || address == 0xC8254 || address == 0xC8258)) {
++		uint32_t out = value;
++		bool restore = false;
++		if (address == 0xC8250) {
++			restore = backlightBlanked && (value & 0x80000000U) != 0;
++		} else if (address == 0xC8254) {
 +			if (value != 0)
 +				driverBacklightFreq = value;
 +			out = fwBacklightFreq ? fwBacklightFreq : value;
++			restore = backlightBlanked && value != 0;
++		} else if (value == 0) {
++			backlightBlanked = true;
 +		} else {
-+			uint32_t max = fwBacklightFreq ? fwBacklightFreq : driverBacklightFreq;
-+			if (value == 0) {
-+				out = lastBacklightDuty ? lastBacklightDuty : (fwBacklightDuty ? fwBacklightDuty : max / 2);
-+			} else if (driverBacklightFreq != 0 && fwBacklightFreq != 0) {
-+				out = static_cast<uint32_t>((static_cast<uint64_t>(value) * fwBacklightFreq) / driverBacklightFreq);
++			if (driverBacklightFreq != 0 && fwBacklightFreq != 0) {
++				out = static_cast<uint32_t>((static_cast<uint64_t>(value) * fwBacklightFreq) / driverDutyMax());
 +				if (out > fwBacklightFreq)
 +					out = fwBacklightFreq;
 +				if (out == 0)
 +					out = 1;
-+			} else {
-+				out = value;
 +			}
 +			lastBacklightDuty = out;
++			backlightBlanked = false;
 +		}
 +		record(address, out, true);
 +		state.mappedWrites++;
-+		if (out != 0)
++		if (out != 0 || address != 0xC8254)
 +			org(controller, address, out);
++		if (restore) {
++			uint32_t max = fwBacklightFreq ? fwBacklightFreq : driverBacklightFreq;
++			uint32_t duty = lastBacklightDuty ? lastBacklightDuty : (fwBacklightDuty ? fwBacklightDuty : max / 2);
++			lastBacklightDuty = duty;
++			backlightBlanked = false;
++			record(0xC8258, duty, true);
++			org(controller, 0xC8258, duty);
++		}
 +		lateCheck(controller);
 +		return;
 +	}
@@ -463,20 +590,15 @@ index e1e4c49..00bc26f 100644
 +	if (address == TGLReg::DpTpCtlA_ICL && (!(out & TGLReg::Enable) || ((out >> 8) & 7) == 3))
 +		publish(controller, true);
 +
-+	// Port disabled: release the transcoder clock once the transcoder itself is off
-+	if (has(SynthPreEnable) && address == TGLReg::DpTpCtlA_ICL && !(value & TGLReg::Enable)) {
-+		auto rd = callbackIGFX->modMMIORegistersReadSupport.orgReadRegister32;
-+		uint32_t fc = rd(controller, TGLReg::TransDdiFuncCtlA);
-+		if (!(fc & TGLReg::Enable) && !(rd(controller, TGLReg::TransConfA) & TGLReg::Enable)) {
-+			if (fc & (0xFU << 27))
-+				org(controller, TGLReg::TransDdiFuncCtlA, fc & ~(0xFU << 27));
-+			if (rd(controller, TGLReg::TransClkSelA) != 0) {
-+				org(controller, TGLReg::TransClkSelA, 0);
-+				if (shouldLog())
-+					SYSLOG("igfx", "TGLMAP: TRANS_CLK_SEL_A cleared after DP_TP_CTL disable.");
-+			}
-+		}
-+	}
++	// Port disabled. Earlier revisions cleared the DDI select in TRANS_DDI_FUNC_CTL_A and then TRANS_CLK_SEL_A here.
++	// Six on-disk traces of the display-sleep freeze (with and without the DMC firmware, with the driver held back
++	// and at full speed) all end right after that FUNC_CTL write, at the read of TRANS_CLK_SEL_A that followed it.
++	// Nothing is touched now: the transcoder is off, and prepareTranscoderA programs both registers again before the
++	// next enable.
++	if (has(SynthPreEnable) && has(TraceDisk) && address == TGLReg::DpTpCtlA_ICL && !(value & TGLReg::Enable))
++		traceNote(0x40000000U | 0x7, 0, true);       // marker: port disabled, no clean-up
++	if (has(TraceDisk) && address == TGLReg::DpTpCtlA_ICL && !(value & TGLReg::Enable))
++		traceNote(0x40000000U | 0x4, 0, true);     // marker: returning to the driver after DP_TP_CTL disable
 +	lateCheck(controller);
 +}
 +
@@ -484,7 +606,7 @@ index e1e4c49..00bc26f 100644
  
  void IGFX::ForceCompleteModeset::init() {
 diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
-index af23ba2..e833c20 100644
+index af23ba2..1b4ad45 100644
 --- a/WhateverGreen/kern_igfx.hpp
 +++ b/WhateverGreen/kern_igfx.hpp
 @@ -8,6 +8,7 @@
@@ -495,7 +617,7 @@ index af23ba2..e833c20 100644
  #include "kern_fb.hpp"
  #include "kern_igfx_lspcon.hpp"
  #include "kern_igfx_backlight.hpp"
-@@ -2561,6 +2562,191 @@ private:
+@@ -2561,6 +2562,246 @@ private:
  		void processFramebufferKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) override;
  	} modTigerLakeFunctionTracer;
  
@@ -544,6 +666,13 @@ index af23ba2..e833c20 100644
 +			                           // and the pipe config block (0x7F000-0x7F0FF); leave DIP, VRR and PSR registers unmapped
 +			LazyEdpReads     = 0x400,  // with MapEdpTranscoder: map eDP reads only after the driver first writes to that block,
 +			                           // so the driver's startup probing sees what it saw without the map
++			TraceDisk        = 0x10000, // diagnostic: once armed, every register access goes into a ring that is written
++			                            // synchronously to /Users/Shared/tgl-trace.bin, so a hard freeze leaves the
++			                            // driver's last accesses on disk. Armed by a zero backlight duty (brightness
++			                            // slider at minimum) or at igfxtgltraceat seconds of uptime; ends after 120 s.
++			                            // The file is never closed, so a clean shutdown hangs afterwards: power off by hand.
++			TraceNoWait      = 0x40000, // with TraceDisk: do not hold the driver until an access is on disk. The driver
++			                            // runs at its normal speed and the last millisecond or two may be lost.
 +			AllTranslation   = 0x03F
 +		};
 +		uint32_t features {0};
@@ -569,6 +698,26 @@ index af23ba2..e833c20 100644
 +		 */
 +		uint32_t driverBacklightFreq {0};
 +		uint32_t lastBacklightDuty {0};
++
++		/**
++		 *  The driver wrote a zero duty and has not set a level since
++		 */
++		bool backlightBlanked {false};
++
++		/**
++		 *  Highest backlight level AppleBacklight sends for the SSDT-PNLF _UID in use (igfxtglblmax, default 0xFFFF).
++		 *  The driver turns a level into duty = level * frequency / 0xFFFF, so with _UID 15 (0xAD9) the duty never
++		 *  exceeds 4 % unless the scale accounts for it.
++		 */
++		uint32_t backlightLevelMax {0xFFFF};
++
++		/**
++		 *  The duty the driver would write for the highest level: the denominator of the backlight scale
++		 */
++		uint32_t driverDutyMax() const {
++			uint32_t m = static_cast<uint32_t>((static_cast<uint64_t>(driverBacklightFreq) * backlightLevelMax) / 0xFFFF);
++			return m ? m : 1;
++		}
 +		bool has(uint32_t f) const { return (features & f) != 0; }
 +
 +		/**
@@ -664,6 +813,34 @@ index af23ba2..e833c20 100644
 +		static void publishThread(thread_call_param_t self, thread_call_param_t controller);
 +
 +		/**
++		 *  Register trace kept on disk (TraceDisk). Reads: bit 31 clear, value = number of consecutive reads of that
++		 *  address. Writes: bit 31 set, value = what the driver wrote (before translation).
++		 */
++		struct TraceRecord {
++			static constexpr uint32_t Magic = 0x52544754; // "TGTR"
++			static constexpr uint32_t RingSize = 500;
++			uint32_t magic {Magic};
++			uint32_t seq {0};       // bumped on every write access
++			uint32_t next {0};      // total entries recorded; the newest is ring[(next - 1) % RingSize]
++			uint32_t armedBy {0};   // 1 zero duty, 2 uptime
++			uint32_t flushes {0};
++			uint32_t waitTimeouts {0};
++			uint32_t armUptime {0}; // seconds
++			uint32_t nowUptime {0};
++			struct { uint32_t address; uint32_t value; } ring[RingSize] {};
++		} traceRec;
++		bool traceArmed {false};
++		bool traceDone {false};
++		uint32_t traceAt {0};
++		volatile uint32_t traceFlushed {0};
++		thread_call_t traceCall {nullptr};
++		void *traceVnode {nullptr};
++		void *traceContext {nullptr};
++		static void traceThread(thread_call_param_t self, thread_call_param_t);
++		void traceArm(uint32_t by);
++		void traceNote(uint32_t address, uint32_t value, bool isWrite);
++
++		/**
 +		 *  Number of NVRAM publications left; the registry property is always updated
 +		 */
 +		uint32_t nvramBudget {10};
@@ -687,7 +864,7 @@ index af23ba2..e833c20 100644
  	/**
  	 *  A collection of shared submodules
  	 */
-@@ -2573,7 +2759,7 @@ private:
+@@ -2573,7 +2814,7 @@ private:
  	/**
  	 *  A collection of submodules
  	 */
@@ -696,7 +873,7 @@ index af23ba2..e833c20 100644
  		&modDVMTCalcFix,
  		&modDPCDMaxLinkRateFix,
  		&modCoreDisplayClockFix,
-@@ -2597,6 +2783,7 @@ private:
+@@ -2597,6 +2838,7 @@ private:
  		&modDisplayDataBufferEarlyOptimizer,
  		&modTigerLakeTracer,
  		&modTigerLakeFunctionTracer,

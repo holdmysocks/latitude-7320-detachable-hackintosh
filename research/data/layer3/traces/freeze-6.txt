@@ -1,0 +1,40 @@
+magic 52544754 seq 40 entries 39 armedBy 1 flushes 9 waitTimeouts 0 armed at 100 s, last flush at 106 s
+     0 W 0C8258 BLC_PWM_DUTY           00000000
+     1 W 0C8258 BLC_PWM_DUTY           000002F1
+     2 W 0C8258 BLC_PWM_DUTY           00000000
+     3 W 0C8258 BLC_PWM_DUTY           00000000
+     4 W 0C8250 BLC_PWM_CTL            00000000
+     5 W 0C7204 PP_CONTROL             00000063
+     6 W 070180 PLANE_CTL_1_A          00000000
+     7 W 070680                        00000000
+     8 r 046520                        x1
+     9 W 068280                        00000000
+    10 W 068274                        00000000
+    11 W 046520                        00000000
+    12 r 07069C                        x1
+    13 r 07019C PLANE_SURF_1_A         x1
+    14 W 07069C                        00000000
+    15 W 07019C PLANE_SURF_1_A         00000000
+    16 W 044404 DE_PIPE_IMR_A          FFFFFFF7
+    17 W 04440C DE_PIPE_IER_A          00000008
+    18 W 044408 DE_PIPE_IIR_A          00000001
+    19 W 044408 DE_PIPE_IIR_A          00000001
+    20 W 044404 DE_PIPE_IMR_A          FFFFFFFF
+    21 W 04440C DE_PIPE_IER_A          00000000
+    22 W 044408 DE_PIPE_IIR_A          00000018
+    23 W 044408 DE_PIPE_IIR_A          00000018
+    24 W 07F008 PIPE_EDP_CONF          40000024
+    25 r 07F008 PIPE_EDP_CONF          x4
+    26 r 06F400 TRANS_DDI_FUNC_CTL_EDP x1
+    27 W 06F400 TRANS_DDI_FUNC_CTL_EDP 02000002
+    28 W 046140 TRANS_CLK_SEL_A        00000000
+    29 r 046520                        x1
+    30 W 068180                        00000200
+    31 W 068174                        00000000
+    32 W 046520                        00000000
+    33 r 064000 DDI_BUF_CTL_A          x1
+    34 W 064000 DDI_BUF_CTL_A          00000003
+    35 r 064040 DP_TP_CTL_A(icl)       x1
+    36 W 064040 DP_TP_CTL_A(icl)       00040300
+    37 * hook marker 1: cleanup entered, TRANS_CONF_A after wait (0003o) / FUNC_CTL_A (0003t) (00000024)
+    38 * hook marker 2: FUNC_CTL select cleared, value = 100 us waits (00000000)
