@@ -290,7 +290,7 @@ The same check selects the firmware's lid path (`GLID` instead of `ILID`).
 
 | | State |
 |---|---|
-| Graphics acceleration | None. No `IOAccelerator`, no Metal. Not attempted; see [`README.md`](README.md). |
+| Graphics acceleration | None. The accelerator can be started but every draw hangs; see [`LAYER4.md`](LAYER4.md). |
 | System sleep | The firmware offers no S3: the DSDT has `Name (SS3, Zero)` and defines `_S3` only `If (SS3)`. macOS's attempt hangs ("Darkwake Entry Failure"). Use `pmset -a disablesleep 1`. Hibernation (S4) is offered and untested. |
 | Lid close | With system sleep disabled nothing turns the panel off; the lid switch itself works (`AppleACPILid`). `tools/mac/lidwatch.sh` puts the display to sleep on close; opening the lid wakes it. `tools/mac/install-lidwatch.sh` installs it as a login item. |
 | External displays | Untested. Type-C ports use the Dekel PHY on Tiger Lake; the driver has MG PHY code only. |
@@ -309,8 +309,8 @@ Still logged by the driver on a working boot, apparently harmless: `Insufficient
   (or closing and opening the lid) fixed it. The driver's log for such a wake is identical, message for message, to
   a good one, including `Link Training successful`, so it cannot be detected there. Both were without `dc6config=0`.
   The driver logs `Timeout powering ON the panel` and `Fast link training failed` on every wake.
-- **Acceleration.** `AppleIntelICLGraphics` still shows in `kextstat` despite the `Exclude` entry, and attaches
-  nothing. Whether it can be made to is untested.
+- **Acceleration.** See [`LAYER4.md`](LAYER4.md). The `Kernel/Block` entry in the recipe does nothing: the kext is
+  in the system kernel collection, and it stays out only because it refuses this chip's PCI revision.
 
 ## Things that are specific to this machine and cost time
 

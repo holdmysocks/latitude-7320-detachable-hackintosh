@@ -53,6 +53,18 @@ Register-map experiments (need the 0003b WhateverGreen build on the ESP). igfxtg
   R         Q + dc6config=0 (the driver skips its Ice Lake DMC firmware and hardware DC6). Without it the machine
             hard-freezes a few ms after the display engine goes idle at display sleep.
   S         R with igfxtglmap=0x2A83F on the 0003q build: the display power-down is paced (2 ms between register writes).
+  GA1      first accelerator probe: R without the Kernel/Block entry for AppleIntelICLGraphics, plus the accelerator's
+            own boot-args -allow3d (it refuses PCI revision <= 2 otherwise) and -disablegfxfirmware. Expected to panic in
+            IntelAccelerator::getGPUInfo ("Unsupported ICL Sku") or hang; the [IGPU] HWCAPS log lines are the point.
+  GA2       GA1 + igfxtglss=6 (0003x build patches the accelerator at load): getGPUInfo takes NumSubSlices = 6, which with this chip's "GPU Sku" fuse value 9 is the
+            driver's "ICL 1x6x8 LP" case, instead of computing 27 from the Tiger Lake fuse and panicking.
+  GA3       GA2 + igfxtglcsb=1 (0003y build): the accelerator's context status buffer is read in the Tiger Lake (Gen12)
+            layout and handed to the driver's handlers as Ice Lake entries; every event is logged to
+            /Users/Shared/tgl-csb.bin (decode-tglcsb.py). The log file stays open: power off by hand afterwards.
+  GA4       GA3's configuration on the 0003z build: the reader wraps after 6 entries (GA3 showed the hardware does;
+            0003y assumed 12 and stalled at entry 6, black login screen).
+  GA5       GA4 with igfxtglss=4 instead of 6: GA4's GPU hang reports show the vertex shader stage busy and the driver's
+            "subslice 5" absent (the chip has 5 dual subslices). The driver may log or reject Sku 9 with 4 subslices.
   M-fb      igfxtglmap=0x683F -igfxdbeo: only the eDP mapping change relative to K (backlight still pinned, no PNLF).
   M-pnlf    K's mask with 0x8000 instead of 0x4000 (0xA03E) and SSDT-PNLF enabled: no eDP mapping change.
   F5        Same arguments as F3, on the 0003h build: the snapshot goes to /Users/Shared/tgl-map-state.bin in three
@@ -88,6 +100,14 @@ TAHOE_IDS = {0x8A510000, 0x8A510001, 0x8A510002, 0x8A520001, 0x8A520002, 0x8A530
 MATCH_IDS = {0xFF05, 0x8A70, 0x8A71, 0x8A51, 0x8A5C, 0x8A5D, 0x8A52, 0x8A53, 0x8A5A, 0x8A5B}
 
 def le32(v): return struct.pack('<I', v)
+
+def accel_subslice_patch(count):
+    """IntelAccelerator::getGPUInfo: NumSubSlices = popcount(~fuse 0x913C). On Tiger Lake that register is the dual-
+    subslice ENABLE mask (0x1F here), so the driver computes 27 and panics with "Unsupported ICL Sku". Force a count."""
+    return {'Arch': 'x86_64', 'Base': '', 'Comment': 'AppleIntelICLGraphics getGPUInfo: NumSubSlices = %d' % count, 'Count': 1,
+            'Enabled': True, 'Find': bytes.fromhex('4489F8F7D0F30FB8F089B388110000'), 'Identifier': ACCEL, 'Limit': 0,
+            'Mask': b'', 'MaxKernel': '', 'MinKernel': '',
+            'Replace': bytes.fromhex('4489F8BE%02X0000009089B388110000' % count), 'ReplaceMask': b'', 'Skip': 0}
 
 def static_dvmt_patch(mb):
     # FBMemMgr_Init, macOS 26.6: shll $0x11,%eax; andl $0xFE000000,%eax; movl %eax,0xd9c(%rbx)
@@ -135,14 +155,14 @@ def main():
         if exp == 'A-nocdc': extra.remove("-igfxcdc")
         if exp == 'A-static': extra.remove("-igfxdvmt"); static = True
         if exp not in ('A', 'A-sam', 'A-cam0', 'A-nocdc', 'A-static'): sys.exit("unknown experiment %r" % exp)
-    elif exp in ('B', 'B-fwpll', 'B-state', 'C', 'C-fwpll', 'D', 'D-fwpll', 'E', 'E-fwpll', 'E-dc6', 'F', 'F-fwpll', 'F2', 'F2-blr', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'K-min', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-fb', 'M-pnlf', 'G', 'G-fwpll', 'G-dc6', 'G2', 'G3', 'H'):
-        mask = {'B': 0x3F, 'B-fwpll': 0x3F, 'B-state': 0xFF, 'C': 0x3E, 'C-fwpll': 0x3E, 'D': 0x43F, 'D-fwpll': 0x43F, 'E': 0xC3F, 'E-fwpll': 0xC3F, 'E-dc6': 0xC3F, 'F': 0x3E, 'F-fwpll': 0x3E, 'F2': 0x3E, 'F2-blr': 0x3E, 'F2-dbeo': 0x3E, 'F3': 0x203E, 'F4': 0x203E, 'F5': 0x203E, 'K': 0x603E, 'K-min': 0x403E, 'M': 0xA83F, 'N': 0xA83F, 'P': 0xA83F, 'P2': 0xA83F, 'Q': 0xA83F, 'R': 0xA83F, 'S': 0x2A83F, 'M-fb': 0x683F, 'M-pnlf': 0xA03E, 'G3': 0x2C3F, 'G2': 0xC3F, 'G': 0xC3F, 'G-fwpll': 0xC3F, 'G-dc6': 0xC3F, 'H': 0x200}[exp]
+    elif exp in ('B', 'B-fwpll', 'B-state', 'C', 'C-fwpll', 'D', 'D-fwpll', 'E', 'E-fwpll', 'E-dc6', 'F', 'F-fwpll', 'F2', 'F2-blr', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'K-min', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5', 'M-fb', 'M-pnlf', 'G', 'G-fwpll', 'G-dc6', 'G2', 'G3', 'H'):
+        mask = {'B': 0x3F, 'B-fwpll': 0x3F, 'B-state': 0xFF, 'C': 0x3E, 'C-fwpll': 0x3E, 'D': 0x43F, 'D-fwpll': 0x43F, 'E': 0xC3F, 'E-fwpll': 0xC3F, 'E-dc6': 0xC3F, 'F': 0x3E, 'F-fwpll': 0x3E, 'F2': 0x3E, 'F2-blr': 0x3E, 'F2-dbeo': 0x3E, 'F3': 0x203E, 'F4': 0x203E, 'F5': 0x203E, 'K': 0x603E, 'K-min': 0x403E, 'M': 0xA83F, 'N': 0xA83F, 'P': 0xA83F, 'P2': 0xA83F, 'Q': 0xA83F, 'R': 0xA83F, 'S': 0x2A83F, 'GA1': 0xA83F, 'GA2': 0xA83F, 'GA3': 0xA83F, 'GA4': 0xA83F, 'GA5': 0xA83F, 'M-fb': 0x683F, 'M-pnlf': 0xA03E, 'G3': 0x2C3F, 'G2': 0xC3F, 'G': 0xC3F, 'G-fwpll': 0xC3F, 'G-dc6': 0xC3F, 'H': 0x200}[exp]
         extra = ["lilucpu=12", "-igfxdvmt", "-igfxcdc", "igfxtglmap=0x%X" % mask]
         if exp.endswith('-fwpll'): extra.append("-igfxtglfwpll")
-        if exp in ('Q', 'R', 'S'): extra.append("igfxtglblmax=0xAD9")
-        if exp.endswith('-dc6') or exp in ('R', 'S'): extra.append("dc6config=0")
+        if exp in ('Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5'): extra.append("igfxtglblmax=0xAD9")
+        if exp.endswith('-dc6') or exp in ('R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5'): extra.append("dc6config=0")
         if exp in ('F2', 'G2', 'F2-blr', 'F3', 'F4', 'F5', 'G3'): extra.append("-igfxblr")
-        if exp in ('F2', 'G2', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-fb', 'M-pnlf', 'G3'): extra.append("-igfxdbeo")
+        if exp in ('F2', 'G2', 'F2-dbeo', 'F3', 'F4', 'F5', 'K', 'M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5', 'M-fb', 'M-pnlf', 'G3'): extra.append("-igfxdbeo")
     elif exp in ('selftest', 'alive'):
         keep_vesa, with_plat, static = True, False, True
         extra = ["-igfxtgl", "-igfxtgl" + exp]
@@ -155,24 +175,29 @@ def main():
 
     if exp != 'revert':
         a = base_args if keep_vesa else base_args.replace('-igfxvesa', '')
+        if exp in ('GA1', 'GA2', 'GA3', 'GA4', 'GA5'): extra += ['-allow3d', '-disablegfxfirmware']
+        if exp in ('GA2', 'GA3', 'GA4'): extra += ['igfxtglss=6']
+        if exp == 'GA5': extra += ['igfxtglss=4']
+        if exp in ('GA3', 'GA4', 'GA5'): extra += ['igfxtglcsb=1']
         nv['boot-args'] = ' '.join(a.split() + extra)
         props = {'device-id': le32(dev)}
         if with_plat: props['AAPL,ig-platform-id'] = le32(plat)
         p['DeviceProperties']['Add'][IGPU] = props
-        p['Kernel'].setdefault('Block', []).append(block_accel())
+        if exp not in ('GA1', 'GA2', 'GA3', 'GA4', 'GA5'):
+            p['Kernel'].setdefault('Block', []).append(block_accel())
         if static:
             p['Kernel'].setdefault('Patch', []).append(static_dvmt_patch(dvmt_mb))
-        if exp in ('M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'M-pnlf'):
+        if exp in ('M', 'N', 'P', 'P2', 'Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5', 'M-pnlf'):
             hit = [a for a in p['ACPI']['Add'] if a.get('Path') == 'SSDT-PNLF.aml']
             if not hit: sys.exit("SSDT-PNLF.aml is not listed in ACPI/Add of the base config")
             hit[0]['Enabled'] = True
 
-    if exp in ('N', 'P', 'P2', 'Q', 'R', 'S'):
+    if exp in ('N', 'P', 'P2', 'Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5'):
         if not any(k['BundlePath'] == 'BrightnessKeys.kext' for k in p['Kernel']['Add']):
             p['Kernel']['Add'].append({'Arch': 'x86_64', 'BundlePath': 'BrightnessKeys.kext', 'Comment': 'ACPI brightness key notifications (Notify LCD 0x86/0x87)',
                 'Enabled': True, 'ExecutablePath': 'Contents/MacOS/BrightnessKeys', 'MaxKernel': '', 'MinKernel': '', 'PlistPath': 'Contents/Info.plist'})
 
-    if exp in ('P', 'P2', 'Q', 'R', 'S'):
+    if exp in ('P', 'P2', 'Q', 'R', 'S', 'GA1', 'GA2', 'GA3', 'GA4', 'GA5'):
         if not any(a.get('Path') == 'SSDT-DOSI.aml' for a in p['ACPI']['Add']):
             p['ACPI']['Add'].append({'Comment': 'Dell OS identity for macOS: lets the firmware forward brightness keys', 'Enabled': True, 'Path': 'SSDT-DOSI.aml'})
 

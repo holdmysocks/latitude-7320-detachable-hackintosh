@@ -254,4 +254,5 @@ match list. The spoof target must be an ID **from the list above**.
 
 ---
 
-Continue to [`LAYER3.md`](LAYER3.md) for what the results establish.
+Continue to [`LAYER3.md`](LAYER3.md) for what the results establish. The accelerator runs (GA1–GA5, 2026-10-08) are
+in [`LAYER4.md`](LAYER4.md).

@@ -1,0 +1,97 @@
+hook        : routed
+written at  : 137.042 s uptime, flush 54
+calls       : 450151   accelerator flags 0x617C4B01 (bit 7 = MMIO mode)
+events      : handed on 90, skipped 0, both idle 0, not written 0, passthrough 0, bad pointer 0, after reset 0
+records     : 90
+
+    ms  eng  idx wp  lo        hi        to   away det  action             synth  active   pending  flags
+ 29042  RCS   0  2  00008001  03FF8000  1    idle 0    idle->active       0001   -   -    1   2    40
+ 29042  RCS   1  2  00010000  00008000  2    1    0    element switch     0014   1   2    -   -    40
+ 29042  RCS   2  2  03FF8000  00010000  idle 2    0    active->idle       0018   2   -    -   -    40
+ 29493  RCS   3  4  00008001  03FF8000  1    idle 0    idle->active       0001   -   -    1   -    40
+ 29493  RCS   4  4  03FF8000  00008000  idle 1    0    active->idle       0018   1   -    -   -    40
+ 34618  BCS   0  1  00038019  03FF8000  7    idle 0    idle->active       0001   -   -    7   -    0
+ 34618  BCS   1  1  03FF8018  00038000  idle 7    0    active->idle       0018   7   -    -   -    0
+ 34619  RCS   5  5  00040001  03FF8000  8    idle 0    idle->active       0001   -   -    8   -    0
+ 34619  RCS   0  0  03FF8000  00040000  idle 8    0    active->idle       0018   8   -    -   -    0
+ 34620  BCS   2  3  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 34620  BCS   3  3  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    -   -    0
+ 34620  RCS   1  1  00050001  03FF8000  A    idle 0    idle->active       0001   -   -    A   -    0
+ 34620  RCS   2  2  03FF8000  00050000  idle A    0    active->idle       0018   A   -    A   -    0
+ 34620  RCS   3  3  00058001  03FF8000  B    idle 0    idle->active       0001   -   -    B   -    0
+ 34620  RCS   4  4  03FF8000  00058000  idle B    0    active->idle       0018   B   -    B   -    0
+ 34621  RCS   5  5  00060001  03FF8000  C    idle 0    idle->active       0001   -   -    C   6    0
+ 34621  RCS   0  0  00030000  00060000  6    C    0    element switch     0014   C   6    -   -    0
+ 34626  BCS   4  4  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 34626  BCS   5  5  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 34626  BCS   0  0  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 34626  BCS   1  1  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 34626  RCS   1  1  00030001  00030005  6    6    5    preempted          8002   6   -    6   5    0
+ 34627  BCS   2  2  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    9   -    0
+ 43673  RCS   0  1  00030001  03FF8000  6    idle 0    idle->active       0001   -   -    6   5    0
+ 43673  RCS   1  1  00028000  00030000  5    6    0    element switch     0014   6   5    -   -    0
+ 54763  RCS   0  0  00028001  03FF8000  5    idle 0    idle->active       0001   5   -    5   -    0
+ 54763  RCS   1  1  03FF8000  00028000  idle 5    0    active->idle       0018   5   -    5   -    0
+ 54763  RCS   2  2  00030001  03FF8000  6    idle 0    idle->active       0001   -   -    6   -    0
+ 54763  RCS   3  3  03FF8000  00030000  idle 6    0    active->idle       0018   6   -    6   -    0
+ 54805  RCS   4  4  00030001  03FF8000  6    idle 0    idle->active       0001   -   -    6   -    0
+ 54806  RCS   5  5  00030001  00030005  6    6    5    preempted          8002   6   -    6   5    0
+ 55537  BCS   3  3  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 55537  BCS   4  4  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    9   -    0
+ 55537  BCS   5  5  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 55537  BCS   0  0  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    9   -    0
+ 63921  RCS   0  1  00030001  03FF8000  6    idle 0    idle->active       0001   -   -    6   5    0
+ 63921  RCS   1  1  00028000  00030000  5    6    0    element switch     0014   6   5    -   -    0
+ 63921  RCS   2  2  00028001  00028005  5    5    5    preempted          8002   5   -    5   -    0
+ 73056  RCS   0  1  00028001  03FF8000  5    idle 0    idle->active       0001   5   -    5   -    0
+ 73056  RCS   1  1  03FF8000  00028000  idle 5    0    active->idle       0018   5   -    -   -    0
+ 73056  RCS   2  2  00030001  03FF8000  6    idle 0    idle->active       0001   -   -    6   5    0
+ 73056  RCS   3  3  00028000  00030000  5    6    0    element switch     0014   6   5    -   -    0
+ 73056  RCS   4  4  03FF8000  00028000  idle 5    0    active->idle       0018   5   -    5   -    0
+ 73117  BCS   1  2  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 73117  BCS   2  2  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    -   -    0
+ 73117  BCS   3  4  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 73117  BCS   4  4  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    -   -    0
+ 73117  RCS   5  5  00028001  03FF8000  5    idle 0    idle->active       0001   -   -    5   -    0
+ 74457  RCS   0  0  00028001  00028005  5    5    5    preempted          8002   5   -    5   E    0
+ 74457  BCS   5  0  00078019  03FF8000  F    idle 0    idle->active       0001   -   -    F   -    0
+ 74457  BCS   0  0  03FF8018  00078000  idle F    0    active->idle       0018   F   -    -   -    0
+ 76043  BCS   1  2  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 76043  BCS   2  2  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    -   -    0
+ 82238  RCS   0  1  00028001  03FF8000  5    idle 0    idle->active       0001   -   -    5   E    0
+ 82238  RCS   1  1  00070000  00028000  E    5    0    element switch     0014   5   E    -   -    0
+ 84239  RCS   2  2  00028001  00070005  5    E    5    preempted          0002   E   -    5   -    40
+ 91602  RCS   0  1  00028001  03FF8000  5    idle 0    idle->active       0001   5   -    5   E    0
+ 91602  RCS   1  1  00070000  00028000  E    5    0    element switch     0014   5   E    -   -    0
+ 91603  RCS   2  2  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+ 91603  RCS   3  3  00080001  03FF8000  10   idle 0    idle->active       0001   -   -    10  11   0
+ 91603  RCS   4  4  00088000  00080000  11   10   0    element switch     0014   10  11   -   -    0
+ 91603  RCS   5  5  03FF8000  00088000  idle 11   0    active->idle       0018   11  -    -   -    0
+ 91603  RCS   0  0  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+101694  RCS   0  1  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+101694  RCS   1  1  00070000  00068000  E    D    0    element switch     0014   D   E    -   -    0
+108772  RCS   0  1  00070001  03FF8000  E    idle 0    idle->active       0001   -   -    E   -    0
+108772  RCS   1  1  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+108772  RCS   2  2  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   12   0
+108772  RCS   3  3  00090000  00068000  12   D    0    element switch     0014   D   12   -   -    0
+118869  RCS   0  1  00090001  03FF8000  12   idle 0    idle->active       0001   -   -    12  -    0
+118869  RCS   1  1  03FF8000  00090000  idle 12   0    active->idle       0018   12  -    -   -    0
+118869  RCS   2  2  00080001  03FF8000  10   idle 0    idle->active       0001   -   -    10  E    0
+126964  RCS   0  1  00080001  03FF8000  10   idle 0    idle->active       0001   -   -    10  E    0
+126964  RCS   1  1  00070000  00080000  E    10   0    element switch     0014   10  E    -   -    0
+126964  RCS   2  2  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+126964  RCS   3  3  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+126964  RCS   4  5  00070000  00068000  E    D    0    element switch     0014   D   E    -   -    0
+126964  RCS   5  5  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+126964  RCS   0  0  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+126964  RCS   1  1  00070000  00068000  E    D    0    element switch     0014   D   E    -   -    0
+126964  RCS   2  2  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+126964  RCS   3  4  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+126964  RCS   4  4  00070000  00068000  E    D    0    element switch     0014   D   E    -   -    0
+126964  RCS   5  5  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+126964  RCS   0  0  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   E    0
+126964  RCS   1  2  00070000  00068000  E    D    0    element switch     0014   D   E    -   -    0
+126964  RCS   2  2  03FF8000  00070000  idle E    0    active->idle       0018   E   -    -   -    0
+126964  RCS   3  3  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   -    0
+137042  RCS   0  1  00068001  03FF8000  D    idle 0    idle->active       0001   -   -    D   -    0
+137042  RCS   1  1  03FF8000  00068000  idle D    0    active->idle       0018   D   -    -   -    0

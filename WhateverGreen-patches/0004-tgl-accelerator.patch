@@ -1,0 +1,454 @@
+diff --git a/WhateverGreen/kern_igfx.cpp b/WhateverGreen/kern_igfx.cpp
+--- a/WhateverGreen/kern_igfx.cpp
++++ b/WhateverGreen/kern_igfx.cpp
+@@ -937,6 +937,7 @@
+ 
+ void IGFX::TigerLakeRegisterMap::init() {
+ 	requiresPatchingFramebuffer = true;
++	requiresPatchingGraphics = true;
+ 	requiresMMIORegistersReadAccess = true;
+ 	requiresMMIORegistersWriteAccess = true;
+ }
+@@ -965,6 +966,12 @@
+ 	PE_parse_boot_argn("igfxtglwait", &lateWait, sizeof(lateWait));
+ 	if (has(LateState))
+ 		publishCall = thread_call_allocate(publishThread, this);
++	PE_parse_boot_argn("igfxtglss", &accelSubSlices, sizeof(accelSubSlices));
++	PE_parse_boot_argn("igfxtglcsb", &csbMode, sizeof(csbMode));
++	if (csbMode)
++		csbCall = thread_call_allocate(csbThread, this);
++	if (has(GTFuseProbe))
++		gtFuseCall = thread_call_allocate(gtFuseThread, this);
+ 	if (has(TraceDisk)) {
+ 		traceCall = thread_call_allocate(traceThread, this);
+ 		PE_parse_boot_argn("igfxtgltraceat", &traceAt, sizeof(traceAt));
+@@ -1111,6 +1118,313 @@
+ 	clock_get_uptime(&t);
+ 	absolutetime_to_nanoseconds(t, &nanos);
+ 	return static_cast<uint32_t>(nanos / 1000000000ULL);
++}
++
++void IGFX::TigerLakeRegisterMap::processGraphicsKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) {
++	// AppleIntelICLGraphics 24.0.5, IntelAccelerator::getGPUInfo():
++	//   movl %r15d, %eax ; notl %eax ; popcntl %eax, %esi ; movl %esi, 0x1188(%rbx)
++	// NumSubSlices = popcount(~[0x913C]). On Ice Lake that register is a subslice DISABLE mask with the unused bits set.
++	// On Tiger Lake it is the dual-subslice ENABLE mask (0x1F on the i5-1140G7), the result is 27, and the driver
++	// panics with "Unsupported ICL Sku". The kext lives in the system kernel collection, where OpenCore's
++	// Kernel/Patch and Kernel/Block do not reach, so it is patched here when it loads.
++	if (csbMode && csbCall) {
++		// The four handlers the driver dispatches to, in the order of its table pfnCsbProcessContextSwitchType
++		static const char *handlers[4] = {
++			"__ZN26IGHardwareCommandStreamer522csbProcessIdleToActiveEPK28SGfxContextStatusBufferEntry",
++			"__ZN26IGHardwareCommandStreamer519csbProcessPreemptedEPK28SGfxContextStatusBufferEntry",
++			"__ZN26IGHardwareCommandStreamer523csbProcessElementSwitchEPK28SGfxContextStatusBufferEntry",
++			"__ZN26IGHardwareCommandStreamer522csbProcessActiveToIdleEPK28SGfxContextStatusBufferEntry"
++		};
++		csbRec.hooked = 1;
++		for (size_t i = 0; i < arrsize(handlers); i++) {
++			csbHandlers[i] = reinterpret_cast<CsbHandler>(patcher.solveSymbol(index, handlers[i], address, size));
++			if (!csbHandlers[i]) {
++				SYSLOG("igfx", "TGLMAP: cannot resolve %s (%d).", handlers[i], patcher.getError());
++				patcher.clearError();
++				csbRec.hooked = 2;
++			}
++		}
++		if (csbRec.hooked == 1) {
++			KernelPatcher::RouteRequest request("__ZN26IGHardwareCommandStreamer526processContextStatusBufferEj", wrapProcessContextStatusBuffer, orgProcessContextStatusBuffer);
++			if (!patcher.routeMultiple(index, &request, 1, address, size)) {
++				SYSLOG("igfx", "TGLMAP: cannot route processContextStatusBuffer (%d).", patcher.getError());
++				patcher.clearError();
++				csbRec.hooked = 3;
++			} else {
++				SYSLOG("igfx", "TGLMAP: reading the context status buffer in the Gen12 layout.");
++			}
++		}
++		// Put the outcome on disk even if the reader is never called. The data volume is not mounted this early.
++		uint64_t deadline = 0;
++		clock_interval_to_deadline(15, kSecondScale, &deadline);
++		thread_call_enter_delayed(csbCall, deadline);
++	}
++	if (accelSubSlices == 0 || accelSubSlices > 8)
++		return;
++	static const uint8_t find[] = {0x44, 0x89, 0xF8, 0xF7, 0xD0, 0xF3, 0x0F, 0xB8, 0xF0, 0x89, 0xB3, 0x88, 0x11, 0x00, 0x00};
++	static uint8_t repl[]       = {0x44, 0x89, 0xF8, 0xBE, 0x00, 0x00, 0x00, 0x00, 0x90, 0x89, 0xB3, 0x88, 0x11, 0x00, 0x00};
++	repl[4] = static_cast<uint8_t>(accelSubSlices);
++	KernelPatcher::LookupPatch patch {};
++	patch.kext = callbackIGFX->currentGraphics;
++	patch.find = find;
++	patch.replace = repl;
++	patch.size = sizeof(find);
++	patch.count = 1;
++	patcher.applyLookupPatch(&patch, reinterpret_cast<uint8_t *>(address), size);
++	if (patcher.getError() != KernelPatcher::Error::NoError) {
++		SYSLOG("igfx", "TGLMAP: getGPUInfo subslice patch failed (%d).", patcher.getError());
++		patcher.clearError();
++	} else {
++		SYSLOG("igfx", "TGLMAP: IntelAccelerator::getGPUInfo will report %u subslices.", accelSubSlices);
++	}
++}
++
++static uint32_t tglUptimeMilliseconds() {
++	uint64_t t = 0, nanos = 0;
++	clock_get_uptime(&t);
++	absolutetime_to_nanoseconds(t, &nanos);
++	return static_cast<uint32_t>(nanos / 1000000ULL);
++}
++
++void IGFX::TigerLakeRegisterMap::csbThread(thread_call_param_t param0, thread_call_param_t) {
++	// Kernel thread context. Same scheme as traceThread: one synchronous write of the whole record, file left open.
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	if (!self->csbContext)
++		self->csbContext = vfs_context_create(nullptr);
++	auto ctx = static_cast<vfs_context_t>(self->csbContext);
++	if (!self->csbVnode && ctx) {
++		vnode_t vp = NULLVP;
++		if (vnode_open("/Users/Shared/tgl-csb.bin", O_WRONLY | O_CREAT, 0666, VNODE_LOOKUP_NOFOLLOW, &vp, ctx) == 0)
++			self->csbVnode = vp;
++	}
++	if (self->csbVnode && ctx) {
++		self->csbRec.flushes++;
++		self->csbRec.nowMs = tglUptimeMilliseconds();
++		uio_t uio = uio_create(1, 0, UIO_SYSSPACE, UIO_WRITE);
++		if (uio) {
++			uio_addiov(uio, CAST_USER_ADDR_T(&self->csbRec), sizeof(self->csbRec));
++			VNOP_WRITE(static_cast<vnode_t>(self->csbVnode), uio, IO_SYNC, ctx);
++		}
++	}
++}
++
++void IGFX::TigerLakeRegisterMap::csbFlush() {
++	if (csbCall)
++		thread_call_enter1(csbCall, nullptr);
++}
++
++/**
++ *  Context id of a work item in one of the driver's execlist slots: item -> IGHardwareContext, id at +0x7C
++ *  (what ContextStatusBufferValidate compares with bits 15:5 of the entry's upper dword)
++ */
++static uint16_t tglCsbItemId(void *item) {
++	if (!item)
++		return 0xFFFF;
++	auto context = getMember<uint8_t *>(item, 0);
++	return context ? static_cast<uint16_t>(getMember<uint32_t>(context, 0x7C)) : 0xFFFE;
++}
++
++void IGFX::TigerLakeRegisterMap::csbNote(void *that, uint8_t action, uint32_t index, uint32_t writePointer, uint32_t lo, uint32_t hi, uint32_t synth, uint32_t flags) {
++	uint32_t group = action >> 4;
++	uint32_t count = static_cast<uint32_t>(OSIncrementAtomic(reinterpret_cast<volatile SInt32 *>(&csbRec.counts[group & 7]))) + 1;
++	bool anomaly = group != 0 && group != (CsbRecord::AfterReset >> 4);
++	// Keep the first events and every anomaly; an empty buffer after a reset is polled, so only its first few
++	if (group == (CsbRecord::AfterReset >> 4) && count > 16)
++		return;
++	// A stuck entry is polled too (run GA3 filled the log with it)
++	if (group == (CsbRecord::NotWritten >> 4) && count > 64)
++		return;
++	if (csbRec.next >= (anomaly ? CsbRecord::Size : CsbRecord::NormalLimit)) {
++		if ((count & 0x3FF) == 0)
++			csbFlush();
++		return;
++	}
++	uint32_t slot = static_cast<uint32_t>(OSIncrementAtomic(reinterpret_cast<volatile SInt32 *>(&csbRec.next)));
++	if (slot >= CsbRecord::Size)
++		return;
++	auto &e = csbRec.entry[slot];
++	auto lists = reinterpret_cast<void **>(static_cast<uint8_t *>(that) + 0x30);
++	uint32_t active = getMember<uint32_t>(that, 0x50) & 1;
++	e.ms = tglUptimeMilliseconds();
++	e.engine = *getMember<uint8_t *>(that, 0x28);
++	e.action = action;
++	e.index = static_cast<uint8_t>(index);
++	e.writePointer = static_cast<uint8_t>(writePointer);
++	e.lo = lo;
++	e.hi = hi;
++	e.synth = synth;
++	e.active[0] = tglCsbItemId(lists[active * 2]);
++	e.active[1] = tglCsbItemId(lists[active * 2 + 1]);
++	e.pending[0] = tglCsbItemId(lists[(1 - active) * 2]);
++	e.pending[1] = tglCsbItemId(lists[(1 - active) * 2 + 1]);
++	e.flags = flags;
++	csbFlush();
++}
++
++void IGFX::TigerLakeRegisterMap::wrapProcessContextStatusBuffer(void *that, uint32_t flags) {
++	// Offsets are those of IGHardwareCommandStreamer5 in AppleIntelICLGraphics 24.0.5:
++	//   +0x10 IntelAccelerator, +0x28 engine description (byte 0 = IGHwCsType), +0x30 two execlists of two work
++	//   items each, +0x50 index of the active list, +0x68 hardware status page, +0x1C04 read pointer.
++	// Hardware status page (same on Gen11 and Gen12): entries at +0x40, write pointer at +0xBC.
++	// Six entries: the driver leaves GFX_MODE bit 3 clear, and run GA3 showed the hardware wrap from entry 5 to
++	// entry 0 with entries 6-11 never written. Only the layout of an entry is the Gen12 one.
++	static constexpr uint32_t Entries = 6;
++	static constexpr uint32_t IdleId = 0x7FF;
++	static constexpr uint32_t Stored = 0x10; // the read pointer is kept at +0x1C04 as Stored + index
++	auto self = &callbackIGFX->modTigerLakeRegisterMap;
++	auto cs = static_cast<uint8_t *>(that);
++	auto accel = getMember<uint8_t *>(that, 0x10);
++	auto page = getMember<volatile uint32_t *>(that, 0x68);
++	auto &rec = self->csbRec;
++	if (OSIncrementAtomic(reinterpret_cast<volatile SInt32 *>(&rec.calls)) == 0)
++		rec.accelFlags = getMember<uint32_t>(accel, 0x11C0);
++
++	// The driver reads the buffer through MMIO when bit 7 of this byte is set; that path is left to the driver
++	if (!page || (accel[0x11C0] & 0x80)) {
++		self->csbNote(that, CsbRecord::Passthrough, 0, 0, 0, 0, 0, flags);
++		FunctionCast(wrapProcessContextStatusBuffer, self->orgProcessContextStatusBuffer)(that, flags);
++		return;
++	}
++
++	uint32_t writePointer = page[0xBC / 4];
++	auto &stored = *reinterpret_cast<uint32_t *>(cs + 0x1C04);
++	uint32_t readPointer;
++	if (stored >= Stored && stored < Stored + Entries) {
++		readPointer = stored - Stored;
++	} else {
++		// The driver put its reset value (7) here, in init(), resetOnWake() or processGPUReset(); the last two
++		// also write 7 to the write pointer in the page. After a reset the hardware's next entry
++		// is entry 0. Entries read here are overwritten with all ones, the page starts out zeroed, and the first
++		// entry after a reset is an idle-to-active one with bit 0 set: an entry 0 of zeros or ones is not new.
++		uint32_t lo = page[0x40 / 4], hi = page[0x44 / 4];
++		if ((lo == 0 && hi == 0) || (lo == 0xFFFFFFFF && hi == 0xFFFFFFFF)) {
++			self->csbNote(that, CsbRecord::AfterReset, 0, writePointer, lo, hi, stored, flags);
++			return;
++		}
++		readPointer = Entries - 1;
++	}
++	if (writePointer >= Entries) {
++		self->csbNote(that, CsbRecord::BadPointer, readPointer, writePointer, 0, 0, stored, flags);
++		return;
++	}
++
++	while (readPointer != writePointer) {
++		uint32_t index = readPointer + 1 == Entries ? 0 : readPointer + 1;
++		volatile uint32_t *entry = page + 0x40 / 4 + index * 2;
++		uint32_t lo = entry[0], hi = entry[1];
++		// The write pointer can be visible before the entry is (i915 csb_read/wa_csb_read, Tiger Lake)
++		for (uint32_t spins = 0; (lo == 0xFFFFFFFF || hi == 0xFFFFFFFF) && spins < 20; spins++) {
++			IODelay(10);
++			lo = entry[0];
++			hi = entry[1];
++		}
++		if (lo == 0xFFFFFFFF || hi == 0xFFFFFFFF) {
++			self->csbNote(that, CsbRecord::NotWritten, index, writePointer, lo, hi, 0, flags);
++			return;
++		}
++		entry[0] = 0xFFFFFFFF;
++		entry[1] = 0xFFFFFFFF;
++		readPointer = index;
++		stored = Stored + readPointer;
++
++		uint32_t to = (lo >> 15) & 0x7FF, away = (hi >> 15) & 0x7FF, detail = hi & 0xF;
++		bool newQueue = (lo & 1) != 0;
++		auto lists = reinterpret_cast<void **>(cs + 0x30);
++		uint32_t active = getMember<uint32_t>(that, 0x50) & 1;
++		uint32_t active0 = tglCsbItemId(lists[active * 2]), active1 = tglCsbItemId(lists[active * 2 + 1]);
++		uint32_t pending0 = tglCsbItemId(lists[(1 - active) * 2]);
++		// Gen8 event bits: 0 idle to active, 1 preempted, 2 element switch, 3 active to idle, 4 context complete,
++		// 7 wait on semaphore, 15 lite restore
++		uint32_t waitOrDone = detail == 4 ? 0x80 : 0x10;
++		uint8_t action;
++		uint32_t synth[2];
++		bool fits;
++		if (away == IdleId && to == IdleId) {
++			self->csbNote(that, CsbRecord::BothIdle, index, writePointer, lo, hi, 0, flags);
++			continue;
++		} else if (away == IdleId) {
++			action = CsbRecord::IdleToActive;
++			synth[0] = 0x1;
++			synth[1] = to << 5;
++			fits = pending0 == to;
++		} else if (newQueue) {
++			action = CsbRecord::Preempted;
++			synth[0] = 0x2 | (to == away ? 0x8000 : (detail == 0 ? 0x10 : (detail == 4 ? 0x80 : 0)));
++			synth[1] = away << 5;
++			fits = active0 == away && pending0 != 0xFFFF;
++		} else if (to != IdleId) {
++			// The handler dereferences the second slot of the active list without a check
++			action = CsbRecord::ElementSwitch;
++			synth[0] = 0x4 | waitOrDone;
++			synth[1] = away << 5;
++			fits = active0 == away && active1 == to;
++		} else {
++			action = CsbRecord::ActiveToIdle;
++			synth[0] = 0x8 | waitOrDone;
++			synth[1] = away << 5;
++			fits = active0 == away;
++		}
++		if (!fits) {
++			self->csbNote(that, CsbRecord::Skipped + action, index, writePointer, lo, hi, synth[0], flags);
++			continue;
++		}
++		self->csbNote(that, action, index, writePointer, lo, hi, synth[0], flags);
++		self->csbHandlers[action - 1](that, synth);
++	}
++}
++
++void IGFX::TigerLakeRegisterMap::gtFuseThread(thread_call_param_t param0, thread_call_param_t) {
++	auto self = static_cast<TigerLakeRegisterMap *>(param0);
++	FileIO::writeBufferToFile("/Users/Shared/tgl-gt-fuses.bin", &self->gtFuses, sizeof(self->gtFuses));
++}
++
++void IGFX::TigerLakeRegisterMap::probeGTFuses(void *controller) {
++	// What IntelAccelerator::getGPUInfo() reads straight from the MMIO mapping, in its order, plus a few neighbours
++	static const uint32_t regs[GTFuseRecord::Count] = {
++		0x145948, 0x145994, 0x145998, 0x229C, 0x7008, 0x7000, 0x7004, 0x9138, 0x913C, 0x9134,
++		0x911C, 0x9120, 0x9118, 0x9140, 0x0D00, 0x9130, 0x9144, 0x9148, 0xA188, 0xA278
++	};
++	// The driver's own ReadRegister32 refuses 0x2000-0x3FFFF while its "GT not accessible" flag is set, so these go
++	// straight to the mapping it keeps at this+0x9B8 (size at this+0xC38) in AppleIntelICLLPGraphicsFramebuffer 24.0.5.
++	auto base = *reinterpret_cast<volatile uint8_t **>(static_cast<uint8_t *>(controller) + 0x9B8);
++	uint32_t size = *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(controller) + 0xC38);
++	gtFusesDone = true;
++	gtFuses.uptime = tglUptimeSeconds();
++	if (!base || size < 0x200000) {
++		gtFuses.waited[0] = gtFuses.waited[1] = 0xDEAD;
++		gtFuses.reg[0].address = size;
++		if (gtFuseCall)
++			thread_call_enter1(gtFuseCall, nullptr);
++		return;
++	}
++	auto rd = [&](void *, uint32_t a) -> uint32_t { return *reinterpret_cast<volatile uint32_t *>(base + a); };
++	auto wr = [&](void *, uint32_t a, uint32_t v) { *reinterpret_cast<volatile uint32_t *>(base + a) = v; };
++	for (uint32_t i = 0; i < GTFuseRecord::Count; i++) {
++		gtFuses.reg[i].address = regs[i];
++		gtFuses.reg[i].plain = rd(controller, regs[i]);
++	}
++	// Forcewake, as i915 does it on Gen11/12: masked write of bit 0, then wait for bit 0 of the ack register.
++	// Render: request 0xA278, ack 0x0D84. GT: request 0xA188, ack 0x130044.
++	static const uint32_t req[2] = {0xA278, 0xA188}, ack[2] = {0x0D84, 0x130044};
++	for (uint32_t d = 0; d < 2; d++) {
++		gtFuses.ackBefore[d] = rd(controller, ack[d]);
++		wr(controller, req[d], 0x00010001);
++		uint32_t n = 0;
++		while (!(rd(controller, ack[d]) & 1) && n < 500) {
++			IODelay(100);
++			n++;
++		}
++		gtFuses.waited[d] = n;
++		gtFuses.ackAfter[d] = rd(controller, ack[d]);
++	}
++	for (uint32_t i = 0; i < GTFuseRecord::Count; i++)
++		gtFuses.reg[i].awake = rd(controller, regs[i]);
++	// Release only what was not already held when we came
++	for (uint32_t d = 0; d < 2; d++)
++		if (!(gtFuses.ackBefore[d] & 1))
++			wr(controller, req[d], 0x00010000);
++	if (gtFuseCall)
++		thread_call_enter1(gtFuseCall, nullptr);
+ }
+ 
+ void IGFX::TigerLakeRegisterMap::traceThread(thread_call_param_t param0, thread_call_param_t) {
+@@ -1287,6 +1601,8 @@
+ void IGFX::TigerLakeRegisterMap::write(void *controller, uint32_t address, uint32_t value) {
+ 	if (!snapshotTaken)
+ 		snapshot(controller);
++	if (has(GTFuseProbe) && !gtFusesDone && address == 0xC8258 && tglUptimeSeconds() >= 30 && ml_get_interrupts_enabled())
++		probeGTFuses(controller);
+ 	if (has(TraceDisk)) {
+ 		if (address == 0xC8258 && value == 0)
+ 			traceArm(1);
+diff --git a/WhateverGreen/kern_igfx.hpp b/WhateverGreen/kern_igfx.hpp
+--- a/WhateverGreen/kern_igfx.hpp
++++ b/WhateverGreen/kern_igfx.hpp
+@@ -2614,6 +2614,9 @@
+ 			                            // The file is never closed, so a clean shutdown hangs afterwards: power off by hand.
+ 			TraceNoWait      = 0x40000, // with TraceDisk: do not hold the driver until an access is on disk. The driver
+ 			                            // runs at its normal speed and the last millisecond or two may be lost.
++			GTFuseProbe      = 0x80000, // diagnostic: once, at the first backlight write 30 s or more after boot, read the GT
++			                            // fuse registers the Ice Lake accelerator's getGPUInfo() reads (with and without
++			                            // forcewake) and write them to /Users/Shared/tgl-gt-fuses.bin
+ 			AllTranslation   = 0x03F
+ 		};
+ 		uint32_t features {0};
+@@ -2770,6 +2773,85 @@
+ 			uint32_t nowUptime {0};
+ 			struct { uint32_t address; uint32_t value; } ring[RingSize] {};
+ 		} traceRec;
++		struct GTFuseRecord {
++			static constexpr uint32_t Magic = 0x55464754; // "TGFU"
++			static constexpr uint32_t Count = 20;
++			uint32_t magic {Magic};
++			uint32_t uptime {0};
++			uint32_t ackBefore[2] {};   // 0x0D84 (render), 0x130044 (GT) before forcewake was requested
++			uint32_t ackAfter[2] {};    // the same after the request
++			uint32_t waited[2] {};      // 100 us waits until each ack bit came up (500 = timed out)
++			struct { uint32_t address; uint32_t plain; uint32_t awake; } reg[Count] {};
++		} gtFuses;
++		bool gtFusesDone {false};
++		thread_call_t gtFuseCall {nullptr};
++		static void gtFuseThread(thread_call_param_t self, thread_call_param_t);
++		void probeGTFuses(void *controller);
++		/**
++		 *  igfxtglss=<n>: make IntelAccelerator::getGPUInfo() take n as the subslice count (0 = leave the accelerator alone)
++		 */
++		uint32_t accelSubSlices {0};
++
++		/**
++		 *  igfxtglcsb=1: replace IGHardwareCommandStreamer5::processContextStatusBuffer() of AppleIntelICLGraphics
++		 *  24.0.5 with a reader for the Gen12 context status buffer.
++		 *
++		 *  The Ice Lake driver expects 6 entries in the Gen8 layout (lower dword = event bits, upper dword = upper
++		 *  half of the context descriptor). Tiger Lake also writes 6 entries, but in the Gen12 layout (i915 gen12_csb_parse):
++		 *  lower dword bit 0 = switched to a new queue, bits 25:15 = id of the context switched to; upper dword
++		 *  bits 3:0 = switch detail (0 complete, 4 wait on semaphore, 5 preempted), bits 25:15 = id of the context
++		 *  switched away from; id 0x7FF = idle. Each entry is turned into a Gen8 entry and handed to the driver's
++		 *  own four handlers. An entry that does not fit the driver's execlist state is skipped instead of being
++		 *  passed on (the driver would panic), and every event goes to /Users/Shared/tgl-csb.bin.
++		 */
++		uint32_t csbMode {0};
++		struct CsbRecord {
++			static constexpr uint32_t Magic = 0x53434754; // "TGCS"
++			static constexpr uint32_t Size = 2040;
++			static constexpr uint32_t NormalLimit = 1536; // events past this are only counted, unless they are anomalies
++			enum Action : uint8_t {
++				IdleToActive = 1, Preempted = 2, ElementSwitch = 3, ActiveToIdle = 4, // handed to the driver's handler
++				Skipped = 0x10,       // + one of the above: did not fit the driver's execlist state, not handed on
++				BothIdle = 0x20,      // neither context id valid
++				NotWritten = 0x30,    // write pointer moved but the entry still read as all ones after 200 us
++				Passthrough = 0x40,   // driver is in MMIO mode: its own function ran
++				BadPointer = 0x50,    // write pointer above 5
++				AfterReset = 0x60     // driver's read pointer is in its reset state and entry 0 is empty
++			};
++			uint32_t magic {Magic};
++			uint32_t hooked {0};      // 1 routed, 2 a symbol was missing, 3 routing failed
++			volatile uint32_t next {0};   // records used
++			uint32_t flushes {0};
++			uint32_t nowMs {0};
++			uint32_t accelFlags {0};  // dword at IntelAccelerator+0x11C0 at the first call
++			volatile uint32_t calls {0};
++			uint32_t reserved {0};
++			volatile uint32_t counts[8] {}; // per (action >> 4): 0 handed on, 1 skipped, 2.. as above
++			struct Entry {
++				uint32_t ms;          // uptime
++				uint8_t engine;       // IGHwCsType
++				uint8_t action;
++				uint8_t index;        // buffer index of the entry
++				uint8_t writePointer;
++				uint32_t lo, hi;      // entry as the hardware wrote it
++				uint32_t synth;       // lower dword handed to the driver (upper = id << 5)
++				uint16_t active[2];   // context ids in the driver's active list (0xFFFF = empty slot)
++				uint16_t pending[2];  // and in the list it submitted last
++				uint32_t flags;       // the flags argument of processContextStatusBuffer
++			} entry[Size] {};
++		} csbRec;
++		static_assert(sizeof(CsbRecord::Entry) == 32, "CSB log entry size");
++		thread_call_t csbCall {nullptr};
++		void *csbVnode {nullptr};
++		void *csbContext {nullptr};
++		using CsbHandler = void (*)(void *, const uint32_t *);
++		CsbHandler csbHandlers[4] {};
++		mach_vm_address_t orgProcessContextStatusBuffer {};
++		static void csbThread(thread_call_param_t self, thread_call_param_t);
++		static void wrapProcessContextStatusBuffer(void *that, uint32_t flags);
++		void csbNote(void *that, uint8_t action, uint32_t index, uint32_t writePointer, uint32_t lo, uint32_t hi, uint32_t synth, uint32_t flags);
++		void csbFlush();
++
+ 		bool traceArmed {false};
+ 		bool traceDone {false};
+ 		uint32_t traceAt {0};
+@@ -2792,6 +2874,7 @@
+ 		// MARK: Patch Submodule IMP
+ 		void init() override;
+ 		void processKernel(KernelPatcher &patcher, DeviceInfo *info) override;
++		void processGraphicsKext(KernelPatcher &patcher, size_t index, mach_vm_address_t address, size_t size) override;
+ 
+ 	private:
+ 		void publish(void *controller, bool toNVRAM);

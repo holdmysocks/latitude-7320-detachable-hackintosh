@@ -72,9 +72,10 @@ Short version: the Ice Lake framebuffer **does** drive this Tiger Lake panel.
 The resets that looked like a wall were a stolen-memory miscalculation that
 WhateverGreen already knows how to fix, but only for CPUs it believes are Ice
 Lake. Behind that were four register-level differences and a backlight
-problem, each small once visible. **Acceleration has not been attempted, so
-this project still has no evidence about the shader-ISA hypothesis** — do not
-cite it as if it had.
+problem, each small once visible. **Acceleration was then attempted:** the Ice Lake accelerator can
+be made to start and schedule work, and every draw hangs in the vertex shader
+stage. That fits the shader-ISA hypothesis and does not prove it; see
+[`research/LAYER4.md`](research/LAYER4.md).
 
 ---
 
@@ -83,7 +84,7 @@ cite it as if it had.
 ```
 EFI/                 scrubbed, ready to personalise. Binaries are fetched, not vendored
 ACPI-sources/        the four SSDTs as readable .dsl, and why XOSI/GPI0 are absent
-WhateverGreen-patches/  the three patches that make the framebuffer work, and how to build
+WhateverGreen-patches/  the patches that make the framebuffer work (and 0004, accelerator research), and how to build
 docs/                the build, split into eight documents
 research/            the graphics work: findings, every run, and the raw evidence
 tools/               fetch, personalise, experiment (Windows and macOS), scrub
@@ -101,6 +102,7 @@ tools/               fetch, personalise, experiment (Windows and macOS), scrub
 | [`docs/06-troubleshooting.md`](docs/06-troubleshooting.md) | symptom → cause → fix |
 | [`research/README.md`](research/README.md) | **the findings**, and what the first write-up got wrong |
 | [`research/LAYER3.md`](research/LAYER3.md) | how the framebuffer was made to work: causes, evidence, fixes |
+| [`research/LAYER4.md`](research/LAYER4.md) | the accelerator: what it took to start it, and where it stops |
 | [`research/RESULTS.md`](research/RESULTS.md) | every run of both phases, including the void ones |
 | [`research/METHODOLOGY.md`](research/METHODOLOGY.md) | controls, and the measurement traps |
 | [`research/data/`](research/data/) | ACPI tables, `ioreg`, `kextstat`, USB topology, driver logs, register snapshots |

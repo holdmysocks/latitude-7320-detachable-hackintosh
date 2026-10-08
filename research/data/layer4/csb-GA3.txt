@@ -1,0 +1,71 @@
+hook        : routed
+written at  : 133.108 s uptime, flush 2220
+calls       : 355957   accelerator flags 0x617C4B01 (bit 7 = MMIO mode)
+events      : handed on 56, skipped 12, both idle 0, not written 203776, passthrough 0, bad pointer 0, after reset 0
+records     : 2040
+
+    ms  eng  idx wp  lo        hi        to   away det  action             synth  active   pending  flags
+ 29533  RCS   0  2  00008001  03FF8000  1    idle 0    idle->active       0001   -   -    1   2    40
+ 29533  RCS   1  2  00010000  00008000  2    1    0    element switch     0014   1   2    -   -    40
+ 29533  RCS   2  2  03FF8000  00010000  idle 2    0    active->idle       0018   2   -    -   -    40
+ 30457  RCS   3  4  00008001  03FF8000  1    idle 0    idle->active       0001   -   -    1   -    40
+ 30457  RCS   4  4  03FF8000  00008000  idle 1    0    active->idle       0018   1   -    -   -    40
+ 36091  BCS   0  1  00038019  03FF8000  7    idle 0    idle->active       0001   -   -    7   -    0
+ 36091  BCS   1  1  03FF8018  00038000  idle 7    0    active->idle       0018   7   -    -   -    0
+ 36091  RCS   5  5  00040001  03FF8000  8    idle 0    idle->active       0001   -   -    8   -    0
+ 36091  RCS   6  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS   7  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS   8  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS   9  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS  10  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS  11  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   8   -    -   -    0
+ 36091  RCS   0  0  03FF8000  00040000  idle 8    0    active->idle       0018   8   -    -   -    0
+ 36092  BCS   2  3  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 36092  BCS   3  3  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    -   -    0
+ 36092  RCS   1  1  00050001  03FF8000  A    idle 0    idle->active       0001   -   -    A   -    0
+ 36092  RCS   2  2  03FF8000  00050000  idle A    0    active->idle       0018   A   -    A   -    0
+ 36092  RCS   3  3  00058001  03FF8000  B    idle 0    idle->active       0001   -   -    B   -    0
+ 36092  RCS   4  4  03FF8000  00058000  idle B    0    active->idle       0018   B   -    B   -    0
+ 36093  RCS   5  5  00060001  03FF8000  C    idle 0    idle->active       0001   -   -    C   -    0
+ 36093  RCS   6  0  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    0
+ 36093  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    0
+ 36113  BCS   4  4  00048019  03FF8000  9    idle 0    idle->active       0001   -   -    9   -    0
+ 36114  BCS   5  5  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 36114  BCS   6  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS   7  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS   8  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS   9  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS  10  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS  11  0  00000000  00000000  0    0    0    SKIPPED element switch 0014   9   -    9   -    40
+ 36114  BCS   0  0  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    40
+ 36114  BCS   1  1  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 36114  BCS   2  2  00048019  00048005  9    9    5    preempted          8002   9   -    9   -    0
+ 36114  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 36114  BCS   3  3  03FF8018  00048000  idle 9    0    active->idle       0018   9   -    9   -    0
+ 36115  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 36177  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 36178  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 41999  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 41999  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42000  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42000  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42000  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42001  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42001  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42001  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42002  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42002  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42002  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42003  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42003  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42003  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42003  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42004  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42004  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42004  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42004  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42005  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42005  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42005  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+ 42005  RCS   6  1  FFFFFFFF  FFFFFFFF  idle idle F    NOT WRITTEN        0000   C   -    C   6    40
+[... the remaining 1977 records are the same NOT WRITTEN line for RCS entry 6 ...]

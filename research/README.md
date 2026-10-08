@@ -3,13 +3,15 @@
 **Status (2026-10-08): the framebuffer works.** Apple's `AppleIntelICLLPGraphicsFramebuffer` drives the internal
 panel of `9A40` on macOS 26.6: native resolution, built-in display, backlight, brightness keys, display sleep and
 wake, lid.
-**Graphics acceleration is not working and has not been attempted.**
+**Graphics acceleration is not working.** The Ice Lake accelerator can be made to start and schedule work on
+`9A40`, but every draw hangs in the vertex shader stage ([`LAYER4.md`](LAYER4.md)).
 
 - [`LAYER3.md`](LAYER3.md) — how it was done: every cause, the evidence, the fix
+- [`LAYER4.md`](LAYER4.md) — the accelerator: what it took to start it, and where it stops
 - [`RESULTS.md`](RESULTS.md) — every run, including the ones that tested nothing
 - [`METHODOLOGY.md`](METHODOLOGY.md) — controls, and the measurement traps
 - [`data/`](data/) — the raw dumps, scrubbed but not edited
-- [`../WhateverGreen-patches/`](../WhateverGreen-patches/) — the three patches
+- [`../WhateverGreen-patches/`](../WhateverGreen-patches/) — the four patches
 
 ---
 
@@ -20,17 +22,18 @@ wake, lid.
 | 1. PCI match | IOKit `IOPCIPrimaryMatch` | ✅ with an Ice Lake `device-id` |
 | 2. Kext load | kext pulled into memory | ✅ |
 | 3. Framebuffer | `AppleIntelICLLPGraphicsFramebuffer::start()`, modeset, link, backlight | ✅ **works**, with a patched WhateverGreen |
-| 4. Accelerator match | `AppleIntelICLGraphics` / Metal driver | **not attempted** |
-| 5. Command submission | Gen12 command streams | **not attempted** |
+| 4. Accelerator start | `AppleIntelICLGraphics`: probe, hardware caps, scheduler, context switches | ✅ starts and schedules, with a patched WhateverGreen |
+| 5. Rendering | Gen11 command streams and shader code on Gen12 | ❌ **every draw hangs** (vertex shader stage) |
 
-## ⚠️ Layers 4 and 5 are still untested
+## Layers 4 and 5: tested, and stuck at the first draw
 
 The widely repeated assumption about Iris Xe on macOS is that the **shader ISA** is the blocker: Apple's Metal driver
 is compiled for Gen11 EU dispatch and command-streamer encodings, Xe-LP changed both.
 
-That may well be correct. **This project has produced no evidence about it.** The accelerator kext is deliberately
-kept from attaching (`Kernel/Block`), and nothing has been tried above the framebuffer. If you read anything here as
-confirming or refuting the ISA hypothesis, that is a misreading.
+This project now has evidence that points the same way, and no proof. With three fixes the accelerator starts,
+submits contexts and gets their completions; blitter work finishes. Every submission that draws hangs with the
+vertex shader stage busy. That is what the ISA explanation predicts, but no shader kernel has been examined, and
+other Gen11/Gen12 differences have not been excluded. See [`LAYER4.md`](LAYER4.md).
 
 ## What it took
 
