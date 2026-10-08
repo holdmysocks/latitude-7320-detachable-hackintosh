@@ -288,7 +288,7 @@ The same check selects the firmware's lid path (`GLID` instead of `ILID`).
 |---|---|
 | Graphics acceleration | None. No `IOAccelerator`, no Metal. Not attempted; see [`README.md`](README.md). |
 | System sleep | The firmware offers no S3: the DSDT has `Name (SS3, Zero)` and defines `_S3` only `If (SS3)`. macOS's attempt hangs ("Darkwake Entry Failure"). Use `pmset -a disablesleep 1`. Hibernation (S4) is offered and untested. |
-| Lid close | With system sleep disabled nothing turns the panel off; the lid switch itself works (`AppleACPILid`). `tools/mac/lidwatch.sh` puts the display to sleep on close; opening the lid wakes it. |
+| Lid close | With system sleep disabled nothing turns the panel off; the lid switch itself works (`AppleACPILid`). `tools/mac/lidwatch.sh` puts the display to sleep on close; opening the lid wakes it. `tools/mac/install-lidwatch.sh` installs it as a login item. |
 | External displays | Untested. Type-C ports use the Dekel PHY on Tiger Lake; the driver has MG PHY code only. |
 
 Still logged by the driver on a working boot, apparently harmless: `Insufficient stolen memory`,

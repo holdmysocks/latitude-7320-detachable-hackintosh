@@ -14,7 +14,7 @@ Every row here was hit at least once during this build.
 | Picture, but nearly black and flickering | `igfxtglblmax=0xAD9` missing, or it does not match the `SSDT-PNLF` `_UID` | `_UID` 15 with `igfxtglblmax=0xAD9` — [LAYER3 §6](../research/LAYER3.md#6-backlight) |
 | Machine freezes when the display sleeps or the lid closes (no panic) | a WhateverGreen built from patch 0003 before 2026-10-08 | rebuild from the current patch — [LAYER3 §7](../research/LAYER3.md#7-the-display-sleep-freeze) |
 | Black screen and hang when macOS tries to sleep | the firmware has no S3 | `sudo pmset -a disablesleep 1` — [LAYER3](../research/LAYER3.md#what-does-not-work) |
-| Lid close does not turn the screen off | system sleep is disabled, so nothing does | run [`tools/mac/lidwatch.sh`](../tools/mac/lidwatch.sh) |
+| Lid close does not turn the screen off | system sleep is disabled, so nothing does | [`tools/mac/install-lidwatch.sh`](../tools/mac/install-lidwatch.sh) |
 | Brightness keys do nothing | `SSDT-DOSI.aml` missing or disabled, or `BrightnessKeys.kext` not loaded | enable both — [LAYER3](../research/LAYER3.md#brightness-keys) |
 | CPU pinned to one frequency | XCPM not attached | check `SSDT-PLUG` targets `\_SB.PR00` — [02 §4.3](02-acpi-analysis.md#43-other-conclusions) |
 | Battery absent | Dell EC >8-bit fields | `ECEnabler.kext` |

@@ -1,12 +1,17 @@
 #!/bin/sh
-# Lid helper for a machine with system sleep disabled: display off when the lid closes, on when it opens.
+# lidwatch.sh - turn the display off when the lid closes.
+#
+# For a machine where system sleep is disabled (pmset disablesleep 1) because the firmware has no S3: macOS sees the
+# lid close but does nothing, and the panel stays lit. This polls the lid state once a second and sleeps the display
+# on close. Opening the lid wakes the display by itself; the caffeinate call only makes sure of it.
+# The machine stays awake with the lid closed. Install as a login item with install-lidwatch.sh.
 prev=No
 while :; do
-  cur=$(ioreg -rc IOPMrootDomain -d1 | awk -F'= ' '/"AppleClamshellState"/{print $2}')
-  if [ "$cur" != "$prev" ]; then
-    if [ "$cur" = Yes ]; then pmset displaysleepnow; else caffeinate -u -t 2; fi
-    echo "$(date '+%H:%M:%S') lid closed=$cur"
+  cur=$(/usr/sbin/ioreg -rc IOPMrootDomain -d1 | /usr/bin/awk -F'= ' '/"AppleClamshellState"/{print $2}')
+  if [ -n "$cur" ] && [ "$cur" != "$prev" ]; then
+    if [ "$cur" = Yes ]; then /usr/bin/pmset displaysleepnow; else /usr/bin/caffeinate -u -t 2; fi
+    echo "$(/bin/date '+%Y-%m-%d %H:%M:%S') lid closed=$cur"
     prev=$cur
   fi
-  sleep 1
+  /bin/sleep 1
 done

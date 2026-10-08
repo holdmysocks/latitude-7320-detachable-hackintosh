@@ -59,10 +59,14 @@ These apply to the committed config, which runs Apple's Ice Lake framebuffer
 | Displays → Brightness slider | full range |
 | brightness keys | work |
 | display sleep and wake | works |
-| lid close and open | display off and on, with [`tools/mac/lidwatch.sh`](../tools/mac/lidwatch.sh) running |
+| lid close and open | display off and on, with the lid helper installed (below) |
 
 **Disable system sleep:** `sudo pmset -a disablesleep 1`. The firmware offers no S3, and macOS hangs when it tries
 to sleep. Leave the other `pmset` values at their defaults.
+
+**Install the lid helper:** `tools/mac/install-lidwatch.sh` (no sudo; `uninstall` removes it). With system sleep
+disabled nothing turns the panel off when the lid closes; the helper sleeps the display on close, and opening the lid
+wakes it. The machine itself stays awake with the lid closed.
 
 Untested: hibernation, external displays.
 

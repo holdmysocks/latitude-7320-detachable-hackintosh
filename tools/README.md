@@ -131,6 +131,7 @@ macOS, and expect the working files on a FAT32 stick mounted at `/Volumes/TGLDEB
 | [`mac/dstest.sh`](mac/dstest.sh), [`mac/ptylog.py`](mac/ptylog.py) | display sleep/wake test that logs the kernel line by line to a file which survives a hard reset |
 | [`mac/decode-tgltrace.py`](mac/decode-tgltrace.py) | decodes the on-disk register trace of patch 0003 (`igfxtglmap` `0x10000`) |
 | [`mac/lidwatch.sh`](mac/lidwatch.sh) | display off when the lid closes, for a machine with system sleep disabled |
+| [`mac/install-lidwatch.sh`](mac/install-lidwatch.sh) | `install`, `uninstall`, `status`: runs `lidwatch.sh` as a per-user login item (LaunchAgent `local.lidwatch`), no sudo |
 | [`mac/collect-mact.sh`](mac/collect-mact.sh) | the earlier capture script (phase 1 handoff) |
 
 `tgl-mac.sh apply <experiment>` generates the config from `config.BASE-VESA.plist` on the ESP, validates it with

@@ -27,7 +27,7 @@ WhateverGreen required)
 |---|---|---|
 | GPU acceleration | ❌ | Iris Xe (Gen12) has no macOS accelerator. The framebuffer works; Metal does not. |
 | Brightness keys | ✅ | `SSDT-DOSI` + `BrightnessKeys.kext`. |
-| System sleep | ❌ | The firmware offers no S3 (Modern Standby only); macOS hangs if it tries. Disable it with `pmset -a disablesleep 1`. The lid turns the display off and on with a small helper script. Hibernation is untested. |
+| System sleep | ❌ | The firmware offers no S3 (Modern Standby only); macOS hangs if it tries. Disable it with `pmset -a disablesleep 1`. The lid turns the display off and on with a small helper ([`tools/mac/install-lidwatch.sh`](tools/mac/install-lidwatch.sh)). Hibernation is untested. |
 | External displays | ❔ | Untested. |
 | Audio | ❌ | SoundWire (RT711/714/1316). macOS has no SoundWire stack. |
 | Camera | ❌ | Intel IPU6 MIPI. No macOS driver. |
